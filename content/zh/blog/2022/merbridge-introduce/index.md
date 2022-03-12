@@ -29,7 +29,7 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 
 ### eBPF 的 sockops 加速
 
-网络连接本质上是 socket 的通讯，eBPF 提供了一个 [bpf_msg_redirect_hash]([https://man7.org/linux/man-pages/man7/bpf-helpers.7.html](https://man7.org/linux/man-pages/man7/bpf-helpers.7.html)) 函数，用来将应用发出的包，直接转发到对端的 socket 上面，可以极大的加速包在内核中的处理流程。
+网络连接本质上是 socket 的通讯，eBPF 提供了一个 [bpf_msg_redirect_hash](https://man7.org/linux/man-pages/man7/bpf-helpers.7.html) 函数，用来将应用发出的包，直接转发到对端的 socket 上面，可以极大的加速包在内核中的处理流程。
 
 这里需要一个 sock_map，需要根据当前的数据包信息，从 sock_map 中挑选一个存在的 socket 连接，转发请求，所以，需要在 sockops 的 hook 处或者其它地方将 socket 信息保存到 sock_map，并提供根据 key 查到 socket 的规则（一般为四元组）。
 
