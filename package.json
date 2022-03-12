@@ -1,21 +1,21 @@
 {
-  "name": "klts-io-hugo",
+  "name": "merbridge-website",
   "version": "0.0.1",
-  "description": "The website for klts.io",
+  "description": "The website for https://merbridge.cc",
   "main": "none.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/klts-io/website.git"
+    "url": "git+https://github.com/merbridge/website.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/klts-io/website/issues"
+    "url": "https://github.com/merbridge/website/issues"
   },
-  "homepage": "https://github.com/klts-io/website#readme",
+  "homepage": "https://github.com/merbridge/website#readme",
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^9.8.6",
