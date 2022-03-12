@@ -39,7 +39,7 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 
 ### Istio 基于 iptables 的原理
 
-![Istio 基于 iptables 的流量拦截原理](./imgs/iptables.png)
+![Istio 基于 iptables 的流量拦截原理](./imgs/1.png)
 
 如上图所示，当外部流量相应访问应用的端口时，会在 iptables 中被 PREROUTING 拦截，最后转发到 Sidecar 容器的 15006 端口，然后交给 Envoy 来进行处理。（图中红色 1 2 3 4 的路径）
 
@@ -79,7 +79,7 @@ Envoy 根据从控制平面下发的规则进行处理，处理完成后，会�
 3. Envoy 收到连接之后会调用 getsockopt 获取当前连接的目的地址，get_sockopt 程序会根据四元组信息从 `pair_original_dst` 取出原始目的地址并返回，由此连接完全建立。
 4. 在发送数据阶段，redir 程序会根据四元组信息，从 `sock_pair_map` 中读取 sock，然后通过 `bpf_msg_redirect_hash` 进行直`接转发，加速请求。
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%201.png)
+![出口流量处理](./imgs/2.png)
 
 其中，之所以在 connect 的时候，修改目的地址为 127.x.y.z 而不是 127.0.0.1，是因为在不同的 Pod 中，可能产生冲突的四元组，使用此方式即可巧妙的避开。（每个 Pod 间的目的 IP 就已经不同了，不存在冲突的情况）
 
@@ -95,7 +95,7 @@ Envoy 根据从控制平面下发的规则进行处理，处理完成后，会�
 
 其他地，流程和出口流量流程一样。
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%202.png)
+![入口流量处理](./imgs/3.png)
 
 ### 同节点加速
 
@@ -114,21 +114,21 @@ Envoy 根据从控制平面下发的规则进行处理，处理完成后，会�
 > Envoy 会在请求失败的时候重试，且这个错误只会发生一次，后续的连接会非常快。
 > 
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%203.png)
+![同节点加速](./imgs/4.png)
 
 ### 连接关系
 
 在没有使用 Merbridge（eBPF） 优化之前，Pod 到 Pod 间的访问入下图所示：
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%204.png)
+![iptable 路径](./imgs/5.png)
 
 在使用 Merbridge（eBPF）优化之后，出入口流量会使用直接跳过很多内核模块，提高性能：
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%205.png)
+![eBPF 路径](./imgs/6.png)
 
 同时，如果两个 Pod 在同一台机器上，那么他们之间的通讯将更加高效：
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%206.png)
+![同节点 eBPF 路径](./imgs/7.png)
 
 以上，通过使用 eBPF 在主机上对相应的连接进行处理，可以大幅度的减少内核处理流量的流程，提升服务之间的通讯质量。
 
@@ -139,11 +139,11 @@ Envoy 根据从控制平面下发的规则进行处理，处理完成后，会�
 
 下图展示了使用 eBPF 代替 iptables 之后，整体延迟的情况（越低越好）：
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%207.png)
+![延迟与连接数](./imgs/8.png)
 
 下图展示了使用 eBPF 代替 iptables 之后，整体 QPS 的情况（越高越好）：
 
-![Untitled](%5BDraft%5D%20%E4%B8%80%E8%A1%8C%203fa7e/Untitled%208.png)
+![延迟与 QPS](./imgs/9.png)
 
 > 以上数据使用 wrk 测试得出。
 > 
@@ -158,16 +158,11 @@ Merbridge 是一个完全独立的开源项目，此时还处于早期阶段，�
 
 参考文档：
 
-[https://github.com/merbridge/merbridge](https://github.com/merbridge/merbridge)
+* [https://ebpf.io/](https://ebpf.io/)
 
-[https://developpaper.com/kubecon-2021-｜-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/](https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/)
-
-[https://developpaper.com/go.php?go=aHR0cHM6Ly9qaW1teXNvbmcuaW8vYmxvZy9zaWRlY2FyLWluamVjdGlvbi1pcHRhYmxlcy1hbmQtdHJhZmZpYy1yb3V0aW5n](https://developpaper.com/go.php?go=aHR0cHM6Ly9qaW1teXNvbmcuaW8vYmxvZy9zaWRlY2FyLWluamVjdGlvbi1pcHRhYmxlcy1hbmQtdHJhZmZpYy1yb3V0aW5n)
-
-[https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter](https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter)
-
-[https://ebpf.io/](https://ebpf.io/)
-
-[https://cilium.io/](https://cilium.io/)
-
-[https://man7.org/linux/man-pages/man7/bpf-helpers.7.html](https://man7.org/linux/man-pages/man7/bpf-helpers.7.html)
+* [https://cilium.io/](https://cilium.io/)
+* [Merbridge on GitHub](https://github.com/merbridge/merbridge)
+* [Using eBPF instead of iptables to optimize the performance of service grid data plane](https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/) by Liu Xu, Tencent
+* [Sidecar injection and transparent traffic hijacking process in Istio explained in detail](https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/) by Jimmy Song, Tetrate
+* [Accelerate the Istio data plane with eBPF](https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1) by Yizhou Xu, Intel
+* [Envoy's Original Destination filter](https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter)
