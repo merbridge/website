@@ -44,9 +44,6 @@
 <li class="nav-item mr-4 mb-2 mb-lg-0">
 <a class="nav-link active" href=/blog/><span class=active>Blog</span></a>
 </li>
-<li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class=nav-link href=/community/><span>社区</span></a>
-</li>
 <li class="nav-item dropdown mr-4 d-none d-lg-block">
 <a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
 中文 Chinese
@@ -58,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.4e43fe22622ca599657f50750a06adc3.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1afd08a1b6e014ccec0dccfc39b58f69.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -68,7 +65,7 @@
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.4e43fe22622ca599657f50750a06adc3.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1afd08a1b6e014ccec0dccfc39b58f69.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -125,7 +122,7 @@
 <h5 class="mt-0 mb-1"><a href=/blog/2022/03/01/merbridge-introduce/>一行代码，使用 eBPF 代替 iptables 加速服务网格</a></h5>
 <p class="mb-2 mb-md-3"><small class=text-muted>2022.03.01 in 2022 年 Blog</small></p>
 <header class=article-meta>
-<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 2 分钟 阅读时间</p>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 3 分钟 阅读时间</p>
 </header>
 <p class="pt-0 mt-0">一行代码使用 eBPF 代替 iptables 加速 Istio 介绍 以 Istio 为首的服务网格技术正在被越来越多的企业关注，其使用 Sidecar 借助 iptables 技术实现流量拦截，可以处理所有应用的出入口流量，以实现诸如治理、观测、加密等能力。
 但是使用 iptables 的方式进行拦截，由于需要对出入口都拦截，会让原本主需要在内核态处理两次的链路变成四次，会损失不少性能，这在一些要求高性能的场景下显然是有影响的。
