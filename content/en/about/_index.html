@@ -14,15 +14,24 @@ menu:
 
 {{< /blocks/cover >}}
 
-{{% blocks/lead %}}
-
-{{% /blocks/lead %}}
-
-
-{{< blocks/section >}}
 <div class="col-12">
-<h1 class="text-center">This is another section</h1>
+  <h3 class="text-center">The service mesh trend led by istio is being focused by more and more enterprises. It uses sidecar to intercept service traffic with the kernel’s `netfilter` packet filter functionality configured by iptables, but intercepting with iptables may degrade performance. Over the past two years, eBPF has become a trending technology, and many projects based on eBPF have been released to the community.</h3>
 </div>
 
-{{< /blocks/section >}}
+  {{% blocks/lead %}}
+
+  {{% /blocks/lead %}}
+
+
+  {{< blocks/section>}}
+
+    <div class="col-12">
+      <h3 class="text-center">With eBPF’s `sockops` and `redir` capabilities, data packets can be processed efficiently by directly being transported from an inbound socket to an outbound socket. In an Istio mesh, it is possible to use eBPF to replace iptables rules, and accelerate the data plane by shortening the data path.</h3>
+    </div>
+
+    {{< /blocks/section>}}
+
+    <div class="col-12">
+      <h3 class="text-center">We have created an open source project called Merbridge, and by running a command on your Istio-managed cluster, you can use eBPF to achieve such network acceleration.</h3>
+    </div>
 
