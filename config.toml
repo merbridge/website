@@ -10,8 +10,8 @@ theme = ["docsy"]
 enableGitInfo = true
 
 # Language settings
-contentDir = "content/zh"
-defaultContentLanguage = "zh"
+contentDir = "content/en"
+defaultContentLanguage = "en"
 defaultContentLanguageInSubdir = false
 # Useful when translating.
 enableMissingTranslationPlaceholders = true
@@ -56,6 +56,7 @@ anchor = "smart"
 title = "Merbridge"
 description = "Merbridge website"
 languageName ="English"
+contentDir = "content/en"
 # Weight used for sorting.
 weight = 1
 
