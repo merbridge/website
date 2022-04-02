@@ -1,4 +1,4 @@
-<!doctype html><html lang=zh class=no-js>
+<!doctype html><html lang=en class=no-js>
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
@@ -14,15 +14,15 @@
 <link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
 <title>Merbridge</title>
-<meta name=description content="Merbridge 的官网"><meta property="og:title" content="Merbridge">
-<meta property="og:description" content="Merbridge 的官网">
+<meta name=description content="Merbridge website"><meta property="og:title" content="Merbridge">
+<meta property="og:description" content="Merbridge website">
 <meta property="og:type" content="website">
 <meta property="og:url" content="/"><meta property="og:image" content="/featured-background.jpg"><meta property="og:site_name" content="Merbridge">
 <meta itemprop=name content="Merbridge">
-<meta itemprop=description content="Merbridge 的官网"><meta name=twitter:card content="summary_large_image">
+<meta itemprop=description content="Merbridge website"><meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="/featured-background.jpg">
 <meta name=twitter:title content="Merbridge">
-<meta name=twitter:description content="Merbridge 的官网">
+<meta name=twitter:description content="Merbridge website">
 <link rel=preload href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
 <link href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
@@ -37,26 +37,26 @@
 <div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
 <ul class="navbar-nav mt-2 mt-lg-0">
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class=nav-link href=/about/><span>关于</span></a>
+<a class=nav-link href=/about/><span>About</span></a>
 </li>
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class=nav-link href=/docs/><span>文档</span></a>
+<a class=nav-link href=/docs/><span>Documentation</span></a>
 </li>
 <li class="nav-item mr-4 mb-2 mb-lg-0">
 <a class=nav-link href=/blog/><span>Blog</span></a>
 </li>
 <li class="nav-item dropdown mr-4 d-none d-lg-block">
 <a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
-中文 Chinese
+English
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/en/>English</a>
+<a class=dropdown-item href=/zh/>中文 Chinese</a>
 </div>
 </li>
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.9e9b49bfee449d73b4e60355f8a5dee3.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.5f97e56c3f0d52aa3c88870a6b27060d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -70,17 +70,17 @@
 <div class=row>
 <div class=col-12>
 <div class=text-center>
-<h1 class="display-1 mt-0 mt-md-5 pb-4">Merbridge: 使用 eBPF 加速您的服务网格，提高性能，降低延迟。</h1>
+<h1 class="display-1 mt-0 mt-md-5 pb-4">Merbridge: use eBPF to improve your mesh performance by reducing latency</h1>
 <div class="pt-3 lead">
 <div class=mx-auto>
 <a class="btn btn-lg btn-primary mr-3 mb-4" href=/docs/>
-学习更多 <i class="fas fa-arrow-alt-circle-right ml-2"></i>
+Learn More <i class="fas fa-arrow-alt-circle-right ml-2"></i>
 </a>
 <a class="btn btn-lg btn-secondary mr-3 mb-4" href=docs/getting-started>
-快速开始 <i class="fab fa-github ml-2"></i>
+Get Started <i class="fab fa-github ml-2"></i>
 </a>
-<p class="lead mt-5">在 Merbridge 中探索吧。</p>
-<a class="btn btn-link text-info" href=#td-block-1 aria-label=更多><i class="fa fa-chevron-circle-down" style=font-size:400%></i></a>
+<p class="lead mt-5">Explore Merbridge</p>
+<a class="btn btn-link text-info" href=#td-block-1 aria-label="Read more"><i class="fa fa-chevron-circle-down" style=font-size:400%></i></a>
 </div>
 </div>
 </div>
@@ -92,8 +92,8 @@
 <section class="row td-box td-box--primary position-relative td-box--gradient td-box--height-auto">
 <div class="container text-center td-arrow-down">
 <span class="h4 mb-0">
-<p>Merbridge 技术使用 eBPF 技术，在服务网格中，代替 iptables 实现流量拦截，并通过 eBPF 和 msg_redirect 技术，提高 Sidecar 和应用之间的传输速度，降低延迟。</p>
-<p>要了解更多实现细节或者原理，可以参考：<a href=blog>Blog</a>。</p>
+<p>Merbridge replaces iptables rules with eBPF to intercept traffic, and combines msg_redirect to reduce latency with a shortened datapath between sidecars and services.</p>
+<p>For details, see: <a href=blog>Blog</a>.</p>
 </span>
 </div>
 </section>
@@ -106,10 +106,10 @@
 <i class="fas fa-lightbulb"></i>
 </div>
 <h4 class=h3>
-查看文档
+Documentation
 </h4>
 <p class=mb-0>
-<p>如果对 Merbridge 使用有任何问题可以查看我们的<a href=docs>文档</a>。</p>
+<p>If you have any problems in using Merbridge, our <a href=docs>Documentation</a> may offer desirable solutions.</p>
 </p>
 </div>
 <div class="col-lg-4 mb-5 mb-lg-0 text-center">
@@ -117,24 +117,24 @@
 <i class="fab fa-github"></i>
 </div>
 <h4 class=h3>
-欢迎贡献！
+Make a Contribution
 </h4>
 <p class=mb-0>
-<p>可以在 <strong>GitHub</strong> 上<a href=https://github.com/merbridge/merbridge/pulls>创建一个 PR</a> 进行贡献，我们一直欢迎您的加入！</p>
+<p>You can <a href=https://github.com/merbridge/merbridge/pulls>open a PR</a> on <strong>GitHub</strong> to improve Merbridge. Your contribution is a big help！</p>
 </p>
-<p><a href=https://github.com/merbridge/merbridge/pulls>更多 …</a></p>
+<p><a href=https://github.com/merbridge/merbridge/pulls>Read more …</a></p>
 </div>
 <div class="col-lg-4 mb-5 mb-lg-0 text-center">
 <div class="mb-4 h1">
 <i class="fas fa-rss"></i>
 </div>
 <h4 class=h3>
-实现原理!
+How it Works!
 </h4>
 <p class=mb-0>
-<p>了解 Merbridge 如何实现，可以查阅我们的<a href=blog>博客</a></p>
+<p>If you are interested in details of Merbridge, this <a href=blog>Blog</a> may take care of your curiosity.</p>
 </p>
-<p><a href=blog>更多 …</a></p>
+<p><a href=blog>Read more …</a></p>
 </div>
 </div>
 </div>
@@ -172,8 +172,8 @@
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2022 The Merbridge Authors 版权所有</small>
-<p class=mt-2><a href=/about/>关于 Merbridge</a></p>
+<small class=text-white>&copy; 2022 The Merbridge Authors All Rights Reserved</small>
+<p class=mt-2><a href=/about/>Merbridge</a></p>
 </div>
 </div>
 </div>

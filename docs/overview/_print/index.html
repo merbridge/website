@@ -1,4 +1,4 @@
-<!doctype html><html lang=zh class=no-js>
+<!doctype html><html lang=en class=no-js>
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
@@ -13,17 +13,17 @@
 <link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
-<title>概览 | Merbridge</title>
-<meta name=description content="Merbridge 的官网"><meta property="og:title" content="概览">
-<meta property="og:description" content="帮助您大致了解 Merbridge。
+<title>Overview | Merbridge</title>
+<meta name=description content="Merbridge website"><meta property="og:title" content="Overview">
+<meta property="og:description" content="This page provides an overview of Merbridge.
 ">
 <meta property="og:type" content="website">
 <meta property="og:url" content="/docs/overview/"><meta property="og:site_name" content="Merbridge">
-<meta itemprop=name content="概览">
-<meta itemprop=description content="帮助您大致了解 Merbridge。
+<meta itemprop=name content="Overview">
+<meta itemprop=description content="This page provides an overview of Merbridge.
 "><meta name=twitter:card content="summary">
-<meta name=twitter:title content="概览">
-<meta name=twitter:description content="帮助您大致了解 Merbridge。
+<meta name=twitter:title content="Overview">
+<meta name=twitter:description content="This page provides an overview of Merbridge.
 ">
 <link rel=preload href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
 <link href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
@@ -39,26 +39,26 @@
 <div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
 <ul class="navbar-nav mt-2 mt-lg-0">
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class=nav-link href=/about/><span>关于</span></a>
+<a class=nav-link href=/about/><span>About</span></a>
 </li>
 <li class="nav-item mr-4 mb-2 mb-lg-0">
-<a class="nav-link active" href=/docs/><span class=active>文档</span></a>
+<a class="nav-link active" href=/docs/><span class=active>Documentation</span></a>
 </li>
 <li class="nav-item mr-4 mb-2 mb-lg-0">
 <a class=nav-link href=/blog/><span>Blog</span></a>
 </li>
 <li class="nav-item dropdown mr-4 d-none d-lg-block">
 <a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
-中文 Chinese
+English
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/en/>English</a>
+<a class=dropdown-item href=/zh/docs/overview/>中文 Chinese</a>
 </div>
 </li>
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.9e9b49bfee449d73b4e60355f8a5dee3.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.5f97e56c3f0d52aa3c88870a6b27060d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -73,29 +73,29 @@
 <div class=td-content>
 <div class="pageinfo pageinfo-primary d-print-none">
 <p>
-这是本节的多页打印视图。
-<a href=# onclick="return print(),!1">点击此处打印</a>.
+This the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
 </p><p>
-<a href=/docs/overview/>返回本页常规视图</a>.
+<a href=/docs/overview/>Return to the regular view of this page</a>.
 </p>
 </div>
-<h1 class=title>概览</h1>
-<div class=lead>帮助您大致了解 Merbridge。</div>
+<h1 class=title>Overview</h1>
+<div class=lead>This page provides an overview of Merbridge.</div>
 <ul>
 </ul>
 <div class=content>
 <div class="pageinfo pageinfo-primary">
-<p>此处帮助您大致了解 Merbridge 项目。</p>
+<p>Obtain a general view of Merbriddge.</p>
 </div>
-<h2 id=merbridge-是什么>Merbridge 是什么</h2>
-<p>Merbridge 是一个专门为服务网格设计，用于代替传统的 iptables 流量劫持技术，让服务网格的流量拦截和转发能力更加高效。</p>
-<h2 id=为什么需要-merbridge>为什么需要 Merbridge？</h2>
-<p>在服务网格的场景中，为了能够做到在应用完全无感知的情况下，利用边车来进行流量治理，就需要把 Pod 的出入口流量都转发到边车进行治理。
-在这种情况下，最通用的技术就是使用 iptables(netfilter) 的 REDIRECT 能力，将原本的流量转向边车，从而实现流量治理和其它相应功能。</p>
-<p>在这种情况下，比如在流量入口方向，原本直接流向应用的流量，需要先经过 iptables(netfilter) 的转发，到边车之后，又要边车将流量转发到实际的应用。
-在这个过程中，netfilter 的性能表现不是很好。而 eBPF 技术由于其独特的特性，也能够做到类似的事情，所以 Merbridge 就诞生了。</p>
-<p>我们希望借助 eBPF 技术，来代替 iptables(netfilter)，让服务网格的效率更高。</p>
-<h2 id=在什么场景下需要-merbridge>在什么场景下需要 Merbridge？</h2>
+<h2 id=what-is-merbridge>What is Merbridge</h2>
+<p>Merbridge is designed to make traffic interception and forwarding more efficient for service meshes by replacing iptables with eBPF.</p>
+<h2 id=why-merbridge>Why Merbridge</h2>
+<p>In the service mesh scenario, in order to use sidecars for silent traffic management, we need to forward the inbound and outbound traffic of a Pod to sidecars.</p>
+<p>The most common solution for this is to use the REDIRECT feature of iptables (netfilter) to redirect the original traffic to a sidecar for traffic management and other purposes.</p>
+<p>For example, the inbound traffic that originally flows directly to the application is now forwarded by iptables (netfilter) to the sidecar, which then forwards the traffic to its destination.</p>
+<p>However, netfilter is not performing well for this job. eBPF&rsquo;s ability for similar purposes makes Merbridge possible.</p>
+<p>We hope to replace iptables (netfilter) with eBPF to make service meshes more efficient.</p>
+<h2 id=when-to-use-merbridge>When to use Merbridge</h2>
 <p>TODO</p>
 </div>
 </div>
@@ -134,8 +134,8 @@
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2022 The Merbridge Authors 版权所有</small>
-<p class=mt-2><a href=/about/>关于 Merbridge</a></p>
+<small class=text-white>&copy; 2022 The Merbridge Authors All Rights Reserved</small>
+<p class=mt-2><a href=/about/>Merbridge</a></p>
 </div>
 </div>
 </div>
