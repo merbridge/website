@@ -26,4 +26,7 @@ Merbridge 是一个专门为服务网格设计，用于代替传统的 iptables 
 
 ## 在什么场景下需要 Merbridge？
 
-TODO
+我们推荐如果您的环境满足下面某些条件，可以考虑使用 Merbridge：
+1. 高一些需要高性能连接的场景，iptables 会增加较多延迟。
+1. 您的系统因为一些原因不能使用 iptables。
+1. 一些特殊原因，不能给普通的 Pod 太多权限（如 init 容器可能需要 NET_ADMIN 等权限）。
