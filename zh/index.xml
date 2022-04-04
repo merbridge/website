@@ -1,4 +1,9 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/zh/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: 一行代码，使用 eBPF 代替 iptables 加速服务网格</title><link>/zh/blog/2022/03/01/merbridge-introduce/</link><pubDate>Tue, 01 Mar 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/03/01/merbridge-introduce/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/zh/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: 与 Solo.io 一起举办的直播活动</title><link>/zh/blog/2022/03/29/solo-io-livestream/</link><pubDate>Tue, 29 Mar 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/03/29/solo-io-livestream/</guid><description>
+&lt;p>2022 年 3 月 29 日，Solo.io 和 Merbridge 共同举办了一场直播活动。&lt;/p>
+&lt;p>在这次直播中，我们一起探讨了很多与 Merbridge 相关的问题，其中包含了一个线上 Demo，可以帮你快速了解 Merbridge 的功能和使用方法。&lt;/p>
+&lt;p>同时，PPT 可以在&lt;a href="./merbridge.pdf">这里&lt;/a>下载。&lt;/p>
+&lt;p>如果您有兴趣，可以查看：&lt;/p>
+&lt;iframe width="1280" height="720" src="https://www.youtube.com/embed/r2wgInmsqsU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>&lt;/iframe></description></item><item><title>Blog: 一行代码，使用 eBPF 代替 iptables 加速服务网格</title><link>/zh/blog/2022/03/01/merbridge-introduce/</link><pubDate>Tue, 01 Mar 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/03/01/merbridge-introduce/</guid><description>
 &lt;h1 id="一行代码使用-ebpf-代替-iptables-加速-istio">一行代码使用 eBPF 代替 iptables 加速 Istio&lt;/h1>
 &lt;h2 id="介绍">介绍&lt;/h2>
 &lt;p>以 Istio 为首的服务网格技术正在被越来越多的企业关注，其使用 Sidecar 借助 iptables 技术实现流量拦截，可以处理所有应用的出入口流量，以实现诸如治理、观测、加密等能力。&lt;/p>

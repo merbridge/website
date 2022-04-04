@@ -58,7 +58,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.162013c0c4d33e89990f38826b5eaba8.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.b443cb1d790fb3bd0dc15b683f25224c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -68,7 +68,7 @@
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.162013c0c4d33e89990f38826b5eaba8.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.b443cb1d790fb3bd0dc15b683f25224c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -113,6 +113,23 @@
 <a href=https://github.com/merbridge/website/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> 提交项目问题</a>
 <a id=print href=/zh/docs/getting-started/_print/><i class="fa fa-print fa-fw"></i> 整节打印</a>
 </div>
+<div class=td-toc><nav id=TableOfContents>
+<ul>
+<li><a href=#prerequisites>先决条件</a></li>
+<li><a href=#installation>安装</a>
+<ul>
+<li><a href=#installation-on-istio>在 Istio 环境安装</a></li>
+<li><a href=#installation-on-linkerd>在 Linkerd2 环境安装</a></li>
+</ul>
+</li>
+<li><a href=#verification>验证</a>
+<ul>
+<li><a href=#verification-installation>验证安装</a></li>
+<li><a href=#verification-connection-test>连接测试</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
 </aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
 <nav aria-label=breadcrumb class="d-none d-md-block d-print-none">
@@ -133,11 +150,31 @@
 </header>
 <h2 id=prerequisites>先决条件</h2>
 <ol>
-<li>确保您的内核版本大于等于 <code>5.7</code>，可以使用 <code>uname -r</code> 查看。</li>
+<li>确保您系统的内核版本大于等于 <code>5.7</code>，可以使用 <code>uname -r</code> 查看。</li>
+<li>确保您系统开启了 cgroup2，可以通过 <code>mount | grep cgroup2</code> 进行验证。</li>
 </ol>
 <h2 id=installation>安装</h2>
-<p>todo</p>
-<h2 id=try>试用</h2>
+<p>Merbridge 目前支持在 Istio 和 Linkerd2 环境下安装。</p>
+<h3 id=installation-on-istio>在 Istio 环境安装</h3>
+<p>目前，您只需要在您的环境中执行以下命令即可安装 Merbridge：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml
+</code></pre></div><h3 id=installation-on-linkerd>在 Linkerd2 环境安装</h3>
+<p>目前，您只需要在您的环境中执行以下命令即可安装 Merbridge：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
+</code></pre></div><h2 id=verification>验证</h2>
+<h3 id=verification-installation>验证安装</h3>
+<p>要验证 Merbridge 是否能正常工作，首先需要确保 Merbridge 的 Pod 都运行正常，以 Istio 为例，您可以使用以下命令查看 Merbridge 的 Pod 状态：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl -n istio-system get pods
+</code></pre></div><p>等待所有 Merbridge 相关 Pod 都为 Running 状态即表示 Merbridge 已经安装成功。</p>
+<h3 id=verification-connection-test>连接测试</h3>
+<p>可以按照下面的方案验证 Merbridge 的连接是否正常：</p>
+<h4 id=安装-sleep-和-hellowrold-应用并等待完全启动>安装 sleep 和 hellowrold 应用，并等待完全启动：</h4>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl label ns default istio-injection<span style=color:#ce5c00;font-weight:700>=</span>enabled
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
+</code></pre></div><h4 id=执行-curl-测试>执行 curl 测试：</h4>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl <span style=color:#204a87>exec</span> <span style=color:#204a87;font-weight:700>$(</span>kubectl get po -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>sleep -o<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>jsonpath</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#39;{..metadata.name}&#39;</span><span style=color:#204a87;font-weight:700>)</span> -c sleep -- curl -s -v helloworld:5000/hello
+</code></pre></div><p>如果在结果中看到类似 <code>* Connected to helloworld (127.128.0.1) port 5000 (#0)</code> 的字样，表示 Merbridge 已经成功使用 eBPF 代替 iptables 进行转发。</p>
 <div class=section-index>
 <hr class=panel-line>
 <div class=entry>
@@ -149,8 +186,8 @@
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
 最后修改
-2022.03.12
-: <a href=https://github.com/merbridge/merbridge/commit/cc891d0b65d1c736c1d76998c110e1174d6f03cf>init website (cc891d0)</a>
+2022.04.04
+: <a href=https://github.com/merbridge/merbridge/commit/8c5be5519f2c59fe133886e0d7332805454212e8>+ add installing and other docs (8c5be55)</a>
 </div>
 </div>
 </main>
