@@ -47,7 +47,7 @@ kubectl -n istio-system get pods
 
 可以按照下面的方案验证 Merbridge 的连接是否正常：
 
-#### 安装 sleep 和 hellowrold 应用，并等待完全启动：
+#### 安装 sleep 和 helloworld 应用，并等待完全启动：
 ```bash
 kubectl label ns default istio-injection=enabled
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
