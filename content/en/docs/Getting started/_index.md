@@ -6,16 +6,16 @@ description: >
   This page helps you quickly get started with Merbridge.
 ---
 
-## Prerequisites 
+## Prerequisites {#prerequisites}
 
 1. Use kernel `5.7` or a higher version. Check your version with `name -r`.
 1. Activate `cgroup2` in your system. Check the status with `mount | grep cgroup2`.
 
-## Installation
+## Installation {#installation}
 
-Merbridge can be installed in Istio and Linkerd2 environments only.
+Merbridge can be installed on Istio and Linkerd2 only.
 
-### Install in Istio {#installation-on-istio}
+### Install on Istio {#installation-on-istio}
 
 Apply the following command to install Merbridge:
 
@@ -23,7 +23,7 @@ Apply the following command to install Merbridge:
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml
 ```
 
-### Install in Linkerd2 {#installation-on-linkerd}
+### Install on Linkerd2 {#installation-on-linkerd}
 
 Apply the following command to install Merbridge:
 
@@ -31,9 +31,9 @@ Apply the following command to install Merbridge:
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
 ```
 
-## Verification{#verification}
+## Verification {#verification}
 
-### Verify installation{#verification-installation}
+### Verify installation {#verification-installation}
 
 Before you start this verification, make sure each Pod of Merbridge is running well. You can check the Pod status in Istio with the following command:
 
@@ -43,7 +43,7 @@ kubectl -n istio-system get pods
 
 If the status of all Pods related to Merbridge is Running, it means Merbridge is successfully installed.
 
-### Verify connection{#verification-connection-test}
+### Verify connection {#verification-connection-test}
 
 Use the following methods to check the connectivity of Merbridge:
 
