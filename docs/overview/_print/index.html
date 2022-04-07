@@ -58,7 +58,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.b443cb1d790fb3bd0dc15b683f25224c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.06d73e461b07f81c67dd0978d36f7d3b.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -85,18 +85,23 @@ This the multi-page printable view of this section.
 </ul>
 <div class=content>
 <div class="pageinfo pageinfo-primary">
-<p>Obtain a general view of Merbriddge.</p>
+<p>Obtain a general view of Merbridge.</p>
 </div>
 <h2 id=what-is-merbridge>What is Merbridge</h2>
 <p>Merbridge is designed to make traffic interception and forwarding more efficient for service meshes by replacing iptables with eBPF.</p>
 <h2 id=why-merbridge>Why Merbridge</h2>
 <p>In the service mesh scenario, in order to use sidecars for silent traffic management, we need to forward the inbound and outbound traffic of a Pod to sidecars.</p>
-<p>The most common solution for this is to use the REDIRECT feature of iptables (netfilter) to redirect the original traffic to a sidecar for traffic management and other purposes.</p>
+<p>The most common solution to this is to use the REDIRECT feature of iptables (netfilter) to redirect the original traffic to a sidecar for traffic management and other purposes.</p>
 <p>For example, the inbound traffic that originally flows directly to the application is now forwarded by iptables (netfilter) to the sidecar, which then forwards the traffic to its destination.</p>
-<p>However, netfilter is not performing well for this job. eBPF&rsquo;s ability for similar purposes makes Merbridge possible.</p>
+<p>However, netfilter is not performing this job well. eBPF&rsquo;s ability for similar purposes makes Merbridge possible.</p>
 <p>We hope to replace iptables (netfilter) with eBPF to make service meshes more efficient.</p>
 <h2 id=when-to-use-merbridge>When to use Merbridge</h2>
-<p>TODO</p>
+<p>Merbridge is recommended if you have following problems:</p>
+<ol>
+<li>iptables increase latency when high-performance connection is needed.</li>
+<li>Your system cannot use iptables for certain reasons.</li>
+<li>Ordinary Pods cannot have too many permissions for certain reasons (e.g., the init container may require NET_ADMIN and other permissions).</li>
+</ol>
 </div>
 </div>
 </main>

@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.b443cb1d790fb3bd0dc15b683f25224c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.06d73e461b07f81c67dd0978d36f7d3b.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -144,7 +144,7 @@
 </code></pre></div><p>等待所有 Merbridge 相关 Pod 都为 Running 状态即表示 Merbridge 已经安装成功。</p>
 <h3 id=verification-connection-test>连接测试</h3>
 <p>可以按照下面的方案验证 Merbridge 的连接是否正常：</p>
-<h4 id=安装-sleep-和-hellowrold-应用并等待完全启动>安装 sleep 和 hellowrold 应用，并等待完全启动：</h4>
+<h4 id=安装-sleep-和-helloworld-应用并等待完全启动>安装 sleep 和 helloworld 应用，并等待完全启动：</h4>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl label ns default istio-injection<span style=color:#ce5c00;font-weight:700>=</span>enabled
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml

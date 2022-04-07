@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.b443cb1d790fb3bd0dc15b683f25224c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.06d73e461b07f81c67dd0978d36f7d3b.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -115,7 +115,7 @@
 <h1 id=一行代码使用-ebpf-代替-iptables-加速-istio>一行代码使用 eBPF 代替 iptables 加速 Istio</h1>
 <h2 id=介绍>介绍</h2>
 <p>以 Istio 为首的服务网格技术正在被越来越多的企业关注，其使用 Sidecar 借助 iptables 技术实现流量拦截，可以处理所有应用的出入口流量，以实现诸如治理、观测、加密等能力。</p>
-<p>但是使用 iptables 的方式进行拦截，由于需要对出入口都拦截，会让原本主需要在内核态处理两次的链路变成四次，会损失不少性能，这在一些要求高性能的场景下显然是有影响的。</p>
+<p>但是使用 iptables 的方式进行拦截，由于需要对出入口都拦截，会让原本只需要在内核态处理两次的链路变成四次，会损失不少性能，这在一些要求高性能的场景下显然是有影响的。</p>
 <p>近两年，由于 eBPF 技术的兴起，不少围绕 eBPF 的项目也应声而出，eBPF 在可观测性和网络包的处理方面也有不少优秀的案例。如 Cilium、px.dev 等项目。</p>
 <p>借助 eBPF 的 sockops 和 redir 能力，可以高效的处理数据包，再结合实际场景，那么我们就可以使用 eBPF 去代替 iptables 为 Istio 进行加速。</p>
 <p>现在，我们开源了 Merbridge 项目，只需要在您的 Istio 集群执行以下命令，即可直接使用 eBPF 代替 iptables 实现网络加速！</p>
@@ -162,7 +162,7 @@
 <p>但是，需要注意的是，由于 eBPF 不像 iptables 能在指定命名空间生效，它是全局的，这就造成如果我们将一个本来不是 Istio 所管理的 Pod，或者就是一个外部的 IP 地址，也做了这个操作的话，那就会引起严重问题，会请求直接无法建立连接。</p>
 <p>所以这里我们设计了一个小的控制平面（以 DaemonSet 方式部署），其通过 Watch 所有的 Pod，类似于像 kubelet 那样获取当前节点的 Pod 列表，将已经被注入了 Sidecar 的 Pod IP 地址写入 <code>local_pod_ips</code> 这个 map。</p>
 <p>当我们在做入口流量处理的时候，如果目的地址不在这个列表之中，我们就不做处理，让它走原来的逻辑，这样就可以比较灵活且简单的处理入口流量。</p>
-<p>其他地，流程和出口流量流程一样。</p>
+<p>其他的流程和出口流量流程一样。</p>
 <p><img src=./imgs/3.png alt=入口流量处理></p>
 <h3 id=同节点加速>同节点加速</h3>
 <p>通过入口流量处理，理论上，我们已经可以直接加速同节点的 Envoy 到 Envoy 的加速。但是存在一个问题。就是在这种场景下，Envoy 访问当前 Pod 的应用的时候会出错。</p>
