@@ -16,13 +16,13 @@ eBPF (extended Berkeley Packet Filter) 是一种可以在 Linux 内核中运行�
 
 Merbridge 的核心特性包括：
 
-- 入口流量处理
+- 出口流量处理
 
   Merbridge 使用 eBPF 的 connect 程序，通过修改 user_ip 和 user_port 修改连接发起时的目的地址，让流量能够发送到新的接口。为了让 Envoy 识别出原始的目的地址，应用程序（包括 Envoy）会在收到连接之后调用 get_sockopts 函数，获取 ORIGINAL_DST。
 
-- 出口流量处理
+- 入口流量处理
 
-  出口流量处理与入口流量处理大体类似。需要注意的是，eBPF 是全局性的，不能在指定的命名空间生效。因此，如果对本来不由 Istio 管理的 Pod 或者一个外部的 IP 地址执行此操作，就会导致请求无法建立连接。所以这里设计了一个小的控制平面（以 DaemonSet 方式部署），通过 Watch 所有的 Pod，类似于 kubelet 那样获取当前节点的 Pod 列表，将已经被注入 Sidecar 的 Pod IP 地址写入 local_pod_ips map。如果目的地址不在这个列表之中， Merbridge 就不做处理，而使用原来的逻辑。这样就可以灵活且简单地处理入口流量。
+  入口流量处理与出口流量处理大体类似。需要注意的是，eBPF 是全局性的，不能在指定的命名空间生效。因此，如果对本来不由 Istio 管理的 Pod 或者一个外部的 IP 地址执行此操作，就会导致请求无法建立连接。所以这里设计了一个小的控制平面（以 DaemonSet 方式部署），通过 Watch 所有的 Pod，类似于 kubelet 那样获取当前节点的 Pod 列表，将已经被注入 Sidecar 的 Pod IP 地址写入 local_pod_ips map。如果目的地址不在这个列表之中， Merbridge 就不做处理，而使用原来的逻辑。这样就可以灵活且简单地处理入口流量。
 
 - 同节点加速
 
@@ -49,10 +49,15 @@ Merbridge 的核心特性包括：
 使用 eBPF 在主机上对相应的连接进行处理，可以大幅度减少内核处理流量的流程，提升服务之间的通讯质量。
 
 - 如果不用 Merbridge (eBPF)，Pod 到 Pod 间的访问连接关系如下图所示：
+
   ![iptable 路径](./imgs/5.png)
+
 - 使用 Merbridge (eBPF) 优化之后，处理出入口流量时会跳过很多内核模块，从而加速网络。
+
   ![eBPF 路径](./imgs/6.png)
+
 - 如果两个 Pod 在同一台机器上，使用 Merbridge (eBPF) 能让 Pod 之间的通讯更加高效。
+
   ![同节点 eBPF 路径](./imgs/7.png)
 
 Merbridge 是一个完全独立的开源项目（Github 地址：https://github.com/merbridge/merbridge），但目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。　　
