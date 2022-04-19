@@ -55,7 +55,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.31179286907cffa54d4c47bb06a45800.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.c8f5f4496144cc44fbeb299e279c0071.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -85,7 +85,7 @@ This the multi-page printable view of this section.
 <ul>
 <li>2.1: <a href=#pg-811eabe57877013e05aad1da682732d4>Installation Troubleshooting</a></li>
 </ul>
-<li>3: <a href=#pg-fcf6186c3c17ed7f2e8577136109a520>Key Concepts</a></li>
+<li>3: <a href=#pg-fcf6186c3c17ed7f2e8577136109a520>Concepts</a></li>
 <ul>
 </ul>
 <li>4: <a href=#pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c>Make Contributions</a></li>
@@ -157,14 +157,40 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 <div class=lead>This page helps you identify and fix errors in installing Merbridge.</div>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-fcf6186c3c17ed7f2e8577136109a520>3 - Key Concepts</h1>
-<div class=lead>This page helps you learn some key concepts in Merbridge.</div>
+<h1 id=pg-fcf6186c3c17ed7f2e8577136109a520>3 - Concepts</h1>
+<div class=lead>Learn about some of the key concepts in the Merbridge project.</div>
 <h2 id=ebpf>eBPF</h2>
-<p>eBPF is a revolutionary technology with origins in the Linux kernel that can run sandboxed programs in an operating system kernel. It is used to safely and efficiently extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules.</p>
+<p>The full name of eBPF is Extended Berkeley Packet Filter. As the name implies, this is a module used to filter network packets. For example, sockops and redir capabilities of eBPF can efficiently filter and intercept packets.</p>
+<p>eBPF is a revolutionary technology with origins in the Linux kernel that can run sandboxed programs in an operating system kernel. It is used to safely and efficiently extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules</p>
 <h2 id=iptables>iptables</h2>
+<p>iptables is a traffic filter built on netfilter. It implements traffic filtering and interception by registering hook functions on the mount point of netfilter. From the name of iptables, we can guess it may contain some tables. In practice, by mounting rule tables on different chains of netfilter, iptables can filter or modify the traffic packets entering and leaving the kernel protocol stack.</p>
+<p>iptables has 4 tables by default:</p>
+<ul>
+<li>Filter</li>
+<li>NAT</li>
+<li>Raw</li>
+<li>Mangle</li>
+</ul>
+<p>iptables has 5 chains by default:</p>
+<ul>
+<li>INPUT chain (ingress rules)</li>
+<li>OUTPUT chain (exgress rules)</li>
+<li>FORWARD chain (rules of forwarding)</li>
+<li>PREROUTING chain (rules before routing)</li>
+<li>POSTROUTING chain (rules after routing)</li>
+</ul>
 <h2 id=service-mesh>Service Mesh</h2>
+<p>A service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud native application. A service mesh can guarantee fast, reliable, and secure communication between containerized application infrastructure services. Key capabilities provided by mesh include service discovery, load balancing, secure encryption and authentication, failover, observability, and more.  </p>
+<p>A service mesh typically injects a sidecar proxy into each service instance. These sidcars handle inter-service communication, monitoring, and security. In this way, developers can focus on the development, support, and maintenance of the application code in the service, while the O&M team is responsible for the maintenance of the service mesh and applications. </p>
+<p>Today, the most well-known service mesh is Istio.</p>
 <h2 id=istio>Istio</h2>
+<p>Istio is a service mesh technology originally open sourced by IBM, Google, and Lyft. It can be layered transparently onto distributed applications and provides all the benefits of a service mesh, such as traffic governance, security, and observability.</p>
+<p>Istio can adapt to all services hosted with on-premises, cloud, Kubernetes containers, and virtual machines. It is typically used with microservices deployed on a Kubernetes platform.</p>
+<p>Fundamentally, Istio works by deploying an extended version of Envoy as a sidecar proxy to each microservice. The proxy network it uses forms a data plane of Istio. The configuration and management of these proxies is done in a control plane, providing discovery, configuration, and certificate management for Envoy proxies in the data plane.</p>
 <h2 id=linkerd>Linkerd</h2>
+<p>Linkerd is the first service mesh launched on the market, but Istio is more popular today.</p>
+<p>Linkerd is an open source, ultra-lightweight service mesh designed by Buoyant for Kubernetes. It is completely rewritten in Rust, which makes it as small, light and safe as possible. It provides runtime debugging, observability, reliability, and safety without code changes in distributed applications.</p>
+<p>Linkerd has three basic components: UI, data plane, and control plane. Linkerd works by installing a set of ultra-light, transparent proxies next to each service instance that automatically handle all traffic to and from the service.</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c>4 - Make Contributions</h1>

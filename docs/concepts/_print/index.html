@@ -13,17 +13,17 @@
 <link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
-<title>Key Concepts | Merbridge</title>
-<meta name=description content="Merbridge website"><meta property="og:title" content="Key Concepts">
-<meta property="og:description" content="This page helps you learn some key concepts in Merbridge.
+<title>Concepts | Merbridge</title>
+<meta name=description content="Merbridge website"><meta property="og:title" content="Concepts">
+<meta property="og:description" content="Learn about some of the key concepts in the Merbridge project.
 ">
 <meta property="og:type" content="website">
 <meta property="og:url" content="/docs/concepts/"><meta property="og:site_name" content="Merbridge">
-<meta itemprop=name content="Key Concepts">
-<meta itemprop=description content="This page helps you learn some key concepts in Merbridge.
+<meta itemprop=name content="Concepts">
+<meta itemprop=description content="Learn about some of the key concepts in the Merbridge project.
 "><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Key Concepts">
-<meta name=twitter:description content="This page helps you learn some key concepts in Merbridge.
+<meta name=twitter:title content="Concepts">
+<meta name=twitter:description content="Learn about some of the key concepts in the Merbridge project.
 ">
 <link rel=preload href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
 <link href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
@@ -58,7 +58,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.31179286907cffa54d4c47bb06a45800.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.c8f5f4496144cc44fbeb299e279c0071.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -79,17 +79,43 @@ This the multi-page printable view of this section.
 <a href=/docs/concepts/>Return to the regular view of this page</a>.
 </p>
 </div>
-<h1 class=title>Key Concepts</h1>
-<div class=lead>This page helps you learn some key concepts in Merbridge.</div>
+<h1 class=title>Concepts</h1>
+<div class=lead>Learn about some of the key concepts in the Merbridge project.</div>
 <ul>
 </ul>
 <div class=content>
 <h2 id=ebpf>eBPF</h2>
-<p>eBPF is a revolutionary technology with origins in the Linux kernel that can run sandboxed programs in an operating system kernel. It is used to safely and efficiently extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules.</p>
+<p>The full name of eBPF is Extended Berkeley Packet Filter. As the name implies, this is a module used to filter network packets. For example, sockops and redir capabilities of eBPF can efficiently filter and intercept packets.</p>
+<p>eBPF is a revolutionary technology with origins in the Linux kernel that can run sandboxed programs in an operating system kernel. It is used to safely and efficiently extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules</p>
 <h2 id=iptables>iptables</h2>
+<p>iptables is a traffic filter built on netfilter. It implements traffic filtering and interception by registering hook functions on the mount point of netfilter. From the name of iptables, we can guess it may contain some tables. In practice, by mounting rule tables on different chains of netfilter, iptables can filter or modify the traffic packets entering and leaving the kernel protocol stack.</p>
+<p>iptables has 4 tables by default:</p>
+<ul>
+<li>Filter</li>
+<li>NAT</li>
+<li>Raw</li>
+<li>Mangle</li>
+</ul>
+<p>iptables has 5 chains by default:</p>
+<ul>
+<li>INPUT chain (ingress rules)</li>
+<li>OUTPUT chain (exgress rules)</li>
+<li>FORWARD chain (rules of forwarding)</li>
+<li>PREROUTING chain (rules before routing)</li>
+<li>POSTROUTING chain (rules after routing)</li>
+</ul>
 <h2 id=service-mesh>Service Mesh</h2>
+<p>A service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud native application. A service mesh can guarantee fast, reliable, and secure communication between containerized application infrastructure services. Key capabilities provided by mesh include service discovery, load balancing, secure encryption and authentication, failover, observability, and more.  </p>
+<p>A service mesh typically injects a sidecar proxy into each service instance. These sidcars handle inter-service communication, monitoring, and security. In this way, developers can focus on the development, support, and maintenance of the application code in the service, while the O&M team is responsible for the maintenance of the service mesh and applications. </p>
+<p>Today, the most well-known service mesh is Istio.</p>
 <h2 id=istio>Istio</h2>
+<p>Istio is a service mesh technology originally open sourced by IBM, Google, and Lyft. It can be layered transparently onto distributed applications and provides all the benefits of a service mesh, such as traffic governance, security, and observability.</p>
+<p>Istio can adapt to all services hosted with on-premises, cloud, Kubernetes containers, and virtual machines. It is typically used with microservices deployed on a Kubernetes platform.</p>
+<p>Fundamentally, Istio works by deploying an extended version of Envoy as a sidecar proxy to each microservice. The proxy network it uses forms a data plane of Istio. The configuration and management of these proxies is done in a control plane, providing discovery, configuration, and certificate management for Envoy proxies in the data plane.</p>
 <h2 id=linkerd>Linkerd</h2>
+<p>Linkerd is the first service mesh launched on the market, but Istio is more popular today.</p>
+<p>Linkerd is an open source, ultra-lightweight service mesh designed by Buoyant for Kubernetes. It is completely rewritten in Rust, which makes it as small, light and safe as possible. It provides runtime debugging, observability, reliability, and safety without code changes in distributed applications.</p>
+<p>Linkerd has three basic components: UI, data plane, and control plane. Linkerd works by installing a set of ultra-light, transparent proxies next to each service instance that automatically handle all traffic to and from the service.</p>
 </div>
 </div>
 </main>
