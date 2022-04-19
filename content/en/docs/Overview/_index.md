@@ -52,14 +52,14 @@ Using eBPF to process connections on the host can greatly simplify the kernel's 
 
 - Before applying eBPF using Merbridge, the data path between pods is like:
 
-  ![iptable path](imgs/iptables_Path.png)
+![iptable path](imgs/iptables_Path.png)
 
 - After applying Merbridge, the outbound traffic will skip many filter steps to improve the performance:
 
-  ![eBPF path](imgs/eBPF_Path.png)
+![eBPF path](imgs/eBPF_Path.png)
 
 - If two pods are on the same node, the connection can even be faster:
 
-  ![same-node eBPF path](imgs/sameNode_eBPF_Path.png)
+![same-node eBPF path](imgs/sameNode_eBPF_Path.png)
 
 Merbridge is a completely independent open source project（https://github.com/merbridge/merbridge). It is still at an early stage, and we are looking forward to having more users and developers to get engaged. It would be greatly appreciated if you would try this new technology to accelerate your mesh, and provide us with some feedback!　
