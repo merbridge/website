@@ -66,4 +66,4 @@ Merbridge 的核心特性包括：
 
 ![同节点 eBPF 路径](imgs/sameNode_eBPF_path.png)
 
-Merbridge 是一个完全独立的开源项目，Github 地址为：https://github.com/merbridge/merbridge。Merbridge 项目目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。　　
+Merbridge 是一个完全独立的开源项目，Merbridge 项目目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。如果您发现了 Merbridge 的漏洞而且有兴趣帮助修复，那么非常欢迎您[提交一个 Pull Request](https://github.com/merbridge/merbridge/compare)，附带上您的修复代码，我们会及时处理您的 PR。
