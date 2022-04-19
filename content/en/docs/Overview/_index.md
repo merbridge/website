@@ -62,4 +62,4 @@ Using eBPF to process connections on the host can greatly simplify the kernel's 
 
 ![same-node eBPF path](imgs/sameNode_eBPF_Path.png)
 
-Merbridge is a completely independent open source project（https://github.com/merbridge/merbridge). It is still at an early stage, and we are looking forward to having more users and developers to get engaged. It would be greatly appreciated if you would try this new technology to accelerate your mesh, and provide us with some feedback!　
+[Merbridge](https://github.com/merbridge/merbridge) is a completely independent open source project. It is still at an early stage, and we are looking forward to having more users and developers to get engaged. It would be greatly appreciated if you would try this new technology to accelerate your mesh, and provide us with some feedback!　
