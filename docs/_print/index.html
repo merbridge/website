@@ -55,7 +55,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.c8f5f4496144cc44fbeb299e279c0071.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -102,24 +102,51 @@ This the multi-page printable view of this section.
 <div class=td-content>
 <h1 id=pg-6e17e09fffc1050f46600282def85180>1 - Overview</h1>
 <div class=lead>This page provides an overview of Merbridge.</div>
-<div class="pageinfo pageinfo-primary">
-<p>Obtain a general view of Merbridge.</p>
-</div>
 <h2 id=what-is-merbridge>What is Merbridge</h2>
 <p>Merbridge is designed to make traffic interception and forwarding more efficient for service meshes by replacing iptables with eBPF.</p>
-<h2 id=why-merbridge>Why Merbridge</h2>
-<p>In the service mesh scenario, in order to use sidecars for silent traffic management, we need to forward the inbound and outbound traffic of a Pod to sidecars.</p>
-<p>The most common solution to this is to use the REDIRECT feature of iptables (netfilter) to redirect the original traffic to a sidecar for traffic management and other purposes.</p>
-<p>For example, the inbound traffic that originally flows directly to the application is now forwarded by iptables (netfilter) to the sidecar, which then forwards the traffic to its destination.</p>
-<p>However, netfilter is not performing this job well. eBPF&rsquo;s ability for similar purposes makes Merbridge possible.</p>
-<p>We hope to replace iptables (netfilter) with eBPF to make service meshes more efficient.</p>
+<p>eBPF (extended Berkeley Packet Filter) can run user&rsquo;s programs in the Linux kernel without modifying the kernel code or loading kernel modules. It is widely used in networking, security, monitoring and other fields. Compared with iptables, Merbridge can shorten the data path between sidecars and services and therefore accelerate network. Meanwhile, Merbridge will not change the original architecture of Istio, and the original logic is still smooth. This means that if you don&rsquo;t want Merbridge anymore, just delete the DaemonSet and return to the traditional iptables. No more actions will be needed.</p>
+<h2 id=what-merbridge-can-do>What Merbridge can do</h2>
+<p>Merbridge has following core features:</p>
+<ul>
+<li>Processing outbound traffic</li>
+</ul>
+<p>Merbridge uses eBPF’s <code>connect</code> program to modify <code>user_ip</code> and <code>user_port</code>, so as to modify the destination address of a connection and ensure traffic can be sent to the new interface. In order to make Envoy identify the original destination address, the application (incl. Envoy) will call the <code>get_sockopt</code> function to obtain <code>ORIGINAL_DST</code> when receiving a connection.</p>
+<ul>
+<li>Processing inbound traffic</li>
+</ul>
+<p>The processing of inbound traffic is basically similar to outbound traffic. Note that eBPF cannot take effect in a specified namespace like iptables. The changes will be global. It means that if we use a Pod that is not originally managed by Istio, or an external IP address, serious problems will be encountered — like the connection not being established at all.</p>
+<p>As a result, we designed a tiny control plane (deployed as a DaemonSet), which watches all pods — similar to the kubelet watching pods on the node — to write the pod IP addresses that have been injected into the sidecar to the <code>local_pod_ips</code> map. If the destination address is not in the map, Merbridge will not do anything to the original traffic.</p>
+<ul>
+<li>Accelerating</li>
+</ul>
+<p>In Istio, Envoy accesses the application by using the current pod IP and port number. Because the pod IP exists in the <code>local_pod_ips</code> map as well, the traffic will be redirected to the pod IP on port 15006, producing an infinite loop. Are there any ways to get the IP address in the current namespace with eBPF? Yes! We have designed a feedback mechanism: When Envoy tries to establish a connection, we redirect it to port 15006. However, in the sockops step, we will determine if the source IP and the destination IP are the same. If yes, it means the wrong request is sent, and we will discard this connection in the sockops process. In the meantime, the current ProcessID and IP information will be written into the <code>process_ip map</code> to allow eBPF to support corresponding relationship between processes and IPs. When the next request is sent, We will check directly from the <code>process_ip map</code> if the destination address is the same as the current IP address. Envoy will retry when the request fails, and this retry process will only occur once, meaning subsequent requests will be accelerated.</p>
+<h2 id=why-need-merbridge>Why need Merbridge</h2>
+<p>In the service mesh scenario, in order to use the sidecar for traffic management without the application being aware of it, the ingress and egress traffic of the Pod will be forwarded to the sidecar. The most common way for this is using the redirect capability of iptables (netfilter) to forward the original traffic to the sidecar. However, this approach will increase network latency, because iptables intercepts both egress and ingress traffic. Take ingress traffic as an example. The traffic that originally flows directly to the application needs to be forwarded to the sidecar by iptables (netfilter), and then the sidecar will forward the traffic to the actual application. The data path becomes very long, since duplicated steps are performed several times.</p>
+<p>Luckily, eBPF provides a function bpf_msg_redirect_hash, to directly forward the packets sent by the application in the inbound socket to the outbound socket. By doing so, packet processing can be greatly accelerated in the kernel. Therefore, we hope to replace iptables with eBPF. That&rsquo;s how Merbridge came into being.</p>
 <h2 id=when-to-use-merbridge>When to use Merbridge</h2>
 <p>Merbridge is recommended if you have following problems:</p>
-<ol>
-<li>iptables increase latency when high-performance connection is needed.</li>
+<ul>
+<li>iptables takes effect globally and related modifications cannot be explicitly prohibited, resulting in poor controllability.</li>
+<li>When large concurrency and high-performance connections are required, using iptables will increase latency.</li>
 <li>Your system cannot use iptables for certain reasons.</li>
-<li>Ordinary Pods cannot have too many permissions for certain reasons (e.g., the init container may require NET_ADMIN and other permissions).</li>
-</ol>
+<li>You cannot give ordinary Pods too many permissions for certain reasons (e.g., the init container may require NET_ADMIN and other permissions).</li>
+<li>Using iptables for transparent interception requires connection tracking feature of the conntrack module. This means great overhead and alos maybe a full track table in the case of a large number of connections.</li>
+</ul>
+<h2 id=what-merbridge-will-change>What Merbridge will change</h2>
+<p>Using eBPF to process connections on the host can greatly simplify the kernel&rsquo;s processing of traffic and improve the communication quality between services.</p>
+<ul>
+<li>Before applying eBPF using Merbridge, the data path between pods is like:</li>
+</ul>
+<p><img src=imgs/iptables_Path.png alt="iptable path"></p>
+<ul>
+<li>After applying Merbridge, the outbound traffic will skip many filter steps to improve the performance:</li>
+</ul>
+<p><img src=imgs/eBPF_Path.png alt="eBPF path"></p>
+<ul>
+<li>If two pods are on the same node, the connection can even be faster:</li>
+</ul>
+<p><img src=imgs/sameNode_eBPF_Path.png alt="same-node eBPF path"></p>
+<p><a href=https://github.com/merbridge/merbridge>Merbridge</a> is a completely independent open source project. It is still at an early stage, and we are looking forward to having more users and developers to get engaged. It would be greatly appreciated if you would try this new technology to accelerate your mesh, and provide us with some feedback!　</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-93aadc1aba179e6928539400a09b9e4e>2 - Quick Start</h1>
@@ -196,8 +223,8 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 <h1 id=pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c>4 - Make Contributions</h1>
 <div class=lead>This page helps you make contributions to Merbridge.</div>
 <p>Merbridge is currently hosted on GitHub for open source, and all code-related issues are managed on GitHub.</p>
-<p>If you have any questions or suggestions about Merbridge, you can <a href=https://github.com/merbridge/merbridge/issues/new/choose>create a New Issue</a> on GitHub. We will review and process it as soon as possible.</p>
-<p>If you find a bug in Merbridge and are interested in helping us fix it, you are more than welcome to share your fix code by <a href=https://github.com/merbridge/merbridge/compare>creating a Pull Request</a>. We will review and process it as soon as possible.</p>
+<p>If you have any questions or suggestions about Merbridge, you can <a href=https://github.com/merbridge/merbridge/issues>create a New Issue</a> on GitHub. We will review and process it as soon as possible.</p>
+<p>If you find a bug in Merbridge and are interested in helping us fix it, you are more than welcome to share your fix code by <a href=https://github.com/merbridge/merbridge/pulls>creating a Pull Request</a>. We will review and process it as soon as possible.</p>
 </div>
 </main>
 </div>
