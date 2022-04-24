@@ -9,7 +9,7 @@ weight: 1
 
 [Cilium](https://cilium.io/) is an excellent open source software that provides many networking capabilities for cloud native applications based on eBPF. As a pioneer in the developing roadmap of eBPF, it provides great design concepts, which also inspires our team to initiate the Merbridge project.
 
-Merbridge is also stemmed from eBPF to provide faster and more efficient experience on connectivity for service mesh applications. The applicable scenarios are different from Cilium, but both are symbiotic. Cilium provides much possibility to enable Merbridge growing up.
+Merbridge is also stemmed from eBPF to provide faster and more efficient experience on connectivity for service mesh applications. Although the application scenarios of Merbridge are different from Cilium, Cilium provides many possibilities to unblock Merbridge's growth.
 
 Cilium mainly provides basic network capabilities for cloud native applications, such as ClusterIP, NodePort, and network policy. Merbridge is using eBPF instead of iptables to realize traffic interception and accelerate your network in the service mesh scenario. It also needs to rely on the capabilities of underlying CNI, such as Cilium.
 
