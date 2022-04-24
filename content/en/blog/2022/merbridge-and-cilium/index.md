@@ -13,7 +13,7 @@ Merbridge is also stemmed from eBPF to provide faster and more efficient experie
 
 Cilium mainly provides basic network capabilities for cloud native applications, such as ClusterIP, NodePort, and network policy. Merbridge is using eBPF instead of iptables to realize traffic interception and accelerate your network in the service mesh scenario. It also needs to rely on the capabilities of underlying CNI, such as Cilium.
 
-Therefore, Merbridge only focuses on enhancing the network capability in the service mesh and needs to rely on the underlying CNI like Cilium, but it can provide users with another better choice for filtering and acceleration.
+Since the two projects have different motives, better eBPF solution is provided by Merbridge for users in the mesh scenario.
 
 ## Acknowledgements
 
