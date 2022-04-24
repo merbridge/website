@@ -1,11 +1,11 @@
 ---
-title: "Merbridge and Cilium Hand in Hand"
-linkTitle: "Merbridge and Cilium Hand in Hand"
+title: "Merbridge and Cilium"
+linkTitle: "Merbridge and Cilium"
 date: 2022-04-23
 weight: 1
 ---
 
-# Merbridge and Cilium Hand in Hand
+# Merbridge and Cilium
 
 [Cilium](https://cilium.io/) is an excellent open source software that provides many networking capabilities for cloud native applications based on eBPF. As a pioneer in the developing roadmap of eBPF, it provides great design concepts, which also inspires our team to initiate the Merbridge project.
 
