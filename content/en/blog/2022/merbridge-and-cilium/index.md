@@ -21,4 +21,4 @@ Cilium has been contributed to the field of eBPF for many years and becomes very
 
 Our team has learned a lot from the documents provided by Cilium, like practice cases, testing procedures. We also talked several times with Cilium technicians in a good manner. All these activities and experience enable the successful incubation of Merbridge.
 
-Once again, we sincerely thanks the Cilium community for their great help and welcome you to join the [Merbridge community](https://github.com/merbridge) to discuss technical issues and promote the development and growth of eBPF technologies. I believe that Cilium and Merbridge will benefit a lot with the further evolution of eBPF.
+Once again, we sincerely thanks the Cilium community for their great help and welcome you to join the [Merbridge community](https://github.com/merbridge) to discuss technical issues and promote the development and growth of eBPF technologies. We believe that Cilium and Merbridge will both benefit a lot with the further evolution of eBPF.
