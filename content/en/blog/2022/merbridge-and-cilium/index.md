@@ -19,6 +19,6 @@ Since the two projects have different motives, better eBPF solution is provided 
 
 Cilium has been contributed to the field of eBPF for many years and becomes very successful in business operation. It has promoted the eBPF technology to the open source community in various ways and output many useful blogs and workshops. These assets provide a lot of help and inspiration for the beginning of Merbridge.
 
-Our team has learned much about the basic knowledge, practice cases and testing procedures of eBPF from the documents provided by Cilium. We also talked several times with Cilium technicians in a good manner. All these activities and experience enable the successful incubation of Merbridge.
+Our team has learned a lot from the documents provided by Cilium, like practice cases, testing procedures. We also talked several times with Cilium technicians in a good manner. All these activities and experience enable the successful incubation of Merbridge.
 
 Once again, we sincerely thanks the Cilium community for their great help and welcome you to join the [Merbridge community](https://github.com/merbridge) to discuss technical issues and promote the development and growth of eBPF technologies. I believe that Cilium and Merbridge will benefit a lot with the further evolution of eBPF.
