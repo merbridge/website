@@ -121,14 +121,17 @@ Envoy 根据从控制平面下发的规则进行处理，处理完成后，会�
 在没有使用 Merbridge（eBPF） 优化之前，Pod 到 Pod 间的访问入下图所示：
 
 ![iptable 路径](./imgs/5.png)
+> 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 在使用 Merbridge（eBPF）优化之后，出入口流量会使用直接跳过很多内核模块，提高性能：
 
 ![eBPF 路径](./imgs/6.png)
+> 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 同时，如果两个 Pod 在同一台机器上，那么他们之间的通讯将更加高效：
 
 ![同节点 eBPF 路径](./imgs/7.png)
+> 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 以上，通过使用 eBPF 在主机上对相应的连接进行处理，可以大幅度的减少内核处理流量的流程，提升服务之间的通讯质量。
 
@@ -158,11 +161,11 @@ Merbridge 是一个完全独立的开源项目，此时还处于早期阶段，�
 
 参考文档：
 
-* [https://ebpf.io/](https://ebpf.io/)
-
-* [https://cilium.io/](https://cilium.io/)
+* [eBPF](https://ebpf.io/)
+* [Cilium](https://cilium.io/)
 * [Merbridge on GitHub](https://github.com/merbridge/merbridge)
 * [Using eBPF instead of iptables to optimize the performance of service grid data plane](https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/) by Liu Xu, Tencent
 * [Sidecar injection and transparent traffic hijacking process in Istio explained in detail](https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/) by Jimmy Song, Tetrate
 * [Accelerate the Istio data plane with eBPF](https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1) by Yizhou Xu, Intel
 * [Envoy's Original Destination filter](https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter)
+* [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
