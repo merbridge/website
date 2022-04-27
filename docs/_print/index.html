@@ -55,7 +55,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.cbce5c76ceb96e04e4323edd9364c017.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -78,9 +78,7 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Documentation</h1>
 <ul>
-<li>1: <a href=#pg-6e17e09fffc1050f46600282def85180>Overview</a></li>
-<ul>
-</ul>
+<li>1: <a href=#pg-4945894b7164a800c7f7895256065f85>Overview</a></li>
 <li>2: <a href=#pg-93aadc1aba179e6928539400a09b9e4e>Quick Start</a></li>
 <ul>
 <li>2.1: <a href=#pg-811eabe57877013e05aad1da682732d4>Installation Troubleshooting</a></li>
@@ -100,7 +98,7 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content>
-<h1 id=pg-6e17e09fffc1050f46600282def85180>1 - Overview</h1>
+<h1 id=pg-4945894b7164a800c7f7895256065f85>1 - Overview</h1>
 <div class=lead>This page provides an overview of Merbridge.</div>
 <h2 id=what-is-merbridge>What is Merbridge</h2>
 <p>Merbridge is designed to make traffic interception and forwarding more efficient for service meshes by replacing iptables with eBPF.</p>
@@ -137,15 +135,24 @@ This the multi-page printable view of this section.
 <ul>
 <li>Before applying eBPF using Merbridge, the data path between pods is like:</li>
 </ul>
-<p><img src=imgs/iptables_Path.png alt="iptable path"></p>
+<p><img src=./imgs/iptables_path.png alt="iptable path"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <ul>
 <li>After applying Merbridge, the outbound traffic will skip many filter steps to improve the performance:</li>
 </ul>
-<p><img src=imgs/eBPF_Path.png alt="eBPF path"></p>
+<p><img src=./imgs/eBPF_path.png alt="eBPF path"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <ul>
 <li>If two pods are on the same node, the connection can even be faster:</li>
 </ul>
-<p><img src=imgs/sameNode_eBPF_Path.png alt="same-node eBPF path"></p>
+<p><img src=./imgs/sameNode_eBPF_path.png alt="same-node eBPF path"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p><a href=https://github.com/merbridge/merbridge>Merbridge</a> is a completely independent open source project. It is still at an early stage, and we are looking forward to having more users and developers to get engaged. It would be greatly appreciated if you would try this new technology to accelerate your mesh, and provide us with some feedback!　</p>
 </div>
 <div class=td-content style=page-break-before:always>

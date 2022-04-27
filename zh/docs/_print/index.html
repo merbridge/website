@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.cbce5c76ceb96e04e4323edd9364c017.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -78,9 +78,7 @@
 </div>
 <h1 class=title>文档</h1>
 <ul>
-<li>1: <a href=#pg-6e17e09fffc1050f46600282def85180>概览</a></li>
-<ul>
-</ul>
+<li>1: <a href=#pg-4945894b7164a800c7f7895256065f85>概览</a></li>
 <li>2: <a href=#pg-93aadc1aba179e6928539400a09b9e4e>快速开始</a></li>
 <ul>
 <li>2.1: <a href=#pg-811eabe57877013e05aad1da682732d4>安装错误排查</a></li>
@@ -100,7 +98,7 @@
 </div>
 </div>
 <div class=td-content>
-<h1 id=pg-6e17e09fffc1050f46600282def85180>1 - 概览</h1>
+<h1 id=pg-4945894b7164a800c7f7895256065f85>1 - 概览</h1>
 <div class=lead>希望您阅读本页后，能够对 Merbridge 有一个大体的了解。</div>
 <h2 id=什么是-merbridge>什么是 Merbridge</h2>
 <p>Merbridge 是一个专门为服务网格设计，用于代替传统的 iptables 流量劫持技术，让服务网格的流量拦截和转发能力更加高效。</p>
@@ -153,15 +151,24 @@
 <ul>
 <li>如果不用 Merbridge (eBPF)，Pod 到 Pod 间的访问连接关系如下图所示：</li>
 </ul>
-<p><img src=imgs/iptables_path.png alt="iptable 路径"></p>
+<p><img src=./imgs/iptables_path.png alt="iptable 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <ul>
 <li>使用 Merbridge (eBPF) 优化之后，处理出入口流量时会跳过很多内核模块，从而加速网络。</li>
 </ul>
-<p><img src=imgs/eBPF_path.png alt="eBPF 路径"></p>
+<p><img src=./imgs/eBPF_path.png alt="eBPF 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <ul>
 <li>如果两个 Pod 在同一台机器上，使用 Merbridge (eBPF) 能让 Pod 之间的通讯更加高效。</li>
 </ul>
-<p><img src=imgs/sameNode_eBPF_path.png alt="同节点 eBPF 路径"></p>
+<p><img src=./imgs/sameNode_eBPF_path.png alt="同节点 eBPF 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>Merbridge 是一个完全独立的开源项目，Merbridge 项目目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。如果您发现了 Merbridge 的漏洞而且有兴趣帮助修复，那么非常欢迎您<a href=https://github.com/merbridge/merbridge/pulls>提交一个 Pull Request</a>，附带上您的修复代码，我们会及时处理您的 PR。</p>
 </div>
 <div class=td-content style=page-break-before:always>
