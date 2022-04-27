@@ -55,7 +55,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -78,6 +78,7 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Blogs of 2022</h1>
 <ul>
+<li><a href=#pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge and Cilium</a></li>
 <li><a href=#pg-9c52cc92a2a851c972fc1e7d42cec0af>Livestream with Solo.io</a></li>
 <li><a href=#pg-df869185d0e53dcbdf1283e406176894>Merbridge - Accelerate your mesh with eBPF</a></li>
 </ul>
@@ -85,6 +86,17 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content>
+<h1 id=pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge and Cilium</h1>
+<div class="td-byline mb-4">
+<time datetime=2022-04-23 class=text-muted>Saturday, April 23, 2022</time>
+</div>
+<h1 id=merbridge-and-cilium>Merbridge and Cilium</h1>
+<p><a href=https://cilium.io/>Cilium</a> is a great open source software that provides a lot of networking capabilities for cloud native applications based on eBPF, with a lot of great designs. One of them, Cilium designed a set of sockmap-based redir capabilities to help accelerate network communications, which inspired us and is the basis for Merbridge to provide network acceleration, which is a really great design.</p>
+<p>Merbridge leverages the great foundation that Cilium has provided us, along with some targeted adaptations we&rsquo;ve made in the Service Mesh, to make it easier to apply eBPF technology to Service Mesh.</p>
+<p>Our development team learned a lot about eBPF theoretical knowledge, practical methods, and testing methods from the materials provided by Cilium, and also had a lot of exchanges with the Cilium technical team, which is what made the Merbridge project possible.</p>
+<p>Thanks again to the Cilium project and community, and to Cilium for these great designs.</p>
+</div>
+<div class=td-content style=page-break-before:always>
 <h1 id=pg-9c52cc92a2a851c972fc1e7d42cec0af>Livestream with Solo.io</h1>
 <div class="td-byline mb-4">
 <time datetime=2022-03-29 class=text-muted>Tuesday, March 29, 2022</time>
@@ -98,6 +110,7 @@ This the multi-page printable view of this section.
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-df869185d0e53dcbdf1283e406176894>Merbridge - Accelerate your mesh with eBPF</h1>
 <div class="td-byline mb-4">
+<time datetime=2022-03-01 class=text-muted>Tuesday, March 01, 2022</time>
 </div>
 <h1 id=merbridge---accelerate-your-mesh-with-ebpf>Merbridge - Accelerate your mesh with eBPF</h1>
 <p><em>Replacing iptables rules with eBPF allows transporting data directly from inbound sockets to outbound sockets, shortening the datapath between sidecars and services.</em></p>
@@ -163,10 +176,19 @@ This the multi-page printable view of this section.
 <h3 id=connection-relationship>Connection relationship</h3>
 <p>Before applying eBPF using Merbridge, the data path between pods is like:</p>
 <p><img src=./imgs/5.png alt="iptables&rsquo;s data path"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>After applying Merbridge, the outbound traffic will skip many filter steps to improve the performance:</p>
 <p><img src=./imgs/6.png alt="eBPF&rsquo;s data path"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>If two pods are on the same machine, the connection can even be faster:</p>
 <p><img src=./imgs/7.png alt="eBPF&rsquo;s data path on the same machine"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <h2 id=performance-results>Performance results</h2>
 <blockquote>
 <p>The below tests are from our development, and not yet validated in production use cases.</p>
@@ -204,6 +226,9 @@ This the multi-page printable view of this section.
 </li>
 <li>
 <p><a href=https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter>Envoy&rsquo;s Original Destination filter</a></p>
+</li>
+<li>
+<p><a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
 </li>
 </ul>
 </div>

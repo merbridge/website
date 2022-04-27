@@ -25,7 +25,7 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 <meta property="og:type" content="article">
 <meta property="og:url" content="/zh/blog/2022/03/01/merbridge-introduce/"><meta property="article:section" content="blog">
 <meta property="article:published_time" content="2022-03-01T00:00:00+00:00">
-<meta property="article:modified_time" content="2022-04-07T13:57:25+08:00"><meta property="og:site_name" content="Merbridge">
+<meta property="article:modified_time" content="2022-04-27T10:44:22+08:00"><meta property="og:site_name" content="Merbridge">
 <meta itemprop=name content="一行代码，使用 eBPF 代替 iptables 加速服务网格">
 <meta itemprop=description content="一行代码使用 eBPF 代替 iptables 加速 Istio 介绍 以 Istio 为首的服务网格技术正在被越来越多的企业关注，其使用 Sidecar 借助 iptables 技术实现流量拦截，可以处理所有应用的出入口流量，以实现诸如治理、观测、加密等能力。
 但是使用 iptables 的方式进行拦截，由于需要对出入口都拦截，会让原本只需要在内核态处理两次的链路变成四次，会损失不少性能，这在一些要求高性能的场景下显然是有影响的。
@@ -35,8 +35,8 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml  注意：当前仅支持在 5.7 版本及以上的内核下运行，请事先升级您的内核版本。
  eBPF 的 sockops 加速 网络连接本质上是 socket 的通讯，eBPF 提供了一个 bpf_msg_redirect_hash 函数，用来将应用发出的包，直接转发到对端的 socket 上面，可以极大的加速包在内核中的处理流程。
 这里需要一个 sock_map，需要根据当前的数据包信息，从 sock_map 中挑选一个存在的 socket 连接，转发请求，所以，需要在 sockops 的 hook 处或者其它地方将 socket 信息保存到 sock_map，并提供根据 key 查到 socket 的规则（一般为四元组）。"><meta itemprop=datePublished content="2022-03-01T00:00:00+00:00">
-<meta itemprop=dateModified content="2022-04-07T13:57:25+08:00">
-<meta itemprop=wordCount content="456">
+<meta itemprop=dateModified content="2022-04-27T10:44:22+08:00">
+<meta itemprop=wordCount content="496">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="一行代码，使用 eBPF 代替 iptables 加速服务网格">
 <meta name=twitter:description content="一行代码使用 eBPF 代替 iptables 加速 Istio 介绍 以 Istio 为首的服务网格技术正在被越来越多的企业关注，其使用 Sidecar 借助 iptables 技术实现流量拦截，可以处理所有应用的出入口流量，以实现诸如治理、观测、加密等能力。
@@ -74,13 +74,13 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 中文 Chinese
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/blog/1/01/01/merbridge-introduce/>English</a>
+<a class=dropdown-item href=/blog/2022/03/01/merbridge-introduce/>English</a>
 </div>
 </li>
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -90,7 +90,7 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -100,7 +100,7 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 中文 Chinese
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/blog/1/01/01/merbridge-introduce/>English</a>
+<a class=dropdown-item href=/blog/2022/03/01/merbridge-introduce/>English</a>
 </div>
 </div>
 <ul class="td-sidebar-nav__section pr-md-3 ul-0">
@@ -110,7 +110,9 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog2022-li>
 <a href=/zh/blog/2022/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblog2022><span>2022 年 Blog</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220329solo-io-livestream-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220423merbridge-and-cilium-li>
+<a href=/zh/blog/2022/04/23/merbridge-and-cilium/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220423merbridge-and-cilium><span>Merbridge 和 Cilium</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220329solo-io-livestream-li>
 <a href=/zh/blog/2022/03/29/solo-io-livestream/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220329solo-io-livestream><span>与 Solo.io 一起举办的直播活动</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-zhblog20220301merbridge-introduce-li>
 <a href=/zh/blog/2022/03/01/merbridge-introduce/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-zhblog20220301merbridge-introduce><span class=td-sidebar-nav-active-item>一行代码，使用 eBPF 代替 iptables 加速服务网格</span></a>
@@ -234,10 +236,19 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 <h3 id=连接关系>连接关系</h3>
 <p>在没有使用 Merbridge（eBPF） 优化之前，Pod 到 Pod 间的访问入下图所示：</p>
 <p><img src=./imgs/5.png alt="iptable 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>在使用 Merbridge（eBPF）优化之后，出入口流量会使用直接跳过很多内核模块，提高性能：</p>
 <p><img src=./imgs/6.png alt="eBPF 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>同时，如果两个 Pod 在同一台机器上，那么他们之间的通讯将更加高效：</p>
 <p><img src=./imgs/7.png alt="同节点 eBPF 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>以上，通过使用 eBPF 在主机上对相应的连接进行处理，可以大幅度的减少内核处理流量的流程，提升服务之间的通讯质量。</p>
 <h2 id=加速效果>加速效果</h2>
 <blockquote>
@@ -256,27 +267,14 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 <p>项目地址：<a href=https://github.com/merbridge/merbridge>https://github.com/merbridge/merbridge</a></p>
 <p>参考文档：</p>
 <ul>
-<li>
-<p><a href=https://ebpf.io/>https://ebpf.io/</a></p>
-</li>
-<li>
-<p><a href=https://cilium.io/>https://cilium.io/</a></p>
-</li>
-<li>
-<p><a href=https://github.com/merbridge/merbridge>Merbridge on GitHub</a></p>
-</li>
-<li>
-<p><a href=https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/>Using eBPF instead of iptables to optimize the performance of service grid data plane</a> by Liu Xu, Tencent</p>
-</li>
-<li>
-<p><a href=https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/>Sidecar injection and transparent traffic hijacking process in Istio explained in detail</a> by Jimmy Song, Tetrate</p>
-</li>
-<li>
-<p><a href=https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1>Accelerate the Istio data plane with eBPF</a> by Yizhou Xu, Intel</p>
-</li>
-<li>
-<p><a href=https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter>Envoy&rsquo;s Original Destination filter</a></p>
-</li>
+<li><a href=https://ebpf.io/>eBPF</a></li>
+<li><a href=https://cilium.io/>Cilium</a></li>
+<li><a href=https://github.com/merbridge/merbridge>Merbridge on GitHub</a></li>
+<li><a href=https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/>Using eBPF instead of iptables to optimize the performance of service grid data plane</a> by Liu Xu, Tencent</li>
+<li><a href=https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/>Sidecar injection and transparent traffic hijacking process in Istio explained in detail</a> by Jimmy Song, Tetrate</li>
+<li><a href=https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1>Accelerate the Istio data plane with eBPF</a> by Yizhou Xu, Intel</li>
+<li><a href=https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter>Envoy&rsquo;s Original Destination filter</a></li>
+<li><a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></li>
 </ul>
 <ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
 <li>

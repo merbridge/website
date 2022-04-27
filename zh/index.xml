@@ -1,4 +1,9 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/zh/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: 与 Solo.io 一起举办的直播活动</title><link>/zh/blog/2022/03/29/solo-io-livestream/</link><pubDate>Tue, 29 Mar 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/03/29/solo-io-livestream/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/zh/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Merbridge 和 Cilium</title><link>/zh/blog/2022/04/23/merbridge-and-cilium/</link><pubDate>Sat, 23 Apr 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/04/23/merbridge-and-cilium/</guid><description>
+&lt;h1 id="merbridge-与-cilium">Merbridge 与 Cilium&lt;/h1>
+&lt;p>&lt;a href="https://cilium.io/">Cilium&lt;/a> 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。其中之一，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。&lt;/p>
+&lt;p>Merbridge 借助于 Cilium 为我们打下的好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便的将 eBPF 技术应用于服务网格。&lt;/p>
+&lt;p>我们开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。&lt;/p>
+&lt;p>再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀的设计。&lt;/p></description></item><item><title>Blog: 与 Solo.io 一起举办的直播活动</title><link>/zh/blog/2022/03/29/solo-io-livestream/</link><pubDate>Tue, 29 Mar 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/03/29/solo-io-livestream/</guid><description>
 &lt;p>2022 年 3 月 29 日，Solo.io 和 Merbridge 共同举办了一场直播活动。&lt;/p>
 &lt;p>在这次直播中，我们一起探讨了很多与 Merbridge 相关的问题，其中包含了一个线上 Demo，可以帮你快速了解 Merbridge 的功能和使用方法。&lt;/p>
 &lt;p>同时，PPT 可以在&lt;a href="./merbridge.pdf">这里&lt;/a>下载。&lt;/p>
@@ -70,10 +75,19 @@
 &lt;h3 id="连接关系">连接关系&lt;/h3>
 &lt;p>在没有使用 Merbridge（eBPF） 优化之前，Pod 到 Pod 间的访问入下图所示：&lt;/p>
 &lt;p>&lt;img src="./imgs/5.png" alt="iptable 路径">&lt;/p>
+&lt;blockquote>
+&lt;p>图片参考：&lt;a href="https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22">Accelerating Envoy and Istio with Cilium and the Linux Kernel&lt;/a>&lt;/p>
+&lt;/blockquote>
 &lt;p>在使用 Merbridge（eBPF）优化之后，出入口流量会使用直接跳过很多内核模块，提高性能：&lt;/p>
 &lt;p>&lt;img src="./imgs/6.png" alt="eBPF 路径">&lt;/p>
+&lt;blockquote>
+&lt;p>图片参考：&lt;a href="https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22">Accelerating Envoy and Istio with Cilium and the Linux Kernel&lt;/a>&lt;/p>
+&lt;/blockquote>
 &lt;p>同时，如果两个 Pod 在同一台机器上，那么他们之间的通讯将更加高效：&lt;/p>
 &lt;p>&lt;img src="./imgs/7.png" alt="同节点 eBPF 路径">&lt;/p>
+&lt;blockquote>
+&lt;p>图片参考：&lt;a href="https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22">Accelerating Envoy and Istio with Cilium and the Linux Kernel&lt;/a>&lt;/p>
+&lt;/blockquote>
 &lt;p>以上，通过使用 eBPF 在主机上对相应的连接进行处理，可以大幅度的减少内核处理流量的流程，提升服务之间的通讯质量。&lt;/p>
 &lt;h2 id="加速效果">加速效果&lt;/h2>
 &lt;blockquote>
@@ -92,27 +106,14 @@
 &lt;p>项目地址：&lt;a href="https://github.com/merbridge/merbridge">https://github.com/merbridge/merbridge&lt;/a>&lt;/p>
 &lt;p>参考文档：&lt;/p>
 &lt;ul>
-&lt;li>
-&lt;p>&lt;a href="https://ebpf.io/">https://ebpf.io/&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://cilium.io/">https://cilium.io/&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://github.com/merbridge/merbridge">Merbridge on GitHub&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/">Using eBPF instead of iptables to optimize the performance of service grid data plane&lt;/a> by Liu Xu, Tencent&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/">Sidecar injection and transparent traffic hijacking process in Istio explained in detail&lt;/a> by Jimmy Song, Tetrate&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1">Accelerate the Istio data plane with eBPF&lt;/a> by Yizhou Xu, Intel&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter">Envoy&amp;rsquo;s Original Destination filter&lt;/a>&lt;/p>
-&lt;/li>
+&lt;li>&lt;a href="https://ebpf.io/">eBPF&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://cilium.io/">Cilium&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://github.com/merbridge/merbridge">Merbridge on GitHub&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/">Using eBPF instead of iptables to optimize the performance of service grid data plane&lt;/a> by Liu Xu, Tencent&lt;/li>
+&lt;li>&lt;a href="https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/">Sidecar injection and transparent traffic hijacking process in Istio explained in detail&lt;/a> by Jimmy Song, Tetrate&lt;/li>
+&lt;li>&lt;a href="https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1">Accelerate the Istio data plane with eBPF&lt;/a> by Yizhou Xu, Intel&lt;/li>
+&lt;li>&lt;a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter">Envoy&amp;rsquo;s Original Destination filter&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22">Accelerating Envoy and Istio with Cilium and the Linux Kernel&lt;/a>&lt;/li>
 &lt;/ul></description></item><item><title>Blog: Release 0.5.0</title><link>/zh/blog/2022/01/27/release-0.5.0/</link><pubDate>Thu, 27 Jan 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/01/27/release-0.5.0/</guid><description>
 &lt;h2 id="新增">新增&lt;/h2>
 &lt;ol>

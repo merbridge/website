@@ -18,14 +18,15 @@
 Introduction The secret of Istio’s abilities in traffic management, security, observability and policy is all in the Envoy proxy. Istio uses Envoy as the “sidecar” to intercept service traffic, with the kernel’s netfilter packet filter functionality configured by iptables.
 There are shortcomings in using iptables to perform this interception.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="/blog/1/01/01/merbridge-introduce/"><meta property="article:section" content="blog">
-<meta property="article:modified_time" content="2022-04-01T16:58:05+08:00"><meta property="og:site_name" content="Merbridge">
+<meta property="og:url" content="/blog/2022/03/01/merbridge-introduce/"><meta property="article:section" content="blog">
+<meta property="article:published_time" content="2022-03-01T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-04-27T10:44:22+08:00"><meta property="og:site_name" content="Merbridge">
 <meta itemprop=name content="Merbridge - Accelerate your mesh with eBPF">
 <meta itemprop=description content="Merbridge - Accelerate your mesh with eBPF Replacing iptables rules with eBPF allows transporting data directly from inbound sockets to outbound sockets, shortening the datapath between sidecars and services.
 Introduction The secret of Istio’s abilities in traffic management, security, observability and policy is all in the Envoy proxy. Istio uses Envoy as the “sidecar” to intercept service traffic, with the kernel’s netfilter packet filter functionality configured by iptables.
-There are shortcomings in using iptables to perform this interception.">
-<meta itemprop=dateModified content="2022-04-01T16:58:05+08:00">
-<meta itemprop=wordCount content="1917">
+There are shortcomings in using iptables to perform this interception."><meta itemprop=datePublished content="2022-03-01T00:00:00+00:00">
+<meta itemprop=dateModified content="2022-04-27T10:44:22+08:00">
+<meta itemprop=wordCount content="1963">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Merbridge - Accelerate your mesh with eBPF">
 <meta name=twitter:description content="Merbridge - Accelerate your mesh with eBPF Replacing iptables rules with eBPF allows transporting data directly from inbound sockets to outbound sockets, shortening the datapath between sidecars and services.
@@ -64,7 +65,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -74,7 +75,7 @@ English
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -94,10 +95,12 @@ English
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-blog2022-li>
 <a href=/blog/2022/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-blog2022><span>Blogs of 2022</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20220329solo-io-livestream-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20220423merbridge-and-cilium-li>
+<a href=/blog/2022/04/23/merbridge-and-cilium/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20220423merbridge-and-cilium><span>Merbridge and Cilium</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20220329solo-io-livestream-li>
 <a href=/blog/2022/03/29/solo-io-livestream/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20220329solo-io-livestream><span>Livestream with Solo.io</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-blog10101merbridge-introduce-li>
-<a href=/blog/1/01/01/merbridge-introduce/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-blog10101merbridge-introduce><span class=td-sidebar-nav-active-item>Merbridge - Accelerate your mesh with eBPF</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-blog20220301merbridge-introduce-li>
+<a href=/blog/2022/03/01/merbridge-introduce/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-blog20220301merbridge-introduce><span class=td-sidebar-nav-active-item>Merbridge - Accelerate your mesh with eBPF</span></a>
 </li>
 </ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-blogreleases-li>
@@ -148,10 +151,10 @@ English
 <div class=td-content>
 <h1>Merbridge - Accelerate your mesh with eBPF</h1>
 <div class="td-byline mb-4">
-<time datetime=0001-01-01 class=text-muted>Monday, January 01, 0001</time>
+<time datetime=2022-03-01 class=text-muted>Tuesday, March 01, 2022</time>
 </div>
 <header class=article-meta>
-<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 9 minute read</p>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 10 minute read</p>
 </header>
 <h1 id=merbridge---accelerate-your-mesh-with-ebpf>Merbridge - Accelerate your mesh with eBPF</h1>
 <p><em>Replacing iptables rules with eBPF allows transporting data directly from inbound sockets to outbound sockets, shortening the datapath between sidecars and services.</em></p>
@@ -217,10 +220,19 @@ English
 <h3 id=connection-relationship>Connection relationship</h3>
 <p>Before applying eBPF using Merbridge, the data path between pods is like:</p>
 <p><img src=./imgs/5.png alt="iptables&rsquo;s data path"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>After applying Merbridge, the outbound traffic will skip many filter steps to improve the performance:</p>
 <p><img src=./imgs/6.png alt="eBPF&rsquo;s data path"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>If two pods are on the same machine, the connection can even be faster:</p>
 <p><img src=./imgs/7.png alt="eBPF&rsquo;s data path on the same machine"></p>
+<blockquote>
+<p>Diagram From: <a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <h2 id=performance-results>Performance results</h2>
 <blockquote>
 <p>The below tests are from our development, and not yet validated in production use cases.</p>
@@ -258,6 +270,9 @@ English
 </li>
 <li>
 <p><a href=https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter>Envoy&rsquo;s Original Destination filter</a></p>
+</li>
+<li>
+<p><a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
 </li>
 </ul>
 <ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">

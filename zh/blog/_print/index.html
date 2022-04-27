@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -80,6 +80,7 @@
 <ul>
 <li><a href=#pg-ea4e888c31a16f912d612ee4ba1570cb>2022 年 Blog</a></li>
 <ul>
+<li><a href=#pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge 和 Cilium</a></li>
 <li><a href=#pg-9c52cc92a2a851c972fc1e7d42cec0af>与 Solo.io 一起举办的直播活动</a></li>
 <li><a href=#pg-df869185d0e53dcbdf1283e406176894>一行代码，使用 eBPF 代替 iptables 加速服务网格</a></li>
 </ul>
@@ -97,6 +98,17 @@
 </div>
 </div>
 <div class=td-content>
+<h1 id=pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge 和 Cilium</h1>
+<div class="td-byline mb-4">
+<time datetime=2022-04-23 class=text-muted>2022.04.23</time>
+</div>
+<h1 id=merbridge-与-cilium>Merbridge 与 Cilium</h1>
+<p><a href=https://cilium.io/>Cilium</a> 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。其中之一，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。</p>
+<p>Merbridge 借助于 Cilium 为我们打下的好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便的将 eBPF 技术应用于服务网格。</p>
+<p>我们开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。</p>
+<p>再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀的设计。</p>
+</div>
+<div class=td-content style=page-break-before:always>
 <h1 id=pg-9c52cc92a2a851c972fc1e7d42cec0af>与 Solo.io 一起举办的直播活动</h1>
 <div class="td-byline mb-4">
 <time datetime=2022-03-29 class=text-muted>2022.03.29</time>
@@ -178,10 +190,19 @@
 <h3 id=连接关系>连接关系</h3>
 <p>在没有使用 Merbridge（eBPF） 优化之前，Pod 到 Pod 间的访问入下图所示：</p>
 <p><img src=./imgs/5.png alt="iptable 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>在使用 Merbridge（eBPF）优化之后，出入口流量会使用直接跳过很多内核模块，提高性能：</p>
 <p><img src=./imgs/6.png alt="eBPF 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>同时，如果两个 Pod 在同一台机器上，那么他们之间的通讯将更加高效：</p>
 <p><img src=./imgs/7.png alt="同节点 eBPF 路径"></p>
+<blockquote>
+<p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
+</blockquote>
 <p>以上，通过使用 eBPF 在主机上对相应的连接进行处理，可以大幅度的减少内核处理流量的流程，提升服务之间的通讯质量。</p>
 <h2 id=加速效果>加速效果</h2>
 <blockquote>
@@ -200,27 +221,14 @@
 <p>项目地址：<a href=https://github.com/merbridge/merbridge>https://github.com/merbridge/merbridge</a></p>
 <p>参考文档：</p>
 <ul>
-<li>
-<p><a href=https://ebpf.io/>https://ebpf.io/</a></p>
-</li>
-<li>
-<p><a href=https://cilium.io/>https://cilium.io/</a></p>
-</li>
-<li>
-<p><a href=https://github.com/merbridge/merbridge>Merbridge on GitHub</a></p>
-</li>
-<li>
-<p><a href=https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/>Using eBPF instead of iptables to optimize the performance of service grid data plane</a> by Liu Xu, Tencent</p>
-</li>
-<li>
-<p><a href=https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/>Sidecar injection and transparent traffic hijacking process in Istio explained in detail</a> by Jimmy Song, Tetrate</p>
-</li>
-<li>
-<p><a href=https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1>Accelerate the Istio data plane with eBPF</a> by Yizhou Xu, Intel</p>
-</li>
-<li>
-<p><a href=https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter>Envoy&rsquo;s Original Destination filter</a></p>
-</li>
+<li><a href=https://ebpf.io/>eBPF</a></li>
+<li><a href=https://cilium.io/>Cilium</a></li>
+<li><a href=https://github.com/merbridge/merbridge>Merbridge on GitHub</a></li>
+<li><a href=https://developpaper.com/kubecon-2021-%EF%BD%9C-using-ebpf-instead-of-iptables-to-optimize-the-performance-of-service-grid-data-plane/>Using eBPF instead of iptables to optimize the performance of service grid data plane</a> by Liu Xu, Tencent</li>
+<li><a href=https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/>Sidecar injection and transparent traffic hijacking process in Istio explained in detail</a> by Jimmy Song, Tetrate</li>
+<li><a href=https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1>Accelerate the Istio data plane with eBPF</a> by Yizhou Xu, Intel</li>
+<li><a href=https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter>Envoy&rsquo;s Original Destination filter</a></li>
+<li><a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></li>
 </ul>
 </div>
 <div class=td-content style=page-break-before:always>

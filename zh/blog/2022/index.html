@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -65,7 +65,7 @@
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.70ff423c1e08dccb67944fc2661caba5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f533a326d89f598fccfd1148cfb6019.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -85,7 +85,9 @@
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog2022-li>
 <a href=/zh/blog/2022/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__section" id=m-zhblog2022><span class=td-sidebar-nav-active-item>2022 年 Blog</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220329solo-io-livestream-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220423merbridge-and-cilium-li>
+<a href=/zh/blog/2022/04/23/merbridge-and-cilium/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220423merbridge-and-cilium><span>Merbridge 和 Cilium</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220329solo-io-livestream-li>
 <a href=/zh/blog/2022/03/29/solo-io-livestream/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220329solo-io-livestream><span>与 Solo.io 一起举办的直播活动</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220301merbridge-introduce-li>
 <a href=/zh/blog/2022/03/01/merbridge-introduce/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220301merbridge-introduce><span>一行代码，使用 eBPF 代替 iptables 加速服务网格</span></a>
@@ -119,6 +121,19 @@
 <div class=col-12>
 <h2>Posts in 2022</h2>
 <ul class="list-unstyled mt-4">
+<li class="media mb-4">
+<div class=media-body>
+<h5 class="mt-0 mb-1"><a href=/zh/blog/2022/04/23/merbridge-and-cilium/>Merbridge 和 Cilium</a></h5>
+<p class="mb-2 mb-md-3"><small class=text-muted>2022.04.23 in 2022 年 Blog</small></p>
+<header class=article-meta>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 1 分钟 阅读时间</p>
+</header>
+<p class="pt-0 mt-0">Merbridge 与 Cilium Cilium 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。其中之一，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。
+Merbridge 借助于 Cilium 为我们打下的好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便的将 eBPF 技术应用于服务网格。
+我们开发团队 …</p>
+<p class=pt-0><a href=/zh/blog/2022/04/23/merbridge-and-cilium/ aria-label="更多 - Merbridge 和 Cilium">更多</a></p>
+</div>
+</li>
 <li class="media mb-4">
 <div class=media-body>
 <h5 class="mt-0 mb-1"><a href=/zh/blog/2022/03/29/solo-io-livestream/>与 Solo.io 一起举办的直播活动</a></h5>
