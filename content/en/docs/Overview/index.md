@@ -52,17 +52,17 @@ Using eBPF to process connections on the host can greatly simplify the kernel's 
 
 - Before applying eBPF using Merbridge, the data path between pods is like:
 
-![iptable path](./imgs/iptables_Path.png)
+![iptable path](./imgs/iptables_path.png)
 > Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 - After applying Merbridge, the outbound traffic will skip many filter steps to improve the performance:
 
-![eBPF path](./imgs/eBPF_Path.png)
+![eBPF path](./imgs/eBPF_path.png)
 > Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 - If two pods are on the same node, the connection can even be faster:
 
-![same-node eBPF path](./imgs/sameNode_eBPF_Path.png)
+![same-node eBPF path](./imgs/sameNode_eBPF_path.png)
 > Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 [Merbridge](https://github.com/merbridge/merbridge) is a completely independent open source project. It is still at an early stage, and we are looking forward to having more users and developers to get engaged. It would be greatly appreciated if you would try this new technology to accelerate your mesh, and provide us with some feedback!　
