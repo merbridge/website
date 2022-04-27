@@ -2,7 +2,7 @@
 ---
 title: "Merbridge - Accelerate your mesh with eBPF"
 linkTitle: "Merbridge - Accelerate your mesh with eBPF"
-date: Mar 29, 2022
+date: 2022-03-01
 weight: 1
 ---
 
@@ -117,14 +117,17 @@ When the next request is sent, the same process need not be performed again. We 
 Before applying eBPF using Merbridge, the data path between pods is like:
 
 ![iptables's data path](./imgs/5.png)
+> Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 After applying Merbridge, the outbound traffic will skip many filter steps to improve the performance:
 
 ![eBPF's data path](./imgs/6.png)
+> Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 If two pods are on the same machine, the connection can even be faster:
 
 ![eBPF's data path on the same machine](./imgs/7.png)
+> Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 ## Performance results
 
@@ -160,3 +163,4 @@ Merbridge Project: [https://github.com/merbridge/merbridge](https://github.com/m
 * [Sidecar injection and transparent traffic hijacking process in Istio explained in detail](https://jimmysong.io/en/blog/sidecar-injection-iptables-and-traffic-routing/) by Jimmy Song, Tetrate
 * [Accelerate the Istio data plane with eBPF](https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1) by Yizhou Xu, Intel
 * [Envoy's Original Destination filter](https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter)
+* [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
