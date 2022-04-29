@@ -3,7 +3,7 @@ title: "Concepts"
 linkTitle: "Concepts"
 weight: 4
 description: >
-  Learn about some of the key concepts in the Merbridge project.
+  This page describes some key concepts about Merbridge.
 ---
 
 ## eBPF
