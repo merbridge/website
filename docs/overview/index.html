@@ -18,11 +18,11 @@
 ">
 <meta property="og:type" content="article">
 <meta property="og:url" content="/docs/overview/"><meta property="article:section" content="docs">
-<meta property="article:modified_time" content="2022-04-27T14:15:49+08:00"><meta property="og:site_name" content="Merbridge">
+<meta property="article:modified_time" content="2022-04-29T10:44:19+08:00"><meta property="og:site_name" content="Merbridge">
 <meta itemprop=name content="Overview">
 <meta itemprop=description content="This page provides an overview of Merbridge.
 ">
-<meta itemprop=dateModified content="2022-04-27T14:15:49+08:00">
+<meta itemprop=dateModified content="2022-04-29T10:44:19+08:00">
 <meta itemprop=wordCount content="931">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
 <meta name=twitter:title content="Overview">
@@ -61,7 +61,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.cbce5c76ceb96e04e4323edd9364c017.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.b4e1a248f7eaceea47943ef7d4b80a7d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -71,7 +71,7 @@ English
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.cbce5c76ceb96e04e4323edd9364c017.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.b4e1a248f7eaceea47943ef7d4b80a7d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -149,18 +149,20 @@ English
 <h2 id=what-merbridge-can-do>What Merbridge can do</h2>
 <p>Merbridge has following core features:</p>
 <ul>
-<li>Processing outbound traffic</li>
-</ul>
+<li>
+<p>Processing outbound traffic</p>
 <p>Merbridge uses eBPF’s <code>connect</code> program to modify <code>user_ip</code> and <code>user_port</code>, so as to modify the destination address of a connection and ensure traffic can be sent to the new interface. In order to make Envoy identify the original destination address, the application (incl. Envoy) will call the <code>get_sockopt</code> function to obtain <code>ORIGINAL_DST</code> when receiving a connection.</p>
-<ul>
-<li>Processing inbound traffic</li>
-</ul>
+</li>
+<li>
+<p>Processing inbound traffic</p>
 <p>The processing of inbound traffic is basically similar to outbound traffic. Note that eBPF cannot take effect in a specified namespace like iptables. The changes will be global. It means that if we use a Pod that is not originally managed by Istio, or an external IP address, serious problems will be encountered — like the connection not being established at all.</p>
 <p>As a result, we designed a tiny control plane (deployed as a DaemonSet), which watches all pods — similar to the kubelet watching pods on the node — to write the pod IP addresses that have been injected into the sidecar to the <code>local_pod_ips</code> map. If the destination address is not in the map, Merbridge will not do anything to the original traffic.</p>
-<ul>
-<li>Accelerating</li>
-</ul>
+</li>
+<li>
+<p>Accelerating</p>
 <p>In Istio, Envoy accesses the application by using the current pod IP and port number. Because the pod IP exists in the <code>local_pod_ips</code> map as well, the traffic will be redirected to the pod IP on port 15006, producing an infinite loop. Are there any ways to get the IP address in the current namespace with eBPF? Yes! We have designed a feedback mechanism: When Envoy tries to establish a connection, we redirect it to port 15006. However, in the sockops step, we will determine if the source IP and the destination IP are the same. If yes, it means the wrong request is sent, and we will discard this connection in the sockops process. In the meantime, the current ProcessID and IP information will be written into the <code>process_ip map</code> to allow eBPF to support corresponding relationship between processes and IPs. When the next request is sent, We will check directly from the <code>process_ip map</code> if the destination address is the same as the current IP address. Envoy will retry when the request fails, and this retry process will only occur once, meaning subsequent requests will be accelerated.</p>
+</li>
+</ul>
 <h2 id=why-need-merbridge>Why need Merbridge</h2>
 <p>In the service mesh scenario, in order to use the sidecar for traffic management without the application being aware of it, the ingress and egress traffic of the Pod will be forwarded to the sidecar. The most common way for this is using the redirect capability of iptables (netfilter) to forward the original traffic to the sidecar. However, this approach will increase network latency, because iptables intercepts both egress and ingress traffic. Take ingress traffic as an example. The traffic that originally flows directly to the application needs to be forwarded to the sidecar by iptables (netfilter), and then the sidecar will forward the traffic to the actual application. The data path becomes very long, since duplicated steps are performed several times.</p>
 <p>Luckily, eBPF provides a function bpf_msg_redirect_hash, to directly forward the packets sent by the application in the inbound socket to the outbound socket. By doing so, packet processing can be greatly accelerated in the kernel. Therefore, we hope to replace iptables with eBPF. That&rsquo;s how Merbridge came into being.</p>
@@ -199,8 +201,8 @@ English
 <p><a href=https://github.com/merbridge/merbridge>Merbridge</a> is a completely independent open source project. It is still at an early stage, and we are looking forward to having more users and developers to get engaged. It would be greatly appreciated if you would try this new technology to accelerate your mesh, and provide us with some feedback!　</p>
 <div class="text-muted mt-5 pt-3 border-top">
 Last modified
-April 27, 2022
-: <a href=https://github.com/merbridge/merbridge/commit/79d2cb1f8533a425b612044146c1a13abbfede57>fix image path in doc>overview (#15) (79d2cb1)</a>
+April 29, 2022
+: <a href=https://github.com/merbridge/merbridge/commit/f9659f3c18021800c28c1f5e9d77b7d409b6f5c2>updated minor text and layout (f9659f3)</a>
 </div>
 </div>
 </main>

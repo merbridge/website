@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.cbce5c76ceb96e04e4323edd9364c017.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.b4e1a248f7eaceea47943ef7d4b80a7d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -92,64 +92,64 @@
 </ul>
 <div class=content>
 <div class="pageinfo pageinfo-primary">
-<p>帮助您了解如何使用 Merbridge。</p>
+<p>帮助您了解如何使用 Merbridge</p>
 </div>
 <p>Merbridge 旨在使用 eBPF 代替 iptables 技术，加速服务网格的数据平面。</p>
 </div>
 </div>
 <div class=td-content>
 <h1 id=pg-4945894b7164a800c7f7895256065f85>1 - 概览</h1>
-<div class=lead>希望您阅读本页后，能够对 Merbridge 有一个大体的了解。</div>
+<div class=lead>希望您阅读本页后，能够对 Merbridge 有一个大体的了解</div>
 <h2 id=什么是-merbridge>什么是 Merbridge</h2>
-<p>Merbridge 是一个专门为服务网格设计，用于代替传统的 iptables 流量劫持技术，让服务网格的流量拦截和转发能力更加高效。</p>
-<p>eBPF (extended Berkeley Packet Filter) 是一种可以在 Linux 内核中运行用户编写的程序且不需要修改内核代码或加载内核模块的技术，目前被广泛用于网络、安全、监控等领域。相比传统的 iptables 流量劫持技术，Merbridge 可以绕过很多内核模块，缩短边车和服务间的数据路径，从而起到网络加速的作用。同时，Merbridge 没有对现有的 Istio 作出任何修改，原有的逻辑依然畅通。这意味着，如果您不想继续使用 eBPF，可以直接删除 DaemonSet，改为传统的 iptables 方式也不会出现任何问题。</p>
+<p>Merbridge 专门为服务网格设计，使用 eBPF 代替传统的 iptables 流量劫持，能够让服务网格的流量拦截和转发能力更加高效。</p>
+<p>eBPF (extended Berkeley Packet Filter) 是一种可以在 Linux 内核中运行用户编写的程序且不需要修改内核代码或加载内核模块的技术，目前广泛应用于网络、安全、监控等领域。相比传统的 iptables 流量劫持技术，Merbridge 可以绕过很多内核模块，缩短边车和服务间的数据路径，从而起到网络加速的作用。同时，Merbridge 没有对现有的 Istio 作出任何修改，原有的逻辑依然畅通。这意味着，如果您不想继续使用 eBPF，直接删除 DaemonSet 就能恢复为传统的 iptables 方式，不会出现任何问题。</p>
 <h2 id=merbridge-有哪些特性>Merbridge 有哪些特性</h2>
 <p>Merbridge 的核心特性包括：</p>
 <ul>
 <li>
 <p>出口流量处理</p>
-<p>Merbridge 使用 eBPF 的 connect 程序，通过修改 user_ip 和 user_port 修改连接发起时的目的地址，让流量能够发送到新的接口。为了让 Envoy 识别出原始的目的地址，应用程序（包括 Envoy）会在收到连接之后调用 get_sockopts 函数，获取 ORIGINAL_DST。</p>
+<p>Merbridge 使用 eBPF 的 <code>connect</code> 程序，通过修改 <code>user_ip</code> 和 <code>user_port</code> 修改连接发起时的目的地址，让流量能够发送到新的接口。为了让 Envoy 识别出原始目的地址，应用程序（包括 Envoy）会在收到连接之后调用 get_sockopts 函数，获取 ORIGINAL_DST。</p>
 </li>
 <li>
 <p>入口流量处理</p>
-<p>入口流量处理与出口流量处理大体类似。需要注意的是，eBPF 是全局性的，不能在指定的命名空间生效。因此，如果对本来不由 Istio 管理的 Pod 或者一个外部的 IP 地址执行此操作，就会导致请求无法建立连接。所以这里设计了一个小的控制平面（以 DaemonSet 方式部署），通过 Watch 所有的 Pod，类似于 kubelet 那样获取当前节点的 Pod 列表，将已经被注入 Sidecar 的 Pod IP 地址写入 local_pod_ips map。如果目的地址不在这个列表之中， Merbridge 就不做处理，而使用原来的逻辑。这样就可以灵活且简单地处理入口流量。</p>
+<p>入口流量处理与出口流量处理大体类似。需要注意的是，eBPF 是全局性的，不能在指定的命名空间生效。因此，如果对本来不由 Istio 管理的 Pod 或者一个外部的 IP 地址执行此操作，就会导致请求无法建立连接。所以这里设计了一个小的控制平面（以 DaemonSet 方式部署），通过 Watch 所有的 Pod，类似于 kubelet 那样获取当前节点的 Pod 列表，将已经被注入 Sidecar 的 Pod IP 地址写入 <code>local_pod_ips map</code>。如果目的地址不在这个列表之中，Merbridge 就不做处理，而使用原来的逻辑。这样就可以灵活且简单地处理入口流量。</p>
 </li>
 <li>
 <p>同节点加速</p>
-<p>在 Istio 中，Envoy 访问应用的方式是使用当前 PodIP 加服务端口。由于 PodIP 肯定也存在于 local_pod_ips 中，那么请求就会被转发到 PodIP + 15006 端口。这会造成无限递归，不能在 eBPF 获取当前命名空间的 IP 地址信息。因此，需要一套反馈机制。在 Envoy 尝试建立连接时，仍然重定向到 15006 端口，但在 sockops 阶段判断源 IP 和目的地址 IP是否一致。如果一致，则说明发送了错误的请求，需要在 sockops 丢弃这个连接，并将当前的 ProcessID 和 IP 地址信息写入 process_ip map，让 eBPF 支持进程和 IP 的对应关系。下次请求发送时直接从 process_ip 表检查目的地址是否与当前 IP 地址一致。Envoy 会在请求失败的时候重试，且这个错误只会发生一次，后续的连接会非常快。</p>
+<p>在 Istio 中，Envoy 访问应用的方式是使用当前 PodIP 加服务端口。由于 PodIP 肯定也存在于 <code>local_pod_ips</code> 中，那么请求就会被转发到 PodIP + 15006 端口。这会造成无限递归，不能在 eBPF 获取当前命名空间的 IP 地址信息。因此，需要一套反馈机制。在 Envoy 尝试建立连接时，仍然重定向到 15006 端口，但在 sockops 阶段判断源 IP 和目的地址 IP 是否一致。如果一致，则说明发送了错误的请求，需要在 sockops 丢弃这个连接，并将当前的 ProcessID 和 IP 地址信息写入 <code>process_ip map</code>，让 eBPF 支持进程和 IP 的对应关系。下次请求发送时直接从 <code>process_ip</code> 表检查目的地址是否与当前 IP 地址一致。Envoy 会在请求失败时重试，且这个错误只会发生一次，后续的连接会非常快。</p>
 </li>
 </ul>
 <h2 id=为什么需要-merbridge>为什么需要 Merbridge</h2>
 <p>在服务网格的场景中，为了能够在应用完全无感知的情况下利用边车进行流量治理，需要把 Pod 的出入口流量都转发到边车进行治理。在这种情况下，最通用的技术就是使用 iptables(netfilter) 的 Redirect 能力，将原本的流量转发到边车，从而实现流量治理和其它相应功能。这种方案的缺点是增加了网络延迟，因为 iptables 对出口流量和入口流量都进行拦截。以入口流量为例，原本直接流向应用的流量，需要先由 iptables(netfilter) 转发到边车，再由边车将流量转发到实际的应用。原本只需要在内核态处理两次的链路如今变成四次，损失了不少性能。</p>
-<p>幸运的是，eBPF 技术提供了一个 bpf_msg_redirect_hash 函数，可以将应用发出的数据包直接转发到对端的 socket 上面，从而极大地加速数据包在内核中的处理流程。我们希望用 eBPF 技术代替 iptables(netfilter)，提高服务网格的效率。于是 Merbridge 就这样诞生了。</p>
+<p>幸运的是，eBPF 技术提供了一个 <code>bpf_msg_redirect_hash</code> 函数，可以将应用发出的数据包直接转发到对端的 socket 上面，从而极大地加速数据包在内核中的处理流程。我们希望用 eBPF 技术代替 iptables(netfilter)，提高服务网格的效率。于是 Merbridge 就这样诞生了。</p>
 <h2 id=merbridge-适用哪些场景>Merbridge 适用哪些场景</h2>
 <p>如果您遇到下列任一问题，建议使用 Merbridge：</p>
 <ol>
-<li>在需要高性能连接的场景下，使用 iptables 会增加延迟。例如：
+<li>在需要高性能连接的场景下，使用 iptables 会增加延迟。
 <ul>
-<li>由于集群中容器数量的增加，iptables 控制面和数据面的性能急剧下降。在 iptables 控制面的接口设计中，每添加一条规则都需要遍历和修改所有的规则。</li>
-<li>由于 Pod 生命周期越来越短，有时甚至只有几秒钟，需要快速更新 iptables 规则，使用 IP 地址进行安全过滤的系统承受的压力越来越大。</li>
+<li>由于集群中容器数量的增加，iptables 控制面和数据面的性能会急剧下降。在 iptables 控制面的接口设计中，每添加一条规则都需要遍历并修改所有的规则。</li>
+<li>由于 Pod 生命周期越来越短，有时甚至只有几秒钟，这就需要快速更新 iptables 规则，使用 IP 地址进行安全过滤的系统将承受越来越大的压力。</li>
 <li>由于使用 iptables 实现透明劫持需要借助 conntrack 模块跟踪连接，连接较多时会造成大量消耗。</li>
 </ul>
 </li>
-<li>系统因某些原因不能使用 iptables。例如：
+<li>系统因某些原因不能使用 iptables。
 <ul>
-<li>需要同时处理大量活动连接，但使用 iptables 容易出现 conntrack 表满的情况。</li>
-<li>需要每秒处理极大数量的连接，但超出了 conntrack 表的限制。例如，在超时设置为 120 秒且表容量是 128k 的情况下，如果尝试每秒处理 1100 个连接，就会超出 conntrack 表的限制（128k/120秒 = 1092 连接/秒）。</li>
+<li>有时需同时处理大量活动连接，但使用 iptables 容易出现 conntrack 表满的情况。</li>
+<li>有时又需每秒处理极大数量的连接，但超出了 conntrack 表的限制。例如，在超时设置为 120 秒且表容量是 128k 的情况下，如果尝试每秒处理 1100 个连接，就会超出 conntrack 表的限制（128k/120秒 = 1092 连接/秒）。</li>
 </ul>
 </li>
-<li>出于安全考虑不能为普通的 Pod 授予太多权限，但使用 Istio （没有 CNI 的情况下）必须允许 Pod 获得更多权限。例如：
+<li>出于安全考虑不能为普通的 Pod 授予太多权限，但使用 Istio（若无 CNI）必须允许 Pod 获得更多权限。
 <ul>
-<li>运行 init 容器，可能需要 NET_ADMIN 等权限。</li>
-<li>运行 iptables 命令，对应的进程可能需要 CAP_NET_ADMIN 权限。</li>
-<li>挂载文件系统，对应的进程可能需要 CAP_SYS_ADMIN 权限。</li>
+<li>运行 init 容器，可能需要 <code>NET_ADMIN</code> 等权限。</li>
+<li>运行 iptables 命令，对应的进程可能需要 <code>CAP_NET_ADMIN</code> 权限。</li>
+<li>挂载文件系统，对应的进程可能需要 <code>CAP_SYS_ADMIN</code> 权限。</li>
 </ul>
 </li>
 </ol>
 <h2 id=使用-merbridge-后连接关系有什么变化>使用 Merbridge 后连接关系有什么变化</h2>
-<p>使用 eBPF 在主机上对相应的连接进行处理，可以大幅度减少内核处理流量的流程，提升服务之间的通讯质量。</p>
+<p>使用 eBPF 在主机上对相应的连接进行处理，可以大幅度地缩减内核处理流量的流程，提升服务之间的通讯质量。</p>
 <ul>
-<li>如果不用 Merbridge (eBPF)，Pod 到 Pod 间的访问连接关系如下图所示：</li>
+<li>如果不用 Merbridge (eBPF)，Pod 到 Pod 间的访问连接关系如下图。</li>
 </ul>
 <p><img src=./imgs/iptables_path.png alt="iptable 路径"></p>
 <blockquote>
@@ -163,17 +163,17 @@
 <p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
 </blockquote>
 <ul>
-<li>如果两个 Pod 在同一台机器上，使用 Merbridge (eBPF) 能让 Pod 之间的通讯更加高效。</li>
+<li>如果两个 Pod 在同一节点上，使用 Merbridge (eBPF) 能让 Pod 之间的通讯更加高效。</li>
 </ul>
 <p><img src=./imgs/sameNode_eBPF_path.png alt="同节点 eBPF 路径"></p>
 <blockquote>
 <p>图片参考：<a href=https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22>Accelerating Envoy and Istio with Cilium and the Linux Kernel</a></p>
 </blockquote>
-<p>Merbridge 是一个完全独立的开源项目，Merbridge 项目目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。如果您发现了 Merbridge 的漏洞而且有兴趣帮助修复，那么非常欢迎您<a href=https://github.com/merbridge/merbridge/pulls>提交一个 Pull Request</a>，附带上您的修复代码，我们会及时处理您的 PR。</p>
+<p>Merbridge 是一个完全独立的开源项目，目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。如果您发现了 Merbridge 的漏洞而且有兴趣帮助修复，非常欢迎您<a href=https://github.com/merbridge/merbridge/pulls>提交一个 Pull Request</a>，附带上您的修复代码，我们会及时处理您的 PR。</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-93aadc1aba179e6928539400a09b9e4e>2 - 快速开始</h1>
-<div class=lead>如何快速开始使用 Merbridge。</div>
+<div class=lead>如何快速开始使用 Merbridge</div>
 <h2 id=prerequisites>先决条件</h2>
 <ol>
 <li>确保您系统的内核版本大于等于 <code>5.7</code>，可以使用 <code>uname -r</code> 查看。</li>
@@ -204,11 +204,11 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-811eabe57877013e05aad1da682732d4>2.1 - 安装错误排查</h1>
-<div class=lead>帮助您如何进行错误排查和诊断。</div>
+<div class=lead>帮助您进行错误排查和诊断</div>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-fcf6186c3c17ed7f2e8577136109a520>3 - 概念</h1>
-<div class=lead>了解 Merbridge 项目中一些关键的概念。</div>
+<div class=lead>了解 Merbridge 项目中一些关键的概念</div>
 <h2 id=ebpf>eBPF</h2>
 <p>eBPF 全称为 Extended Berkeley Packet Filter，顾名思义，这是一个用来过滤网络数据包的模块。例如 eBPF 的 sockops 和 redir 能力，就可以高效地过滤和拦截数据包。</p>
 <p>eBPF 是一项起源于 Linux 内核的革命性技术，可以在操作系统的内核中运行沙盒程序，能够安全、有效地扩展 Linux 内核的功能，无需改变内核的源代码，也无需加载内核模块。</p>
@@ -231,20 +231,20 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 </ul>
 <h2 id=service-mesh>Service Mesh</h2>
 <p>中文名为服务网格，这是一个可配置的低延迟基础设施层，通过 API 接口处理应用服务之间的网络进程间通信。服务网格能确保容器化应用基础结构服务之间的通信快速、可靠和安全。网格提供的关键功能包括服务发现、负载均衡、安全加密和身份验证、故障恢复、可观测性等。  </p>
-<p>服务网格通常会为每个服务实例注入一个 Sidcar 的代理实例。这些 Sidcar 会处理服务间的通信、监控和安全等问题。这样，开发人员就可以专注于服务中应用代码的开发、支持和维护，而运维团队负责服务网格以及应用的维护工作。 </p>
+<p>服务网格通常会为每个服务实例注入一个 Sidcar 的代理实例。这些 Sidcar 会处理服务间的通信、监控和安全等问题。这样，开发人员就可以专注于服务中应用代码的开发、支持和维护，而运维团队负责服务网格以及应用的维护工作。</p>
 <p>目前最著名的服务网格架构是 Istio。</p>
 <h2 id=istio>Istio</h2>
 <p>Istio 是最初由 IBM、Google 和 Lyft 开源的服务网格技术。它可以透明地分层到分布式应用上，并提供服务网格的所有优点，例如流量治理、安全性和可观测性等。</p>
 <p>Istio 能够适配本地部署、云托管、Kubernetes 容器以及虚拟机上运行的服务程序。通常与 Kubernetes 平台上部署的微服务一起使用。</p>
 <p>从根本上讲，Istio 的工作原理是以 Sidcar 的形式将 Envoy 的扩展版本作为代理布署到每个微服务中。其使用的代理网络构成了 Istio 的数据平面。而这些代理的配置和管理在控制平面完成，为数据平面中的 Envoy 代理提供发现、配置和证书管理。</p>
 <h2 id=linkerd>Linkerd</h2>
-<p>Linkerd 是市场上出现的第一个服务网格，但目前而言 Istio 的服务网格更受欢迎。</p>
+<p>Linkerd 是市场上出现的第一个服务网格。</p>
 <p>Linkerd 是 Buoyant 为 Kubernetes 设计的开源、超轻量级的服务网格。用 Rust 语言完全重写，使其尽可能小、轻和安全，它提供了运行时调试、可观测性、可靠性和安全性，而无需在分布式应用中更改代码。</p>
 <p>Linkerd 有三个基本组件：UI、数据平面和控制平面。Linkerd 通过在每个服务实例旁安装一组超轻、透明的代理来工作，这些代理会自动处理进出服务的所有流量。</p>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c>4 - 参与贡献</h1>
-<div class=lead>如何参与到 Merbridge 的贡献中。</div>
+<div class=lead>如何参与到 Merbridge 的贡献中</div>
 <p>Merbridge 目前托管在 GitHub 上进行开源，所有与代码相关的事情都在 GitHub 上进行管理。</p>
 <p>如果您对 Merbridge 有疑问，需要我们帮忙解决问题，或者想要提供一些新的功能，可以在 GitHub 上<a href=https://github.com/merbridge/merbridge/issues>创建一个新的 Issue</a>，我们会及时查看和处理。</p>
 <p>如果您发现了 Merbridge 的 bug，且有兴趣帮助我们进行修复，那么非常欢迎您<a href=https://github.com/merbridge/merbridge/pulls>提交一个 Pull Request</a>，附带上您的修复代码，我们会及时处理您的 PR。</p>

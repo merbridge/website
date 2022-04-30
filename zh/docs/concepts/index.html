@@ -15,15 +15,15 @@
 <link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
 <title>概念 | Merbridge</title>
 <meta name=description content="Merbridge 的官网"><meta property="og:title" content="概念">
-<meta property="og:description" content="了解 Merbridge 项目中一些关键的概念。
+<meta property="og:description" content="了解 Merbridge 项目中一些关键的概念
 ">
 <meta property="og:type" content="website">
 <meta property="og:url" content="/zh/docs/concepts/"><meta property="og:site_name" content="Merbridge">
 <meta itemprop=name content="概念">
-<meta itemprop=description content="了解 Merbridge 项目中一些关键的概念。
+<meta itemprop=description content="了解 Merbridge 项目中一些关键的概念
 "><meta name=twitter:card content="summary">
 <meta name=twitter:title content="概念">
-<meta name=twitter:description content="了解 Merbridge 项目中一些关键的概念。
+<meta name=twitter:description content="了解 Merbridge 项目中一些关键的概念
 ">
 <link rel=preload href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
 <link href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
@@ -58,7 +58,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.cbce5c76ceb96e04e4323edd9364c017.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.b4e1a248f7eaceea47943ef7d4b80a7d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -68,7 +68,7 @@
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.cbce5c76ceb96e04e4323edd9364c017.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.b4e1a248f7eaceea47943ef7d4b80a7d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -136,7 +136,7 @@
 </nav>
 <div class=td-content>
 <h1>概念</h1>
-<div class=lead>了解 Merbridge 项目中一些关键的概念。</div>
+<div class=lead>了解 Merbridge 项目中一些关键的概念</div>
 <header class=article-meta>
 <p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 1 分钟 阅读时间</p>
 </header>
@@ -162,22 +162,22 @@
 </ul>
 <h2 id=service-mesh>Service Mesh</h2>
 <p>中文名为服务网格，这是一个可配置的低延迟基础设施层，通过 API 接口处理应用服务之间的网络进程间通信。服务网格能确保容器化应用基础结构服务之间的通信快速、可靠和安全。网格提供的关键功能包括服务发现、负载均衡、安全加密和身份验证、故障恢复、可观测性等。  </p>
-<p>服务网格通常会为每个服务实例注入一个 Sidcar 的代理实例。这些 Sidcar 会处理服务间的通信、监控和安全等问题。这样，开发人员就可以专注于服务中应用代码的开发、支持和维护，而运维团队负责服务网格以及应用的维护工作。 </p>
+<p>服务网格通常会为每个服务实例注入一个 Sidcar 的代理实例。这些 Sidcar 会处理服务间的通信、监控和安全等问题。这样，开发人员就可以专注于服务中应用代码的开发、支持和维护，而运维团队负责服务网格以及应用的维护工作。</p>
 <p>目前最著名的服务网格架构是 Istio。</p>
 <h2 id=istio>Istio</h2>
 <p>Istio 是最初由 IBM、Google 和 Lyft 开源的服务网格技术。它可以透明地分层到分布式应用上，并提供服务网格的所有优点，例如流量治理、安全性和可观测性等。</p>
 <p>Istio 能够适配本地部署、云托管、Kubernetes 容器以及虚拟机上运行的服务程序。通常与 Kubernetes 平台上部署的微服务一起使用。</p>
 <p>从根本上讲，Istio 的工作原理是以 Sidcar 的形式将 Envoy 的扩展版本作为代理布署到每个微服务中。其使用的代理网络构成了 Istio 的数据平面。而这些代理的配置和管理在控制平面完成，为数据平面中的 Envoy 代理提供发现、配置和证书管理。</p>
 <h2 id=linkerd>Linkerd</h2>
-<p>Linkerd 是市场上出现的第一个服务网格，但目前而言 Istio 的服务网格更受欢迎。</p>
+<p>Linkerd 是市场上出现的第一个服务网格。</p>
 <p>Linkerd 是 Buoyant 为 Kubernetes 设计的开源、超轻量级的服务网格。用 Rust 语言完全重写，使其尽可能小、轻和安全，它提供了运行时调试、可观测性、可靠性和安全性，而无需在分布式应用中更改代码。</p>
 <p>Linkerd 有三个基本组件：UI、数据平面和控制平面。Linkerd 通过在每个服务实例旁安装一组超轻、透明的代理来工作，这些代理会自动处理进出服务的所有流量。</p>
 <div class=section-index>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
 最后修改
-2022.04.19
-: <a href=https://github.com/merbridge/merbridge/commit/2e35818293ed51f7f455514607f97fb80a8d5fc2>docsite (2e35818)</a>
+2022.04.29
+: <a href=https://github.com/merbridge/merbridge/commit/f9659f3c18021800c28c1f5e9d77b7d409b6f5c2>updated minor text and layout (f9659f3)</a>
 </div>
 </div>
 </main>
