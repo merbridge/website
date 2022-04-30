@@ -3,7 +3,7 @@ title: "参与贡献"
 linkTitle: "参与贡献"
 weight: 10
 description: >
-  如何参与到 Merbridge 的贡献中。
+  如何参与到 Merbridge 的贡献中
 ---
 
 Merbridge 目前托管在 GitHub 上进行开源，所有与代码相关的事情都在 GitHub 上进行管理。

@@ -3,7 +3,7 @@ title: "快速开始"
 linkTitle: "快速开始"
 weight: 2
 description: >
-  如何快速开始使用 Merbridge。
+  如何快速开始使用 Merbridge
 ---
 
 ## 先决条件 {#prerequisites}
