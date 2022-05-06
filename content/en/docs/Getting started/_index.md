@@ -35,19 +35,19 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 
 ### Verify installation {#verification-installation}
 
-Before you start this verification, make sure each Pod of Merbridge is running well. You can check the Pod status in Istio with the following command:
+Before you start this verification, make sure all Pods relevant to Merbridge are running well. You can check Pod status in Istio with the following command:
 
 ```bash
 kubectl -n istio-system get pods
 ```
 
-If the status of all Pods related to Merbridge is Running, it means Merbridge is successfully installed.
+If all these Pods are `Running`, it means Merbridge is successfully installed.
 
 ### Verify connection {#verification-connection-test}
 
 Use the following methods to check the connectivity of Merbridge:
 
-#### Install sleep and helloworld and wait for a complete start:
+#### Install sleep and helloworld and wait for a full start:
 
 ```bash
 kubectl label ns default istio-injection=enabled

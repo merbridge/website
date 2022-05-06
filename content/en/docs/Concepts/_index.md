@@ -10,7 +10,7 @@ description: >
 
 The full name of eBPF is Extended Berkeley Packet Filter. As the name implies, this is a module used to filter network packets. For example, sockops and redir capabilities of eBPF can efficiently filter and intercept packets.
 
-eBPF is a revolutionary technology with origins in the Linux kernel that can run sandboxed programs in an operating system kernel. It is used to safely and efficiently extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules
+eBPF is a revolutionary technology with origins in the Linux kernel that can run sandboxed programs in an operating system kernel. It is used to safely and efficiently extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules.
 
 ## iptables
 
@@ -26,7 +26,7 @@ iptables has 4 tables by default:
 iptables has 5 chains by default:
 
 - INPUT chain (ingress rules)
-- OUTPUT chain (exgress rules)
+- OUTPUT chain (egress rules)
 - FORWARD chain (rules of forwarding)
 - PREROUTING chain (rules before routing)
 - POSTROUTING chain (rules after routing)
@@ -35,7 +35,7 @@ iptables has 5 chains by default:
 
 A service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud native application. A service mesh can guarantee fast, reliable, and secure communication between containerized application infrastructure services. Key capabilities provided by mesh include service discovery, load balancing, secure encryption and authentication, failover, observability, and more.  
 
-A service mesh typically injects a sidecar proxy into each service instance. These sidcars handle inter-service communication, monitoring, and security. In this way, developers can focus on the development, support, and maintenance of the application code in the service, while the O\&M team is responsible for the maintenance of the service mesh and applications. 
+A service mesh typically injects a sidecar proxy into each service instance. These sidecars handle inter-service communication, monitoring, and security. In this way, developers can focus on the development, support, and maintenance of the application code in the service, while the O\&M team is responsible for the maintenance of the service mesh and applications. 
 
 Today, the most well-known service mesh is Istio.
 

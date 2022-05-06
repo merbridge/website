@@ -6,15 +6,15 @@ menu:
     weight: 10
 ---
 
-{{< blocks/cover title="关于 Merbridge" image_anchor="bottom" height="min" >}}
+{{< blocks/cover title="Merbridge" image_anchor="bottom" height="min" >}}
 
-<p class="lead mt-5"><strong></strong>使用 eBPF 技术代替 iptables 加速服务网格。</strong>
+<p class="lead mt-5"><strong>使用 eBPF 技术代替 iptables 加速服务网格。</strong>
 </p>
   
 {{< /blocks/cover>}}
  
 {{% blocks/lead %}}
-  以 Istio 为首的服务网格技术正在被越来越多的企业所关注，其使用 Sidecar 借助 iptables 技术实现流量拦截，但是使用 iptables 的方式进行拦截会损失不少性能。近两年，由于 eBPF 技术的兴起，不少围绕 eBPF 的项目应声而出。
+  以 Istio 为首的服务网格技术正在被越来越多的企业所关注。服务网格使用 Sidecar 借助 iptables 技术实现流量拦截，但是这样会损失不少性能。近两年，由于 eBPF 技术的兴起，不少围绕 eBPF 的项目应声而出。
 
 {{% /blocks/lead %}}
 
@@ -22,7 +22,7 @@ menu:
 
 {{< blocks/section>}}
 <div class="col-12">
-  <h3 class="text-center">借助 eBPF 的 sockops 和 redir 能力，可以高效的处理数据包，再结合实际场景，我们可以使用 eBPF 去代替 iptables 为 Istio 进行加速。</h3>
+  <h3 class="text-center">借助 eBPF 的 sockops 和 redir 能力，可以高效地处理数据包。因此，可以结合实际场景，使用 eBPF 代替 iptables 为 Istio 实现加速。</h3>
 </div>
 
 {{< /blocks/section>}}
@@ -31,7 +31,7 @@ menu:
 
 {{< blocks/section >}}
 <div class="col-12">
-  <h3 class="text-center">现在，我们开源了 Merbridge 项目，只需要在您的 Istio 集群执行一条命令，即可直接使用 eBPF 代替 iptables 实现网络加速！</h3>
+  <h3 class="text-center">现在，我们开源了 Merbridge 项目。您只需要在 Istio 集群执行一条命令，即可直接使用 eBPF 代替 iptables 实现网络加速！</h3>
 </div>
       
 {{< /blocks/section >}}

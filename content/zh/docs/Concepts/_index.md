@@ -3,7 +3,7 @@ title: "概念"
 linkTitle: "概念"
 weight: 4
 description: >
-  了解 Merbridge 项目中一些关键的概念
+  本文介绍 Merbridge 项目中的一些关键概念
 ---
 
 ## eBPF
