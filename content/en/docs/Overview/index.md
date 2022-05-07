@@ -24,7 +24,7 @@ Merbridge has following core features:
 
   Inbound traffic is processed similarly to outbound traffic. Note that eBPF cannot take effect in a specified namespace like iptables, so changes will be global. It means that if we apply eBPF to Pods that are not originally managed by Istio, or an external IP, serious problems will occur, e.g., cannot establish a connection.
 
-  To address this issue, we designed a tiny control plane, deployed as a DaemonSet. It can watch and get a list of all pods on the node, similar to kubelet. Then, Pod IPs injected into the sidecar will be written into the `local_pod_ips` map. For traffic with a destination address not in the map, Merbridge will not intercept it.
+  To address this issue, we designed a tiny control plane, deployed as a DaemonSet. It can help watch and get a list of all pods on the node, similar to kubelet. Then, Pod IPs injected into the sidecar will be written into the `local_pod_ips` map. For traffic with a destination address not in the map, Merbridge will not intercept it.
 
 - Accelerating networking
 
@@ -46,7 +46,7 @@ Merbridge is recommended if you have any of following problems:
     - Using iptables to achieve transparent interception needs a conntrack module for connection trace. It will cause a lot of consumption when there are many connections.
 2. The system cannot use iptables for some reasons.
    - Sometimes it needs to process numerous active connections simultaneously, but using iptables is easily to have a full conntrack table.
-   - 例如，在超时设置为 120 秒且表容量是 128k 的情况下，如果尝试每秒处理 1100 个连接，就会超出 conntrack 表的限制（128k/120秒 = 1092 连接/秒）。Sometimes numerous connections should be processed in one second, which will exceed limit of the conntrack table. For example, if you try to process 1100 connections per second with timeout set as 120 seconds and a table capacity of 128k, it would exceed the conntrack table's limit (128k/120 seconds = 1092 connections/second).
+   - Sometimes numerous connections should be processed in one second, which will exceed limit of the conntrack table. For example, if you try to process 1100 connections per second with timeout set as 120 seconds and a table capacity of 128k, it would exceed the conntrack table's limit (128k/120 seconds = 1092 connections/second).
 3. Due to security concerns, some ordinary Pods cannot have too many permissions, but using Istio (without CNI) must allow these Pods to gain more permissions.
    - Running the init container may require permissions such as `NET_ADMIN`.
    - Running an iptables command may need `CAP_NET_ADMIN` permission.
