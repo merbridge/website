@@ -1,9 +1,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/zh/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Merbridge 和 Cilium</title><link>/zh/blog/2022/04/23/merbridge-and-cilium/</link><pubDate>Sat, 23 Apr 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/04/23/merbridge-and-cilium/</guid><description>
 &lt;h1 id="merbridge-与-cilium">Merbridge 与 Cilium&lt;/h1>
-&lt;p>&lt;a href="https://cilium.io/">Cilium&lt;/a> 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。其中之一，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。&lt;/p>
-&lt;p>Merbridge 借助于 Cilium 为我们打下的好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便的将 eBPF 技术应用于服务网格。&lt;/p>
-&lt;p>我们开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。&lt;/p>
-&lt;p>再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀的设计。&lt;/p></description></item><item><title>Blog: 与 Solo.io 一起举办的直播活动</title><link>/zh/blog/2022/03/29/solo-io-livestream/</link><pubDate>Tue, 29 Mar 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/03/29/solo-io-livestream/</guid><description>
+&lt;p>&lt;a href="https://cilium.io/">Cilium&lt;/a> 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。例如，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。&lt;/p>
+&lt;p>Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便地将 eBPF 技术应用于服务网格。&lt;/p>
+&lt;p>我们的开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。&lt;/p>
+&lt;p>再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀设计。&lt;/p></description></item><item><title>Blog: 与 Solo.io 一起举办的直播活动</title><link>/zh/blog/2022/03/29/solo-io-livestream/</link><pubDate>Tue, 29 Mar 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/03/29/solo-io-livestream/</guid><description>
 &lt;p>2022 年 3 月 29 日，Solo.io 和 Merbridge 共同举办了一场直播活动。&lt;/p>
 &lt;p>在这次直播中，我们一起探讨了很多与 Merbridge 相关的问题，其中包含了一个线上 Demo，可以帮你快速了解 Merbridge 的功能和使用方法。&lt;/p>
 &lt;p>同时，PPT 可以在&lt;a href="./merbridge.pdf">这里&lt;/a>下载。&lt;/p>

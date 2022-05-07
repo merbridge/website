@@ -58,7 +58,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.b4e1a248f7eaceea47943ef7d4b80a7d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.2ba4f1c9832b430fff525ab5370c0e4c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -68,7 +68,7 @@ English
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.b4e1a248f7eaceea47943ef7d4b80a7d.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.2ba4f1c9832b430fff525ab5370c0e4c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -163,12 +163,12 @@ English
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
 </code></pre></div><h2 id=verification>Verification</h2>
 <h3 id=verification-installation>Verify installation</h3>
-<p>Before you start this verification, make sure each Pod of Merbridge is running well. You can check the Pod status in Istio with the following command:</p>
+<p>Before you start this verification, make sure all Pods relevant to Merbridge are running well. You can check Pod status in Istio with the following command:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl -n istio-system get pods
-</code></pre></div><p>If the status of all Pods related to Merbridge is Running, it means Merbridge is successfully installed.</p>
+</code></pre></div><p>If all these Pods are <code>Running</code>, it means Merbridge is successfully installed.</p>
 <h3 id=verification-connection-test>Verify connection</h3>
 <p>Use the following methods to check the connectivity of Merbridge:</p>
-<h4 id=install-sleep-and-helloworld-and-wait-for-a-complete-start>Install sleep and helloworld and wait for a complete start:</h4>
+<h4 id=install-sleep-and-helloworld-and-wait-for-a-full-start>Install sleep and helloworld and wait for a full start:</h4>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl label ns default istio-injection<span style=color:#ce5c00;font-weight:700>=</span>enabled
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
@@ -186,8 +186,8 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
 Last modified
-April 7, 2022
-: <a href=https://github.com/merbridge/merbridge/commit/3d62dcca3d36fb061e436b280d387c8bc5d9d1eb>remote (3d62dcc)</a>
+May 7, 2022
+: <a href=https://github.com/merbridge/merbridge/commit/010fd12642500da4db16d02ab521bb21d9288e16>polished docs (#18) (010fd12)</a>
 </div>
 </div>
 </main>
