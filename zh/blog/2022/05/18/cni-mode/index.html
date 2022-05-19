@@ -12,29 +12,20 @@
 <link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
-<title>Merbridge 和 Cilium | Merbridge</title>
-<meta name=description content="Merbridge 的官网"><meta property="og:title" content="Merbridge 和 Cilium">
-<meta property="og:description" content="Merbridge 与 Cilium Cilium 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。例如，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。
-Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便地将 eBPF 技术应用于服务网格。
-我们的开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。
-再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀设计。">
+<title>Merbridge CNI 模式 | Merbridge</title>
+<meta name=description content="Merbridge 的官网"><meta property="og:title" content="Merbridge CNI 模式">
+<meta property="og:description" content="此篇博客将向您介绍 Merbridge CNI 的工作原理。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="/zh/blog/2022/04/23/merbridge-and-cilium/"><meta property="article:section" content="blog">
-<meta property="article:published_time" content="2022-04-23T00:00:00+00:00">
-<meta property="article:modified_time" content="2022-05-07T09:37:08+08:00"><meta property="og:site_name" content="Merbridge">
-<meta itemprop=name content="Merbridge 和 Cilium">
-<meta itemprop=description content="Merbridge 与 Cilium Cilium 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。例如，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。
-Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便地将 eBPF 技术应用于服务网格。
-我们的开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。
-再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀设计。"><meta itemprop=datePublished content="2022-04-23T00:00:00+00:00">
-<meta itemprop=dateModified content="2022-05-07T09:37:08+08:00">
-<meta itemprop=wordCount content="34">
+<meta property="og:url" content="/zh/blog/2022/05/18/cni-mode/"><meta property="article:section" content="blog">
+<meta property="article:published_time" content="2022-05-18T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-05-19T10:59:29+08:00"><meta property="og:site_name" content="Merbridge">
+<meta itemprop=name content="Merbridge CNI 模式">
+<meta itemprop=description content="此篇博客将向您介绍 Merbridge CNI 的工作原理。"><meta itemprop=datePublished content="2022-05-18T00:00:00+00:00">
+<meta itemprop=dateModified content="2022-05-19T10:59:29+08:00">
+<meta itemprop=wordCount content="226">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Merbridge 和 Cilium">
-<meta name=twitter:description content="Merbridge 与 Cilium Cilium 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。例如，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。
-Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便地将 eBPF 技术应用于服务网格。
-我们的开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。
-再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀设计。">
+<meta name=twitter:title content="Merbridge CNI 模式">
+<meta name=twitter:description content="此篇博客将向您介绍 Merbridge CNI 的工作原理。">
 <link rel=preload href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css as=style>
 <link href=/scss/main.min.bd5285b713d3061549a6bfd34e5f4ec6775ede36672a3088260f0d420050647f.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
@@ -62,7 +53,7 @@ Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格�
 中文 Chinese
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/blog/2022/04/23/merbridge-and-cilium/>English</a>
+<a class=dropdown-item href=/>English</a>
 </div>
 </li>
 </ul>
@@ -88,7 +79,7 @@ Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格�
 中文 Chinese
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/blog/2022/04/23/merbridge-and-cilium/>English</a>
+<a class=dropdown-item href=/>English</a>
 </div>
 </div>
 <ul class="td-sidebar-nav__section pr-md-3 ul-0">
@@ -98,10 +89,10 @@ Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格�
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog2022-li>
 <a href=/zh/blog/2022/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblog2022><span>2022 年 Blog</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220518cni-mode-li>
-<a href=/zh/blog/2022/05/18/cni-mode/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220518cni-mode><span>Merbridge CNI 模式</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-zhblog20220423merbridge-and-cilium-li>
-<a href=/zh/blog/2022/04/23/merbridge-and-cilium/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-zhblog20220423merbridge-and-cilium><span class=td-sidebar-nav-active-item>Merbridge 和 Cilium</span></a>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-zhblog20220518cni-mode-li>
+<a href=/zh/blog/2022/05/18/cni-mode/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-zhblog20220518cni-mode><span class=td-sidebar-nav-active-item>Merbridge CNI 模式</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220423merbridge-and-cilium-li>
+<a href=/zh/blog/2022/04/23/merbridge-and-cilium/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220423merbridge-and-cilium><span>Merbridge 和 Cilium</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220329solo-io-livestream-li>
 <a href=/zh/blog/2022/03/29/solo-io-livestream/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220329solo-io-livestream><span>与 Solo.io 一起举办的直播活动</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220301merbridge-introduce-li>
@@ -124,32 +115,78 @@ Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格�
 </aside>
 <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
 <div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
-<a href=https://github.com/merbridge/merbridge/edit/main/content/zh/blog/2022/merbridge-and-cilium/index.md target=_blank><i class="fa fa-edit fa-fw"></i> 编辑此页</a>
-<a href="https://github.com/merbridge/merbridge/new/main/content/zh/blog/2022/merbridge-and-cilium/index.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> 添加子页面</a>
-<a href="https://github.com/merbridge/merbridge/issues/new?title=Merbridge%20%e5%92%8c%20Cilium" target=_blank><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
+<a href=https://github.com/merbridge/merbridge/edit/main/content/zh/blog/2022/cni-mode/index.md target=_blank><i class="fa fa-edit fa-fw"></i> 编辑此页</a>
+<a href="https://github.com/merbridge/merbridge/new/main/content/zh/blog/2022/cni-mode/index.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> 添加子页面</a>
+<a href="https://github.com/merbridge/merbridge/issues/new?title=Merbridge%20CNI%20%e6%a8%a1%e5%bc%8f" target=_blank><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
 <a href=https://github.com/merbridge/website/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> 提交项目问题</a>
 <a id=print href=/zh/blog/2022/_print/><i class="fa fa-print fa-fw"></i> 整节打印</a>
 </div>
+<div class=td-toc><nav id=TableOfContents>
+<ul>
+<li><a href=#为什么需要-cni-模式>为什么需要 CNI 模式？</a></li>
+<li><a href=#cni-如何解决问题>CNI 如何解决问题？</a>
+<ul>
+<li><a href=#如何通过-cni-让-ebpf-程序获取当前正在处理的-pod-ip>如何通过 CNI 让 eBPF 程序获取当前正在处理的 Pod IP？</a></li>
+<li><a href=#如何处理入口流量>如何处理入口流量？</a></li>
+</ul>
+</li>
+<li><a href=#如何体验-cni-模式>如何体验 CNI 模式？</a></li>
+<li><a href=#注意事项>注意事项</a>
+<ul>
+<li><a href=#cni-模式处于测试阶段>CNI 模式处于测试阶段</a></li>
+<li><a href=#需要注意主机是否可开启-hardware-checksum-能力>需要注意主机是否可开启 hardware-checksum 能力</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
 </aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role=main>
 <div class=td-content>
-<h1>Merbridge 和 Cilium</h1>
+<h1>Merbridge CNI 模式</h1>
+<div class=lead>此篇博客将向您介绍 Merbridge CNI 的工作原理。</div>
 <div class="td-byline mb-4">
-<time datetime=2022-04-23 class=text-muted>2022.04.23</time>
+<time datetime=2022-05-18 class=text-muted>2022.05.18</time>
 </div>
 <header class=article-meta>
-<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 1 分钟 阅读时间</p>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 2 分钟 阅读时间</p>
 </header>
-<h1 id=merbridge-与-cilium>Merbridge 与 Cilium</h1>
-<p><a href=https://cilium.io/>Cilium</a> 是一款基于 eBPF 为云原生应用提供诸多网络能力的优秀开源软件，有很多很棒的设计。例如，Cilium 设计了一套基于 sockmap 的 redir 能力，帮助加速网络通讯，这给了我们很大的启发，也是 Merbridge 提供网络加速的基础，这真是一个非常棒的设计。</p>
-<p>Merbridge 借助于 Cilium 打下的良好基础，加上我们在服务网格领域做地一些针对性的适配，让大家可以更加方便地将 eBPF 技术应用于服务网格。</p>
-<p>我们的开发团队从 Cilium 提供的资料中学习了很多关于 eBPF 的理论知识、实践方法和测试方法等，也与 Cilium 技术团队多有交流，也就是因为这些经历，才能有 Merbridge 项目的诞生。</p>
-<p>再次衷心感谢 Cilium 项目和社区，以及 Cilium 的这些优秀设计。</p>
+<p>Merbridge CNI 模式的出现，旨在能够更好地适配服务网格的功能。之前没有 CNI 模式时，Merbridge 能够做得事情比较有限。其中最大的问题是不能适配注入 Istio 的 Sidecar Annotation，这就导致 Merbridge 无法排除某些端口或 IP 段的流量等。
+同时，由于之前 Merbridge 只处理 Pod 内部的连接请求，这就导致，如果是外部发送到 Pod 的流量，Merbridge 将无法处理。</p>
+<p>为此，我们精心设计了 Merbridge CNI，旨在解决这些问题。</p>
+<h2 id=为什么需要-cni-模式>为什么需要 CNI 模式？</h2>
+<p>其一，之前的 Merbridge 只有一个很小的控制面，其监听 Pod 资源，将当前节点的 IP 信息写入 <code>local_pod_ips</code> 的 map，以供 connect 使用。
+但是，connect 程序由于工作在主机内核层，其无法知道当前正在处理的是哪个 Pod 的流量，就没法处理如 <code>excludeOutboundPorts</code> 等配置。
+为了能够适配注入 <code>excludeOutboundPorts</code> 的 Sidecar Annotation，我们需要让 eBPF 程序能够得知当前正在处理哪个 Pod 的请求。</p>
+<p>为此，我们设计了一套方法，与 CNI 配合，能够获取当前 Pod 的 IP，以适配针对 Pod 的特殊配置。</p>
+<p>其二，在之前的 Merbridge 版本中，只有 connect 会处理主机发起的请求，这在同一台主机上的 Pod 互相通讯时，是没有问题的。但是在不同主机之间通讯时就会出现问题，因为按照之前的逻辑，在跨节点通讯时流量不会被修改，这会导致在接收端还是离不开 iptables。</p>
+<p>这次，我们依靠 XDP 程序，解决入口流量处理的问题。因为 XDP 程序需要挂载网卡，所以也需要借助 CNI。</p>
+<h2 id=cni-如何解决问题>CNI 如何解决问题？</h2>
+<p>这里我们将探讨 CNI 的工作原理，以及如何使用 CNI 来解决问题。</p>
+<h3 id=如何通过-cni-让-ebpf-程序获取当前正在处理的-pod-ip>如何通过 CNI 让 eBPF 程序获取当前正在处理的 Pod IP？</h3>
+<p>我们通过 CNI，在 Pod 创建的时候，将 Pod 的 IP 信息写入一个 Map（<code>mark_pod_ips_map</code>），其 Key 为一个随机的值，Value 为 Pod 的 IP。然后，在当前 Pod 的 NetNS 里面监听一个特殊的端口 39807，将 Key 使用 <code>setsockopt</code> 写入这个端口 socket 的 mark。</p>
+<p>在 eBPF 中，我们通过 <code>bpf_sk_lookup_tcp</code> 取得端口 39807 的 Mark 信息，然后从 <code>mark_pod_ips_map</code> 中即可取得当前 NetNS（也是当期 Pod）的 IP。</p>
+<p>有了当前 Pod IP 之后，我们可以根据这个 Pod 的配置，确认流量处理路径（比如 <code>excludeOutboundPorts</code>）。</p>
+<p>同时，我们还使用 Pod 优化了之前解决四元组冲突的方案，改为使用 <code>bpf_bind</code> 绑定源 IP，目的 IP 直接使用 <code>127.0.0.1</code>，为了后续支持 IPv6 做准备。</p>
+<h3 id=如何处理入口流量>如何处理入口流量？</h3>
+<p>为了能够处理入口流量，我们引入了 XDP 程序，XDP 程序作用在网卡上，能够对原始数据包做修改。
+我们借助 XDP 程序，在流量到达 Pod 的时候，修改目的端口为 15006 以完成流量转发。</p>
+<p>同时考虑到可能存在主机直接访问 Pod 的情况，也为了减小影响范围，我们选择将 XDP 程序附加到 Pod 的网卡上。这就需要借助 CNI 的能力，在创建 Pod 时进行附加操作。</p>
+<h2 id=如何体验-cni-模式>如何体验 CNI 模式？</h2>
+<p>CNI 模式默认被关闭，需要手动开启。</p>
+<p>可以使用以下命令一键开启：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -sSL https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml <span style=color:#000;font-weight:700>|</span> sed <span style=color:#4e9a06>&#39;s/--cni-mode=false/--cni-mode=true/g&#39;</span> <span style=color:#000;font-weight:700>|</span> kubectl apply -f -
+</code></pre></div><h2 id=注意事项>注意事项</h2>
+<h3 id=cni-模式处于测试阶段>CNI 模式处于测试阶段</h3>
+<p>CNI 模式刚被设计和开发出来，可能存在不少问题，我们欢迎大家在测试阶段进行反馈，或者提出更好的建议，以帮助我们改进 Merbridge！</p>
+<p>如果需要使用注入 Istio perf benchmark 等工具进行测试性能，请开启 CNI 模式，否则会导致性能测试结果不准确。</p>
+<h3 id=需要注意主机是否可开启-hardware-checksum-能力>需要注意主机是否可开启 hardware-checksum 能力</h3>
+<p>为了保证 CNI 模式的正常运行，我们默认关闭了 hardware-checksum 能力，这可能会影响到网络性能。建议大家在开启 CNI 模式前，先确认主机是否可开启 hardware-checksum 能力。如果可以开启，建议设置 <code>--hardware-checksum=true</code> 以获得最佳的性能表现。</p>
+<p>测试方法：<code>ethtool -k &lt;网卡> | grep tx-checksum-ipv4</code> 为 on 表示开启。</p>
 <ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
 <li>
-<a href=/zh/blog/2022/03/29/solo-io-livestream/ aria-label="上一页 - 与 Solo.io 一起举办的直播活动" class="btn btn-primary"><span class=mr-1>←</span> 上一页</a>
+<a href=/zh/blog/2022/04/23/merbridge-and-cilium/ aria-label="上一页 - Merbridge 和 Cilium" class="btn btn-primary"><span class=mr-1>←</span> 上一页</a>
 </li>
-<a href=/zh/blog/2022/05/18/cni-mode/ aria-label="下一页 - Merbridge CNI 模式" class="btn btn-primary">下一页 <span class=ml-1>→</span></a>
+<a class="btn btn-primary disabled">下一页 <span class=ml-1>→</span></a>
 </li>
 </ul>
 </div>

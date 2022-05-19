@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.2ba4f1c9832b430fff525ab5370c0e4c.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.d19317b6056da1031b338dc50051dcbb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -80,6 +80,7 @@
 <ul>
 <li><a href=#pg-ea4e888c31a16f912d612ee4ba1570cb>2022 年 Blog</a></li>
 <ul>
+<li><a href=#pg-ddae09d9f86ef7a0b6eecd3628b18eb5>Merbridge CNI 模式</a></li>
 <li><a href=#pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge 和 Cilium</a></li>
 <li><a href=#pg-9c52cc92a2a851c972fc1e7d42cec0af>与 Solo.io 一起举办的直播活动</a></li>
 <li><a href=#pg-df869185d0e53dcbdf1283e406176894>一行代码，使用 eBPF 代替 iptables 加速服务网格</a></li>
@@ -98,6 +99,45 @@
 </div>
 </div>
 <div class=td-content>
+<h1 id=pg-ddae09d9f86ef7a0b6eecd3628b18eb5>Merbridge CNI 模式</h1>
+<div class=lead>此篇博客将向您介绍 Merbridge CNI 的工作原理。</div>
+<div class="td-byline mb-4">
+<time datetime=2022-05-18 class=text-muted>2022.05.18</time>
+</div>
+<p>Merbridge CNI 模式的出现，旨在能够更好地适配服务网格的功能。之前没有 CNI 模式时，Merbridge 能够做得事情比较有限。其中最大的问题是不能适配注入 Istio 的 Sidecar Annotation，这就导致 Merbridge 无法排除某些端口或 IP 段的流量等。
+同时，由于之前 Merbridge 只处理 Pod 内部的连接请求，这就导致，如果是外部发送到 Pod 的流量，Merbridge 将无法处理。</p>
+<p>为此，我们精心设计了 Merbridge CNI，旨在解决这些问题。</p>
+<h2 id=为什么需要-cni-模式>为什么需要 CNI 模式？</h2>
+<p>其一，之前的 Merbridge 只有一个很小的控制面，其监听 Pod 资源，将当前节点的 IP 信息写入 <code>local_pod_ips</code> 的 map，以供 connect 使用。
+但是，connect 程序由于工作在主机内核层，其无法知道当前正在处理的是哪个 Pod 的流量，就没法处理如 <code>excludeOutboundPorts</code> 等配置。
+为了能够适配注入 <code>excludeOutboundPorts</code> 的 Sidecar Annotation，我们需要让 eBPF 程序能够得知当前正在处理哪个 Pod 的请求。</p>
+<p>为此，我们设计了一套方法，与 CNI 配合，能够获取当前 Pod 的 IP，以适配针对 Pod 的特殊配置。</p>
+<p>其二，在之前的 Merbridge 版本中，只有 connect 会处理主机发起的请求，这在同一台主机上的 Pod 互相通讯时，是没有问题的。但是在不同主机之间通讯时就会出现问题，因为按照之前的逻辑，在跨节点通讯时流量不会被修改，这会导致在接收端还是离不开 iptables。</p>
+<p>这次，我们依靠 XDP 程序，解决入口流量处理的问题。因为 XDP 程序需要挂载网卡，所以也需要借助 CNI。</p>
+<h2 id=cni-如何解决问题>CNI 如何解决问题？</h2>
+<p>这里我们将探讨 CNI 的工作原理，以及如何使用 CNI 来解决问题。</p>
+<h3 id=如何通过-cni-让-ebpf-程序获取当前正在处理的-pod-ip>如何通过 CNI 让 eBPF 程序获取当前正在处理的 Pod IP？</h3>
+<p>我们通过 CNI，在 Pod 创建的时候，将 Pod 的 IP 信息写入一个 Map（<code>mark_pod_ips_map</code>），其 Key 为一个随机的值，Value 为 Pod 的 IP。然后，在当前 Pod 的 NetNS 里面监听一个特殊的端口 39807，将 Key 使用 <code>setsockopt</code> 写入这个端口 socket 的 mark。</p>
+<p>在 eBPF 中，我们通过 <code>bpf_sk_lookup_tcp</code> 取得端口 39807 的 Mark 信息，然后从 <code>mark_pod_ips_map</code> 中即可取得当前 NetNS（也是当期 Pod）的 IP。</p>
+<p>有了当前 Pod IP 之后，我们可以根据这个 Pod 的配置，确认流量处理路径（比如 <code>excludeOutboundPorts</code>）。</p>
+<p>同时，我们还使用 Pod 优化了之前解决四元组冲突的方案，改为使用 <code>bpf_bind</code> 绑定源 IP，目的 IP 直接使用 <code>127.0.0.1</code>，为了后续支持 IPv6 做准备。</p>
+<h3 id=如何处理入口流量>如何处理入口流量？</h3>
+<p>为了能够处理入口流量，我们引入了 XDP 程序，XDP 程序作用在网卡上，能够对原始数据包做修改。
+我们借助 XDP 程序，在流量到达 Pod 的时候，修改目的端口为 15006 以完成流量转发。</p>
+<p>同时考虑到可能存在主机直接访问 Pod 的情况，也为了减小影响范围，我们选择将 XDP 程序附加到 Pod 的网卡上。这就需要借助 CNI 的能力，在创建 Pod 时进行附加操作。</p>
+<h2 id=如何体验-cni-模式>如何体验 CNI 模式？</h2>
+<p>CNI 模式默认被关闭，需要手动开启。</p>
+<p>可以使用以下命令一键开启：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -sSL https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml <span style=color:#000;font-weight:700>|</span> sed <span style=color:#4e9a06>&#39;s/--cni-mode=false/--cni-mode=true/g&#39;</span> <span style=color:#000;font-weight:700>|</span> kubectl apply -f -
+</code></pre></div><h2 id=注意事项>注意事项</h2>
+<h3 id=cni-模式处于测试阶段>CNI 模式处于测试阶段</h3>
+<p>CNI 模式刚被设计和开发出来，可能存在不少问题，我们欢迎大家在测试阶段进行反馈，或者提出更好的建议，以帮助我们改进 Merbridge！</p>
+<p>如果需要使用注入 Istio perf benchmark 等工具进行测试性能，请开启 CNI 模式，否则会导致性能测试结果不准确。</p>
+<h3 id=需要注意主机是否可开启-hardware-checksum-能力>需要注意主机是否可开启 hardware-checksum 能力</h3>
+<p>为了保证 CNI 模式的正常运行，我们默认关闭了 hardware-checksum 能力，这可能会影响到网络性能。建议大家在开启 CNI 模式前，先确认主机是否可开启 hardware-checksum 能力。如果可以开启，建议设置 <code>--hardware-checksum=true</code> 以获得最佳的性能表现。</p>
+<p>测试方法：<code>ethtool -k &lt;网卡> | grep tx-checksum-ipv4</code> 为 on 表示开启。</p>
+</div>
+<div class=td-content style=page-break-before:always>
 <h1 id=pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge 和 Cilium</h1>
 <div class="td-byline mb-4">
 <time datetime=2022-04-23 class=text-muted>2022.04.23</time>
