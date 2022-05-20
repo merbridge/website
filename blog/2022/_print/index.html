@@ -55,7 +55,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.d19317b6056da1031b338dc50051dcbb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.3117aa00f8c32d8b1b48f8e5749367b0.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -78,6 +78,7 @@ This the multi-page printable view of this section.
 </div>
 <h1 class=title>Blogs of 2022</h1>
 <ul>
+<li><a href=#pg-ddae09d9f86ef7a0b6eecd3628b18eb5>Merbridge CNI Mode</a></li>
 <li><a href=#pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge and Cilium</a></li>
 <li><a href=#pg-9c52cc92a2a851c972fc1e7d42cec0af>Livestream with Solo.io</a></li>
 <li><a href=#pg-df869185d0e53dcbdf1283e406176894>Merbridge - Accelerate your mesh with eBPF</a></li>
@@ -86,6 +87,42 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content>
+<h1 id=pg-ddae09d9f86ef7a0b6eecd3628b18eb5>Merbridge CNI Mode</h1>
+<div class=lead>This blog explains how CNI works in Merbridge.</div>
+<div class="td-byline mb-4">
+<time datetime=2022-05-18 class=text-muted>Wednesday, May 18, 2022</time>
+</div>
+<p>The CNI mode is designed to better adapt to the service mesh functions. Before having this mode, Merbridge was limited to certain scenarios. The biggest problem was that it could not adapt to the sidecar annotations from the container injected by Istio, which led to Merbridge cannot exclude traffic from certain ports and IP ranges. Furthermore, Merbridge was only able to handle requests inside the pod, which means the external traffic sent to the pod was not handled.</p>
+<p>Therefore, we have implemented the Merbridge CNI to address these issues.</p><!--## 为什么需要 CNI 模式？-->
+<h2 id=why-cni-mode-is-needed>Why CNI mode is needed</h2>
+<p>First, Merbridge had a small control plane before, which listened to pods resources, and wrote the current node IP into the map of <code>local_pod_ips</code> for use by <code>connect</code>. However, since the <code>connect</code> program only works at the host kernel layer, it won&rsquo;t know which pod&rsquo;s traffic is being processed. Thus, configurations like <code>excludeOutboundPorts</code> cannot be handled. In order to be able to adapt to the injected sidecar annotation <code>excludeOutboundPorts</code>, we need to let the eBPF program know which Pod&rsquo;s request is currently being processed.</p>
+<p>To this end, we have designed a method to cooperate with the CNI, through which you can get the current Pod IP to validate special configurations for the Pod.</p>
+<p>Second, for early versions of Merbridge, only <code>connect</code> would process requests from the host, which had no problem for intra-node pod communication. However, it becomes problematic when traffic flows between different nodes. According to the previous logic, the traffic will not be modified during the cross-node communication, which will lead to the use of <code>iptables</code> at the end.</p>
+<p>Here, we turned to the XDP program for processing the inbound traffic. The XDP program needs to mount a network card, which also needs to use CNI.</p><!--## CNI 如何解决问题？-->
+<h2 id=how-does-cni-work>How does CNI work</h2>
+<p>This section will explore how CNI works and how to use CNI to solve the issues mentioned above.</p><!--### 如何通过 CNI 让 eBPF 程序获取当前正在处理的 Pod IP？-->
+<h3 id=how-to-use-cni-to-let-ebpf-have-the-current-pod-ip>How to use CNI to let eBPF have the current Pod IP</h3>
+<p>When a pod is created, we write Pod IP into the map <code>mark_pod_ips_map</code> through CNI, where the key is a random value, and the value is the Pod IP. Then, we listen to a special port <code>39807</code> in the NetNS of the current Pod, and write the key to the mark of this port socket using <code>setsockopt</code>.</p>
+<p>In eBPF, we get the recorded mark information of port <code>39807</code> through <code>bpf_sk_lookup_tcp</code>, and use it to get the current Pod IP (also the current NetNS) from <code>mark_pod_ips_map</code>.</p>
+<p>With the current Pod IP, we can determine the path to route traffic (such as <code>excludeOutboundPorts</code>) according to the configuration of this Pod.</p>
+<p>In addition, we also optimized the quadruple conflicts by using <code>bpf_bind</code> to bind the source IP and using <code>127.0.0.1</code> as the destination IP, which also prepares for future support of IPv6.</p><!--### 如何处理入口流量？-->
+<h3 id=how-to-handle-ingress-traffic>How to handle ingress traffic</h3>
+<p>In order to handle inbound traffic, we introduced the XDP program, which works on the network card and can modify the original data packets.</p>
+<p>We use the XDP program to modify the destination port as <code>15006</code> when the traffic reaches the Pod, so as to complete traffic forwarding.</p>
+<p>At the same time, considering the possibility that the host directly accesses the Pod, and in order to reduce the scope of influence, we choose to attach the XDP program to the Pod&rsquo;s network card. This requires the ability of CNI to perform additional operations when creating Pods</p><!--## 如何体验 CNI 模式？-->
+<h2 id=how-to-use-cni-mode>How to use CNI mode?</h2>
+<p>CNI mode is disabled by default. You need to enable it manually with the following command.</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -sSL https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml <span style=color:#000;font-weight:700>|</span> sed <span style=color:#4e9a06>&#39;s/--cni-mode=false/--cni-mode=true/g&#39;</span> <span style=color:#000;font-weight:700>|</span> kubectl apply -f -
+</code></pre></div><!--## 注意事项-->
+<h2 id=notes>Notes</h2><!--### CNI 模式处于测试阶段-->
+<h3 id=cni-mode-is-in-beta>CNI mode is in beta</h3>
+<p>The CNI mode is a new feature that may not be perfect. We welcome your feedback and suggestions to help improve Merbridge.</p>
+<p>If you are trying to do benchmark test using tools like <code>Istio perf benchmark</code>, it is suggested to enable the CNI mode. Otherwise the test results will be inaccurate.</p><!--### 需要注意主机是否可开启 hardware-checksum 能力-->
+<h3 id=check-whether-the-host-can-enable-the-hardware-checksum-capability>Check whether the host can enable the hardware-checksum capability</h3>
+<p>In order to ensure the CNI mode works properly, the <code>hardware-checksum</code> capability is disabled by default, which may affect network performance. It is recommended to check whether you can enable this capability on the host before enabling the CNI mode. If yes, we suggest to set <code>--hardware-checksum=true</code> for best performance.</p>
+<p>Test method: if <code>ethtool -k &lt;network card> | grep tx-checksum-ipv4</code> is on, it means enabled.</p>
+</div>
+<div class=td-content style=page-break-before:always>
 <h1 id=pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge and Cilium</h1>
 <div class="td-byline mb-4">
 <time datetime=2022-04-23 class=text-muted>Saturday, April 23, 2022</time>
