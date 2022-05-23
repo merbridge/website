@@ -183,7 +183,10 @@
 &lt;li>
 &lt;p>&lt;a href="https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22">Accelerating Envoy and Istio with Cilium and the Linux Kernel&lt;/a>&lt;/p>
 &lt;/li>
-&lt;/ul></description></item><item><title>Blog: Release 0.5.0</title><link>/blog/2022/03/30/release-0.5.0/</link><pubDate>Wed, 30 Mar 2022 00:00:00 +0000</pubDate><guid>/blog/2022/03/30/release-0.5.0/</guid><description>
+&lt;/ul></description></item><item><title>Blog: Release 0.6.0</title><link>/blog/2022/05/23/release-0.6.0/</link><pubDate>Mon, 23 May 2022 00:00:00 +0000</pubDate><guid>/blog/2022/05/23/release-0.6.0/</guid><description>
+&lt;p>&lt;strong>We are pleased to announce the release of Merbridge 0.6.0!&lt;/strong>&lt;/p>
+&lt;p>In this release, we have introduced CNI mode for the first time to support the capabilities of forwarding all Istio traffic. For details about the CNI mode support, see &lt;a href="/blog/2022/05/18/cni-mode/">Merbridge CNI Mode&lt;/a>&lt;/p>
+&lt;p>For release notes, see: &lt;a href="https://github.com/merbridge/merbridge/releases/tag/0.6.0">Merbridge 0.6.0&lt;/a>&lt;/p></description></item><item><title>Blog: Release 0.5.0</title><link>/blog/2022/03/30/release-0.5.0/</link><pubDate>Wed, 30 Mar 2022 00:00:00 +0000</pubDate><guid>/blog/2022/03/30/release-0.5.0/</guid><description>
 &lt;h2 id="added">Added&lt;/h2>
 &lt;ol>
 &lt;li>Support passive sockops. (&lt;a href="https://github.com/merbridge/merbridge/pull/77">#77&lt;/a>) &lt;a href="https://github.com/kebe7jun">@kebe7jun&lt;/a> .&lt;/li>
