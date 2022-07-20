@@ -183,7 +183,18 @@
 &lt;li>
 &lt;p>&lt;a href="https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22">Accelerating Envoy and Istio with Cilium and the Linux Kernel&lt;/a>&lt;/p>
 &lt;/li>
-&lt;/ul></description></item><item><title>Blog: Release 0.6.0</title><link>/blog/2022/05/23/release-0.6.0/</link><pubDate>Mon, 23 May 2022 00:00:00 +0000</pubDate><guid>/blog/2022/05/23/release-0.6.0/</guid><description>
+&lt;/ul></description></item><item><title>Blog: Release 0.7.0</title><link>/blog/2022/07/20/release-0.7.0/</link><pubDate>Wed, 20 Jul 2022 00:00:00 +0000</pubDate><guid>/blog/2022/07/20/release-0.7.0/</guid><description>
+&lt;p>&lt;strong>We are pleased to announce the release of Merbridge 0.7.0!&lt;/strong>&lt;/p>
+&lt;p>This release mainly includes two updates as below:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Replaced XDP with &lt;code>tc&lt;/code> (Traffic Control) to handle the ingress/egress traffic. This replacement comes from a situation that the XDP Generic mode has some problems and is not recommended to use in a production environment.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Merbridge now supports &lt;a href="https://kuma.io/">Kuma&lt;/a>, a universal Envoy service mesh. Similar to Istio, you can use all capabilities provided by Merbridge when you are working in the Kuma environment. Thanks &lt;a href="https://github.com/bartsmykla">@bartsmykla&lt;/a>, an excellent engineer from Kuma.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>For release notes, see &lt;a href="https://github.com/merbridge/merbridge/releases/tag/0.7.0">Merbridge 0.7.0&lt;/a>.&lt;/p></description></item><item><title>Blog: Release 0.6.0</title><link>/blog/2022/05/23/release-0.6.0/</link><pubDate>Mon, 23 May 2022 00:00:00 +0000</pubDate><guid>/blog/2022/05/23/release-0.6.0/</guid><description>
 &lt;p>&lt;strong>We are pleased to announce the release of Merbridge 0.6.0!&lt;/strong>&lt;/p>
 &lt;p>In this release, we have introduced CNI mode for the first time to support the capabilities of forwarding all Istio traffic. For details about the CNI mode support, see &lt;a href="/blog/2022/05/18/cni-mode/">Merbridge CNI Mode&lt;/a>&lt;/p>
 &lt;p>For release notes, see: &lt;a href="https://github.com/merbridge/merbridge/releases/tag/0.6.0">Merbridge 0.6.0&lt;/a>&lt;/p></description></item><item><title>Blog: Release 0.5.0</title><link>/blog/2022/03/30/release-0.5.0/</link><pubDate>Wed, 30 Mar 2022 00:00:00 +0000</pubDate><guid>/blog/2022/03/30/release-0.5.0/</guid><description>
