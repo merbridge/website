@@ -146,7 +146,14 @@
 &lt;li>&lt;a href="https://01.org/blogs/xuyizhou/2021/accelerate-istio-dataplane-ebpf-part-1">Accelerate the Istio data plane with eBPF&lt;/a> by Yizhou Xu, Intel&lt;/li>
 &lt;li>&lt;a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/listener_filters/original_dst_filter">Envoy&amp;rsquo;s Original Destination filter&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22">Accelerating Envoy and Istio with Cilium and the Linux Kernel&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Blog: 发布 0.6.0</title><link>/zh/blog/2022/05/23/release-0.6.0/</link><pubDate>Mon, 23 May 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/05/23/release-0.6.0/</guid><description>
+&lt;/ul></description></item><item><title>Blog: 发布 0.7.0</title><link>/zh/blog/2022/07/20/release-0.7.0/</link><pubDate>Wed, 20 Jul 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/07/20/release-0.7.0/</guid><description>
+&lt;p>&lt;strong>我们很高兴地发布 Merbridge 0.7.0！&lt;/strong>&lt;/p>
+&lt;p>本次更新主要体现在两个方面：&lt;/p>
+&lt;ol>
+&lt;li>使用 &lt;code>tc&lt;/code>（Traffic Control）代替 XDP 来做容器的出入口流量处理，规避 XDP Generic 模式存在的问题，并且可用于生产环境。&lt;/li>
+&lt;li>增加对 Kuma 的支持，可以在 Kuma 中使用和 Istio 相同的能力。感谢 Kuma 工程师 &lt;a href="https://github.com/bartsmykla">@bartsmykla&lt;/a> 的贡献。&lt;/li>
+&lt;/ol>
+&lt;p>有关其他更新内容，请参考：&lt;a href="https://github.com/merbridge/merbridge/releases/tag/0.7.0">Merbridge 0.7.0&lt;/a>&lt;/p></description></item><item><title>Blog: 发布 0.6.0</title><link>/zh/blog/2022/05/23/release-0.6.0/</link><pubDate>Mon, 23 May 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/05/23/release-0.6.0/</guid><description>
 &lt;p>&lt;strong>我们很高兴地发布 Merbridge 0.6.0！&lt;/strong>&lt;/p>
 &lt;p>在这个版本中，我们首次引入了 CNI 模式，用于支持全量的 Istio 流量转发相关的能力。有关 CNI 模式的支持功能，请参考 &lt;a href="/zh/blog/2022/05/18/cni-mode/">Merbridge CNI 模式&lt;/a>&lt;/p>
 &lt;p>有关版本发布说明，请参考：&lt;a href="https://github.com/merbridge/merbridge/releases/tag/0.6.0">Merbridge 0.6.0&lt;/a>&lt;/p></description></item><item><title>Blog: Release 0.5.0</title><link>/zh/blog/2022/01/27/release-0.5.0/</link><pubDate>Thu, 27 Jan 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/01/27/release-0.5.0/</guid><description>
