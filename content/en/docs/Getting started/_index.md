@@ -47,7 +47,7 @@ If all these Pods are `Running`, it means Merbridge is successfully installed.
 
 Use the following methods to check the connectivity of Merbridge:
 
-#### Install sleep and helloworld and wait for a full start:
+#### Install sleep and helloworld and wait for a full start
 
 ```bash
 kubectl label ns default istio-injection=enabled
@@ -55,7 +55,7 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/sl
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
 ```
 
-#### Conduct curl test:
+#### Conduct curl test
 
 ```bash
 kubectl exec $(kubectl get po -l app=sleep -o=jsonpath='{..metadata.name}') -c sleep -- curl -s -v helloworld:5000/hello
