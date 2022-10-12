@@ -47,15 +47,18 @@ kubectl -n istio-system get pods
 
 可以按照如下方案验证 Merbridge 的连接是否正常：
 
-#### 安装 sleep 和 helloworld 应用，并等待完全启动：
+#### 安装 sleep 和 helloworld 应用并等待其完全启动
+
 ```bash
 kubectl label ns default istio-injection=enabled
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
 ```
 
-#### 执行 curl 测试：
+#### 执行 curl 测试
+
 ```bash
 kubectl exec $(kubectl get po -l app=sleep -o=jsonpath='{..metadata.name}') -c sleep -- curl -s -v helloworld:5000/hello
 ```
+
 如果在结果中看到类似 `* Connected to helloworld (127.128.0.1) port 5000 (#0)` 的字样，表明 Merbridge 已经成功使用 eBPF 代替 iptables 进行流量转发。

@@ -56,17 +56,20 @@ Merbridge 的核心特性包括：
 
 - 如果不用 Merbridge (eBPF)，Pod 到 Pod 间的访问连接关系如下图。
 
-![iptable 路径](./imgs/iptables_path.png)
-> 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
+  ![iptable 路径](./imgs/iptables_path.png)
+
+  > 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 - 使用 Merbridge (eBPF) 优化之后，处理出入口流量时会跳过很多内核模块，从而加速网络。
 
-![eBPF 路径](./imgs/eBPF_path.png)
-> 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
+  ![eBPF 路径](./imgs/eBPF_path.png)
+
+  > 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 - 如果两个 Pod 在同一节点上，使用 Merbridge (eBPF) 能让 Pod 之间的通讯更加高效。
 
-![同节点 eBPF 路径](./imgs/sameNode_eBPF_path.png)
-> 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
+  ![同节点 eBPF 路径](./imgs/sameNode_eBPF_path.png)
+  
+  > 图片参考：[Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
 Merbridge 是完全独立的开源项目，目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。如果您发现了 Merbridge 的漏洞而且有兴趣帮助修复，非常欢迎您[提交 Pull Request](https://github.com/merbridge/merbridge/pulls)，附上您的修复代码，我们会及时处理您的 PR。
