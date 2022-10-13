@@ -3,13 +3,13 @@ title: 深入 Ambient Mesh - 流量路径
 linkTitle: 深入 Ambient Mesh - 流量路径
 date: 2022-10-13
 weight: 1
-description: 此篇博客介绍 Ambient Mesh 中，数据面的流量路径。
+description: 此篇博客介绍 Ambient Mesh 中数据面的流量路径。
 author: Kebe Liu
 ---
 
-Ambient Mesh 宣布已经有一段时间，已经有不少文章讲述了其用法和架构。本文将深入梳理一下，数据面流量在 Ambient 模式下的路径，帮助大家全面的理解 Ambient 数据面的实现方案。
+Ambient Mesh 发布已经有一段时间，已经有不少文章讲述了其用法和架构。本文将深入梳理一下，数据面流量在 Ambient 模式下的路径，帮助大家全面的理解 Ambient 数据面的实现方案。
 
-在阅读本文章之前，需要先阅读 [Ambient Mesh 介绍](https://istio.io/latest/blog/2022/introducing-ambient-mesh/) 以了解基本的架构，本文不在赘述。
+在阅读本文之前，需要先阅读 [Ambient Mesh 介绍](https://istio.io/latest/blog/2022/introducing-ambient-mesh/) 以了解基本的架构，本文不再赘述。
 
 > 为了方便阅读和同步实践，本文使用的环境按照 [Ambient 使用](https://istio.io/latest/blog/2022/get-started-ambient/) 的方式进行部署。
 > 
@@ -29,7 +29,7 @@ Ambient Mesh 宣布已经有一段时间，已经有不少文章讲述了其用�
 要了解出口流量拦截的方案，我们首先可以看一下控制面组件：
 
 ```console
-kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system get po
+kebe@pc $ kubectl -n istio-system get po
 NAME                                   READY   STATUS    RESTARTS   AGE
 istio-cni-node-5rh5z                   1/1     Running   0          20h
 istio-cni-node-qsvsz                   1/1     Running   0          20h
@@ -41,13 +41,13 @@ ztunnel-vxv4b                          1/1     Running   0          20h
 ztunnel-xkz4s                          1/1     Running   0          20h
 ```
 
-我们发现在 Ambient 模式下 istio-cni 变成了默认组件，我们知道，istio-cni 在 Sidecar 模式下，主要是为了避免使用 istio-init 容器处理 iptables 规则而造成权限泄露等情况推出的 CNI 插件，但是 Ambient 模式下，理论上不需要 Sidecar，为什么还需要 istio-cni 呢？
+在 Ambient 模式下 istio-cni 变成了默认组件。我们知道，istio-cni 在 Sidecar 模式下，主要是为了避免使用 istio-init 容器处理 iptables 规则而造成权限泄露等情况推出的 CNI 插件，但是 Ambient 模式下，理论上不需要 Sidecar，为什么还需要 istio-cni 呢？
 
 我们可以看一下日志：
 
 ```console
 
-kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system logs istio-cni-node-qsvsz
+kebe@pc $ kubectl -n istio-system logs istio-cni-node-qsvsz
 ...
 2022-10-12T07:34:33.224957Z	info	ambient	Adding route for reviews-v1-6494d87c7b-zrpks/default: [table 100 10.244.1.4/32 via 192.168.126.2 dev istioin src 10.244.1.1]
 2022-10-12T07:34:33.226054Z	info	ambient	Adding pod 'reviews-v2-79857b95b-m4q2g/default' (0ff78312-3a13-4a02-b39d-644bfb91e861) to ipset
@@ -61,10 +61,10 @@ kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system logs istio-cni-node-qsvs
 1. 添加 Pod 到 ipset
 2. 添加了一个路由规则到 table 100（后面介绍用途）
 
-我们可以在起所在的节点上查看一下 ipset 里面的内容（注意，这里使用 kind 集群，所在主机需要用 docker exec 先进入，后面不再赘述）：
+我们可以在其所在的节点上查看一下 ipset 里面的内容（注意，这里使用 kind 集群，需要用 docker exec 先进入所在主机，后面不再赘述）：
 
 ```console
-kebe@Kebe-DaoCloud-PC  ~  docker exec -it ambient-worker2 bash
+kebe@pc $ docker exec -it ambient-worker2 bash
 root@ambient-worker2:/# ipset list
 Name: ztunnel-pods-ips
 Type: hash:ip
@@ -81,10 +81,10 @@ Members:
 10.244.1.6
 ```
 
-我们发现在这个 Pod 所在的节点上，存在一个 ipset，保存了很多 ip，这些 ip 是 Pod IP：
+我们发现这个 Pod 所在的节点上有一个 ipset，其中保存了很多 IP。这些 IP 是 Pod IP：
 
 ```console
-kebe@Kebe-DaoCloud-PC  ~  kubectl get po -o wide
+kebe@pc $ kubectl get po -o wide
 NAME                              READY   STATUS    RESTARTS   AGE   IP           NODE              NOMINATED NODE   READINESS GATES
 details-v1-76778d6644-wn4d2       1/1     Running   0          20h   10.244.1.9   ambient-worker2   <none>           <none>
 notsleep-6d6c8669b5-pngxg         1/1     Running   0          20h   10.244.2.5   ambient-worker    <none>           <none>
@@ -134,12 +134,12 @@ default via 192.168.127.2 dev istioout
 10.244.1.2 dev veth5db63c11 scope link
 ```
 
-很清晰了，默认网关被换成了 `192.168.127.2`，且走了 istioout 网卡。
+可以明显看到，默认网关被换成了 `192.168.127.2`，且走了 istioout 网卡。
 
-这里就有问题了，`192.168.127.2` 这个 IP 并不属于节点 IP 、Pod IP、Cluster IP 中的任意一种，istioout 网卡默认应该也不存在，那他们是谁创建的呢？因为流量最终是需要发往 ztunnel 的，我们可以看看 ztunnel 的配置，看看能否找到答案。
+这里就有问题了，`192.168.127.2` 这个 IP 并不属于 NodeIP、PodIP、ClusterIP 中的任意一种，istioout 网卡默认应该也不存在，那这个 IP 是谁创建的呢？因为流量最终需要发往 ztunnel，我们可以查看 ztunnel 的配置，看看能否找到答案。
 
 ```console
-kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system get po ztunnel-vxv4b -o yaml
+kebe@pc $ kubectl -n istio-system get po ztunnel-vxv4b -o yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -170,7 +170,7 @@ spec:
 
 ```
 
-我们可以看到，ztunnel 会负责创建 istioout 网卡，我们可以在节点上看到对应网卡
+如上，ztunnel 会负责创建 istioout 网卡，我们现在去节点上查看对应网卡。
 
 ```console
 root@ambient-worker2:/# ip a
@@ -180,10 +180,10 @@ root@ambient-worker2:/# ip a
        valid_lft forever preferred_lft forever
 ```
 
-那 `192.168.127.2` 这个网关 IP 在哪呢？它被分配在了 ztunnel 里面
+那 `192.168.127.2` 这个网关 IP 在哪呢？它被分配在了 ztunnel 里面。
 
 ```console
-kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system exec -it ztunnel-nptf6 -- ip a
+kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- ip a
 Defaulted container "istio-proxy" out of: istio-proxy, istio-init (init)
 2: eth0@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 46:8a:46:72:1d:3b brd ff:ff:ff:ff:ff:ff link-netnsid 0
@@ -199,12 +199,12 @@ Defaulted container "istio-proxy" out of: istio-proxy, istio-init (init)
        valid_lft forever preferred_lft forever
 ```
 
-这就清楚了，流量会到 ztunnel 里面，但是，此时并没有对流量做任何其它操作，只是简单的路由到了 ztunnel，如何才能让 ztunnel 里面的 Envoy 对流量进行处理呢？
+现在可以看到，流量会到 ztunnel 里面，但此时并没有对流量做任何其它操作，只是简单地路由到了 ztunnel。如何才能让 ztunnel 里面的 Envoy 对流量进行处理呢？
 
 我们继续看一看 ztunnel 的配置，他写了很多 iptables 规则，我们可以进入 ztunnel 看一下具体的规则：
 
 ```console
-kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system exec -it ztunnel-nptf6 -- iptables-save
+kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- iptables-save
 Defaulted container "istio-proxy" out of: istio-proxy, istio-init (init)
 ...
 *mangle
@@ -213,9 +213,9 @@ Defaulted container "istio-proxy" out of: istio-proxy, istio-init (init)
 COMMIT
 ```
 
-清楚了，当流量进入 ztunnel 时，会使用 TPROXY 将流量转入 15001 端口进行处理，此处的 15001 即为 Envoy 实际监听用于处理 Pod 出口流量的端口。关于 TPROXY，大家可以自行学习相关信息。本文不在赘述。
+现在可以看到，当流量进入 ztunnel 时，会使用 TPROXY 将流量转入 15001 端口进行处理，此处的 15001 即为 Envoy 实际监听用于处理 Pod 出口流量的端口。关于 TPROXY，大家可以自行学习相关信息。本文不再赘述。
 
-所以，总结下来，当 Pod 处于 Ambient 模式下，那么他的出口流量路径大致为：
+所以，总结下来，当 Pod 处于 Ambient 模式下，其出口流量路径大致为：
 
 1. 从 Pod 里面的进程发起流量。
 2. 流量流经所在节点网络，经节点的 iptables 进行标记。
@@ -228,7 +228,7 @@ COMMIT
 
 有了上面的经验，我们不难发现，Ambient 模式下，对于流量的拦截主要通过 MARK 路由 + TPROXY 的方式，入口流量应该也差不多。
 
-我们采用最简单的分析方式看一下，分析一下，当节点上的进程，或者其他主机上的程序相应访问当前节点上的 Pod 时，流量会经过主机的路由表，我们查看一下当相应访问 productpage-v1-7c548b785b-w9zl6(10.244.1.7) 时的路由信息：
+我们采用最简单的方式分析一下。当节点上的进程，或者其他主机上的程序相应访问当前节点上的 Pod 时，流量会经过主机的路由表。我们查看一下当响应访问 productpage-v1-7c548b785b-w9zl6(10.244.1.7) 时的路由信息：
 
 ```console
 root@ambient-worker2:/# ip r get 10.244.1.7
@@ -236,12 +236,12 @@ root@ambient-worker2:/# ip r get 10.244.1.7
     cache
 ```
 
-我们可以看到，当访问 10.244.1.7 时，流量会被路由到 `192.168.126.2`，而这条规则正式上面由 istio-cni 添加的。
+我们可以看到，当访问 10.244.1.7 时，流量会被路由到 `192.168.126.2`，而这条规则正是由上面 istio-cni 添加的。
 
-同样的 `192.168.126.2` 这个 IP 属于 ztunnel：
+同样地 `192.168.126.2` 这个 IP 属于 ztunnel：
 
 ```console
-kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system exec -it ztunnel-nptf6 -- ip a
+kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- ip a
 Defaulted container "istio-proxy" out of: istio-proxy, istio-init (init)
 2: eth0@if3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
     link/ether 46:8a:46:72:1d:3b brd ff:ff:ff:ff:ff:ff link-netnsid 0
@@ -260,20 +260,20 @@ Defaulted container "istio-proxy" out of: istio-proxy, istio-init (init)
 按照相同的分析方法，我们看一下 iptables 规则：
 
 ```console
-✘ kebe@Kebe-DaoCloud-PC  ~  kubectl -n istio-system exec -it ztunnel-nptf6 -- iptables-save
+kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- iptables-save
 ...
 -A PREROUTING -i pistioin -p tcp -m tcp --dport 15008 -j TPROXY --on-port 15008 --on-ip 127.0.0.1 --tproxy-mark 0x400/0xfff
 -A PREROUTING -i pistioin -p tcp -j TPROXY --on-port 15006 --on-ip 127.0.0.1 --tproxy-mark 0x400/0xfff
 ...
 ```
 
-我们可以知道，如果我们直接在节点上访问 PodIP+Pod 端口的时候，会被转发到 ztunnel 的 15006 端口，而这，就是 Istio 处理入口流量的端口。
+如果我们直接在节点上访问 PodIP+Pod 端口，流量会被转发到 ztunnel 的 15006 端口，而这就是 Istio 处理入口流量的端口。
 
-至于目标端口为 15008 端口的流量，这是 ztunnel 用来做四层流量隧道的端口。我们后面再详聊。
+至于目标端口为 15008 端口的流量，这是 ztunnel 用来做四层流量隧道的端口。本文暂不细述。
 
 ## 对于 Envoy 自身的流量处理
 
-我们知道，在 Sidecar 模式下，Envoy 和业务容器运行在相同的网络 NS 中，对于业务容器的流量，我们需要全部拦截，以保证对流量的完成掌控，但是在 Ambient 模式下是否需要呢？
+我们知道，在 Sidecar 模式下，Envoy 和业务容器运行在相同的网络 NS 中。对于业务容器的流量，我们需要全部拦截，以保证对流量的完成掌控，但是在 Ambient 模式下是否需要呢？
 
 答案是否定的，因为 Envoy 已经被独立到其它 Pod 中，Envoy 发出的流量是不需要特殊处理的。换言之，对于 ztunnel，我们只需要处理入口流量即可，所以 ztunnel 中的规则看起来还是相对简单。
 
