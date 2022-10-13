@@ -1,0 +1,397 @@
+<!doctype html><html lang=zh class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.87.0"><meta name=ROBOTS content="NOINDEX, NOFOLLOW">
+<link rel="shortcut icon" href=/favicons/favicon.ico>
+<link rel=icon type=image/png href=/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
+<title>深入 Ambient Mesh - 流量路径 | Merbridge</title>
+<meta name=description content="Merbridge 的官网"><meta property="og:title" content="深入 Ambient Mesh - 流量路径">
+<meta property="og:description" content="此篇博客介绍 Ambient Mesh 中数据面的流量路径。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/zh/blog/2022/10/13/ambient-mesh-data-path/"><meta property="article:section" content="blog">
+<meta property="article:published_time" content="2022-10-13T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-10-13T15:23:57+08:00"><meta property="og:site_name" content="Merbridge">
+<meta itemprop=name content="深入 Ambient Mesh - 流量路径">
+<meta itemprop=description content="此篇博客介绍 Ambient Mesh 中数据面的流量路径。"><meta itemprop=datePublished content="2022-10-13T00:00:00+00:00">
+<meta itemprop=dateModified content="2022-10-13T15:23:57+08:00">
+<meta itemprop=wordCount content="1030">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="深入 Ambient Mesh - 流量路径">
+<meta name=twitter:description content="此篇博客介绍 Ambient Mesh 中数据面的流量路径。">
+<link rel=preload href=/scss/main.min.957d988e396d495afa3156d4640b99742d961f39c79e92f8d152969969aa9ece.css as=style>
+<link href=/scss/main.min.957d988e396d495afa3156d4640b99742d961f39c79e92f8d152969969aa9ece.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
+<script src=https://unpkg.com/lunr@2.3.8/lunr.min.js integrity=sha384-vRQ9bDyE0Wnu+lMfm57BlYLO0/XauFuKpVsZPs7KEDwYKktWi5+Kz3MP8++DFlRY crossorigin=anonymous></script>
+</head>
+<body class="td-page td-blog">
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/zh/>
+<span class=navbar-logo><svg id="Graph" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><style>.cls-1{fill:#33de72}.cls-2{fill:#fff}.cls-3{fill:none}</style></defs><g id="Merbridge_-_Graph_-_Color_Light" data-name="Merbridge - Graph - Color Light"><path id="Primary" class="cls-1" d="M440 86.059V454l-48-48V201.941l-44 44V178.059zm-184 184c-34.6-34.6-151.526-151.526-184-184V454l48-48V201.941l136 136 44-44V226.059z"/><path id="Secondary" class="cls-2" d="M212 382l-48 48V245.941l48 48zm0-155.941V48L164 96v82.059zM3e2 48V382l48 48V96z"/><rect id="Frame" class="cls-3" width="512" height="512"/></g></svg></span><span class="text-uppercase font-weight-bold">Merbridge</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/zh/about/><span>关于</span></a>
+</li>
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/zh/docs/><span>文档</span></a>
+</li>
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class="nav-link active" href=/zh/blog/><span class=active>Blog</span></a>
+</li>
+<li class="nav-item dropdown mr-4 d-none d-lg-block">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+中文 Chinese
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/>English</a>
+</div>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block">
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.247fa7c4dacac82dcf578b0ef8b3dfdb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+<div id=td-sidebar-menu class=td-sidebar__inner>
+<form class="td-sidebar__search d-flex align-items-center">
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.247fa7c4dacac82dcf578b0ef8b3dfdb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
+</button>
+</form>
+<nav class="collapse td-sidebar-nav" id=td-section-nav>
+<div class="nav-item dropdown d-block d-lg-none">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+中文 Chinese
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/>English</a>
+</div>
+</div>
+<ul class="td-sidebar-nav__section pr-md-3 ul-0">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog-li>
+<a href=/zh/blog/ title="Merbridge Blog" class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-zhblog><span>Blog</span></a>
+<ul class=ul-1>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog2022-li>
+<a href=/zh/blog/2022/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblog2022><span>2022 年 Blog</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-zhblog20221013ambient-mesh-data-path-li>
+<a href=/zh/blog/2022/10/13/ambient-mesh-data-path/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-zhblog20221013ambient-mesh-data-path><span class=td-sidebar-nav-active-item>深入 Ambient Mesh - 流量路径</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220518cni-mode-li>
+<a href=/zh/blog/2022/05/18/cni-mode/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220518cni-mode><span>Merbridge CNI 模式</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220423merbridge-and-cilium-li>
+<a href=/zh/blog/2022/04/23/merbridge-and-cilium/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220423merbridge-and-cilium><span>Merbridge 和 Cilium</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220329solo-io-livestream-li>
+<a href=/zh/blog/2022/03/29/solo-io-livestream/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220329solo-io-livestream><span>与 Solo.io 一起举办的直播活动</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220301merbridge-introduce-li>
+<a href=/zh/blog/2022/03/01/merbridge-introduce/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220301merbridge-introduce><span>一行代码，使用 eBPF 代替 iptables 加速服务网格</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-zhblogreleases-li>
+<a href=/zh/blog/releases/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblogreleases><span>版本发布</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220720release-070-li>
+<a href=/zh/blog/2022/07/20/release-0.7.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220720release-070><span>发布 0.7.0</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220523release-060-li>
+<a href=/zh/blog/2022/05/23/release-0.6.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220523release-060><span>发布 0.6.0</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220127release-050-li>
+<a href=/zh/blog/2022/01/27/release-0.5.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220127release-050><span>Release 0.5.0</span></a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</aside>
+<aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+<a href=https://github.com/merbridge/merbridge/edit/main/content/zh/blog/2022/ambient-mesh-data-path/index.md target=_blank><i class="fa fa-edit fa-fw"></i> 编辑此页</a>
+<a href="https://github.com/merbridge/merbridge/new/main/content/zh/blog/2022/ambient-mesh-data-path/index.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> 添加子页面</a>
+<a href="https://github.com/merbridge/merbridge/issues/new?title=%e6%b7%b1%e5%85%a5%20Ambient%20Mesh%20-%20%e6%b5%81%e9%87%8f%e8%b7%af%e5%be%84" target=_blank><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
+<a href=https://github.com/merbridge/website/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> 提交项目问题</a>
+<a id=print href=/zh/blog/2022/_print/><i class="fa fa-print fa-fw"></i> 整节打印</a>
+</div>
+<div class=td-toc><nav id=TableOfContents>
+<ul>
+<li><a href=#从发起请求的一刻开始>从发起请求的一刻开始</a></li>
+<li><a href=#出口流量拦截>出口流量拦截</a></li>
+<li><a href=#入口流量拦截>入口流量拦截</a></li>
+<li><a href=#对于-envoy-自身的流量处理>对于 Envoy 自身的流量处理</a></li>
+<li><a href=#未完待续>未完待续…</a></li>
+</ul>
+</nav></div>
+</aside>
+<main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role=main>
+<div class=td-content>
+<h1>深入 Ambient Mesh - 流量路径</h1>
+<div class=lead>此篇博客介绍 Ambient Mesh 中数据面的流量路径。</div>
+<div class="td-byline mb-4">
+By <b>Kebe Liu</b> |
+<time datetime=2022-10-13 class=text-muted>2022.10.13</time>
+</div>
+<header class=article-meta>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 5 分钟 阅读时间</p>
+</header>
+<p>Ambient Mesh 发布已经有一段时间，已经有不少文章讲述了其用法和架构。本文将深入梳理一下，数据面流量在 Ambient 模式下的路径，帮助大家全面的理解 Ambient 数据面的实现方案。</p>
+<p>在阅读本文之前，需要先阅读 <a href=https://istio.io/latest/blog/2022/introducing-ambient-mesh/>Ambient Mesh 介绍</a> 以了解基本的架构，本文不再赘述。</p>
+<blockquote>
+<p>为了方便阅读和同步实践，本文使用的环境按照 <a href=https://istio.io/latest/blog/2022/get-started-ambient/>Ambient 使用</a> 的方式进行部署。</p>
+</blockquote>
+<h2 id=从发起请求的一刻开始>从发起请求的一刻开始</h2>
+<p>为了探究流量路径，首先我们分析同在 Ambient 模式下的两个服务互相访问的情况（仅 L4 模式，不同节点）。</p>
+<p>在 default 命名空间启用 Ambient 模式后，所有的服务都将具备网格治理的能力。</p>
+<p>我们的分析从这条命令开始： <code>kubectl exec deploy/sleep -- curl -s http://productpage:9080/ | head -n1</code></p>
+<p>在 Sidecar 模式下，Istio 通过 iptables 进行流量拦截，当在 sleep 的 Pod 中执行 curl 时，流量会被 iptables 转发到 Sidecar 的 15001 端口进行处理。但是在 Ambient 模式下，在 Pod 中不存在 Sidecar，且开启 Ambient 模式也不需要重启 Pod，那它的请求如何确保被 ztunnel 处理呢？</p>
+<h2 id=出口流量拦截>出口流量拦截</h2>
+<p>要了解出口流量拦截的方案，我们首先可以看一下控制面组件：</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ kubectl -n istio-system get po
+NAME                                   READY   STATUS    RESTARTS   AGE
+istio-cni-node-5rh5z                   1/1     Running   0          20h
+istio-cni-node-qsvsz                   1/1     Running   0          20h
+istio-cni-node-wdffp                   1/1     Running   0          20h
+istio-ingressgateway-5cfcb57bd-kx9hx   1/1     Running   0          20h
+istiod-6b84499b75-ncmn7                1/1     Running   0          20h
+ztunnel-nptf6                          1/1     Running   0          20h
+ztunnel-vxv4b                          1/1     Running   0          20h
+ztunnel-xkz4s                          1/1     Running   0          20h
+</code></pre><p>在 Ambient 模式下 istio-cni 变成了默认组件。我们知道，istio-cni 在 Sidecar 模式下，主要是为了避免使用 istio-init 容器处理 iptables 规则而造成权限泄露等情况推出的 CNI 插件，但是 Ambient 模式下，理论上不需要 Sidecar，为什么还需要 istio-cni 呢？</p>
+<p>我们可以看一下日志：</p>
+<pre><code class=language-console data-lang=console>
+kebe@pc $ kubectl -n istio-system logs istio-cni-node-qsvsz
+...
+2022-10-12T07:34:33.224957Z	info	ambient	Adding route for reviews-v1-6494d87c7b-zrpks/default: [table 100 10.244.1.4/32 via 192.168.126.2 dev istioin src 10.244.1.1]
+2022-10-12T07:34:33.226054Z	info	ambient	Adding pod 'reviews-v2-79857b95b-m4q2g/default' (0ff78312-3a13-4a02-b39d-644bfb91e861) to ipset
+2022-10-12T07:34:33.228305Z	info	ambient	Adding route for reviews-v2-79857b95b-m4q2g/default: [table 100 10.244.1.5/32 via 192.168.126.2 dev istioin src 10.244.1.1]
+2022-10-12T07:34:33.229967Z	info	ambient	Adding pod 'reviews-v3-75f494fccb-92nq5/default' (e41edf7c-a347-45cb-a144-97492faa77bf) to ipset
+2022-10-12T07:34:33.232236Z	info	ambient	Adding route for reviews-v3-75f494fccb-92nq5/default: [table 100 10.244.1.6/32 via 192.168.126.2 dev istioin src 10.244.1.1]
+</code></pre><p>我们可以看到，对于在 Ambient 模式下的 Pod，istio-cni 做了两件事情：</p>
+<ol>
+<li>添加 Pod 到 ipset</li>
+<li>添加了一个路由规则到 table 100（后面介绍用途）</li>
+</ol>
+<p>我们可以在其所在的节点上查看一下 ipset 里面的内容（注意，这里使用 kind 集群，需要用 docker exec 先进入所在主机，后面不再赘述）：</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ docker exec -it ambient-worker2 bash
+root@ambient-worker2:/# ipset list
+Name: ztunnel-pods-ips
+Type: hash:ip
+Revision: 0
+Header: family inet hashsize 1024 maxelem 65536
+Size in memory: 520
+References: 1
+Number of entries: 5
+Members:
+10.244.1.5
+10.244.1.7
+10.244.1.8
+10.244.1.4
+10.244.1.6
+</code></pre><p>我们发现这个 Pod 所在的节点上有一个 ipset，其中保存了很多 IP。这些 IP 是 Pod IP：</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ kubectl get po -o wide
+NAME                              READY   STATUS    RESTARTS   AGE   IP           NODE              NOMINATED NODE   READINESS GATES
+details-v1-76778d6644-wn4d2       1/1     Running   0          20h   10.244.1.9   ambient-worker2   &lt;none&gt;           &lt;none&gt;
+notsleep-6d6c8669b5-pngxg         1/1     Running   0          20h   10.244.2.5   ambient-worker    &lt;none&gt;           &lt;none&gt;
+productpage-v1-7c548b785b-w9zl6   1/1     Running   0          20h   10.244.1.7   ambient-worker2   &lt;none&gt;           &lt;none&gt;
+ratings-v1-85c74b6cb4-57m52       1/1     Running   0          20h   10.244.1.8   ambient-worker2   &lt;none&gt;           &lt;none&gt;
+reviews-v1-6494d87c7b-zrpks       1/1     Running   0          20h   10.244.1.4   ambient-worker2   &lt;none&gt;           &lt;none&gt;
+reviews-v2-79857b95b-m4q2g        1/1     Running   0          20h   10.244.1.5   ambient-worker2   &lt;none&gt;           &lt;none&gt;
+reviews-v3-75f494fccb-92nq5       1/1     Running   0          20h   10.244.1.6   ambient-worker2   &lt;none&gt;           &lt;none&gt;
+sleep-7b85956664-z6qh7            1/1     Running   0          20h   10.244.2.4   ambient-worker    &lt;none&gt;           &lt;none&gt;
+</code></pre><p>所以，这个 ipset 保存了当前节点上所有处于 Ambient 模式下的 Pod IP 列表。</p>
+<p>那这个 ipset 在哪可以用到呢？</p>
+<p>我们可以看一下 iptables 规则，可以发现：</p>
+<pre><code class=language-console data-lang=console>root@ambient-worker2:/# iptables-save
+*mangle
+...
+-A POSTROUTING -j ztunnel-POSTROUTING
+...
+-A ztunnel-PREROUTING -p tcp -m set --match-set ztunnel-pods-ips src -j MARK --set-xmark 0x100/0x100
+</code></pre><p>通过这个我们知道，当节点上，处于 Ambient 模式下的 Pod（<code>ztunnel-pods-ips</code> ipset 中）发起请求时，其连接会被打上 <code>0x100/0x100</code> 的标记。</p>
+<p>一般在这种情况下，会和路由相关，我们看一下路由规则：</p>
+<pre><code class=language-console data-lang=console>root@ambient-worker2:/# ip rule
+0:	from all lookup local
+100:	from all fwmark 0x200/0x200 goto 32766
+101:	from all fwmark 0x100/0x100 lookup 101
+102:	from all fwmark 0x40/0x40 lookup 102
+103:	from all lookup 100
+32766:	from all lookup main
+32767:	from all lookup default
+</code></pre><p>可以看到，被标记了 <code>0x100/0x100</code> 的流量会走 table 101 的路由表，我们可以查看路由表：</p>
+<pre><code class=language-console data-lang=console>root@ambient-worker2:/# ip r show table 101
+default via 192.168.127.2 dev istioout
+10.244.1.2 dev veth5db63c11 scope link
+</code></pre><p>可以明显看到，默认网关被换成了 <code>192.168.127.2</code>，且走了 istioout 网卡。</p>
+<p>这里就有问题了，<code>192.168.127.2</code> 这个 IP 并不属于 NodeIP、PodIP、ClusterIP 中的任意一种，istioout 网卡默认应该也不存在，那这个 IP 是谁创建的呢？因为流量最终需要发往 ztunnel，我们可以查看 ztunnel 的配置，看看能否找到答案。</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ kubectl -n istio-system get po ztunnel-vxv4b -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  ...
+  name: ztunnel-vxv4b
+  namespace: istio-system
+	...
+spec:
+  ...
+  initContainers:
+  - command:
+			...
+      OUTBOUND_TUN=istioout
+			...
+      OUTBOUND_TUN_IP=192.168.127.1
+      ZTUNNEL_OUTBOUND_TUN_IP=192.168.127.2
+
+      ip link add name p$INBOUND_TUN type geneve id 1000 remote $HOST_IP
+      ip addr add $ZTUNNEL_INBOUND_TUN_IP/$TUN_PREFIX dev p$INBOUND_TUN
+
+      ip link add name p$OUTBOUND_TUN type geneve id 1001 remote $HOST_IP
+      ip addr add $ZTUNNEL_OUTBOUND_TUN_IP/$TUN_PREFIX dev p$OUTBOUND_TUN
+
+      ip link set p$INBOUND_TUN up
+      ip link set p$OUTBOUND_TUN up
+
+      ...
+
+</code></pre><p>如上，ztunnel 会负责创建 istioout 网卡，我们现在去节点上查看对应网卡。</p>
+<pre><code class=language-console data-lang=console>root@ambient-worker2:/# ip a
+11: istioout: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1450 qdisc noqueue state UNKNOWN group default
+    link/ether 0a:ea:4e:e0:8d:26 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.127.1/30 brd 192.168.127.3 scope global istioout
+       valid_lft forever preferred_lft forever
+</code></pre><p>那 <code>192.168.127.2</code> 这个网关 IP 在哪呢？它被分配在了 ztunnel 里面。</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- ip a
+Defaulted container &quot;istio-proxy&quot; out of: istio-proxy, istio-init (init)
+2: eth0@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default
+    link/ether 46:8a:46:72:1d:3b brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.244.2.3/24 brd 10.244.2.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::448a:46ff:fe72:1d3b/64 scope link
+       valid_lft forever preferred_lft forever
+4: pistioout: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1450 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether c2:d0:18:20:3b:97 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.127.2/30 scope global pistioout
+       valid_lft forever preferred_lft forever
+    inet6 fe80::c0d0:18ff:fe20:3b97/64 scope link
+       valid_lft forever preferred_lft forever
+</code></pre><p>现在可以看到，流量会到 ztunnel 里面，但此时并没有对流量做任何其它操作，只是简单地路由到了 ztunnel。如何才能让 ztunnel 里面的 Envoy 对流量进行处理呢？</p>
+<p>我们继续看一看 ztunnel 的配置，他写了很多 iptables 规则，我们可以进入 ztunnel 看一下具体的规则：</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- iptables-save
+Defaulted container &quot;istio-proxy&quot; out of: istio-proxy, istio-init (init)
+...
+*mangle
+-A PREROUTING -i pistioout -p tcp -j TPROXY --on-port 15001 --on-ip 127.0.0.1 --tproxy-mark 0x400/0xfff
+...
+COMMIT
+</code></pre><p>现在可以看到，当流量进入 ztunnel 时，会使用 TPROXY 将流量转入 15001 端口进行处理，此处的 15001 即为 Envoy 实际监听用于处理 Pod 出口流量的端口。关于 TPROXY，大家可以自行学习相关信息。本文不再赘述。</p>
+<p>所以，总结下来，当 Pod 处于 Ambient 模式下，其出口流量路径大致为：</p>
+<ol>
+<li>从 Pod 里面的进程发起流量。</li>
+<li>流量流经所在节点网络，经节点的 iptables 进行标记。</li>
+<li>节点上的路由表会将流量转发到当前节点的 ztunnel Pod。</li>
+<li>流量到达 ztunnel 时，会经过 iptables 进行 TPROXY 透明代理，将流量交给当前 Pod 中的 Envoy 的 15001 端口进行处理。</li>
+</ol>
+<p>由上面我们可以看出，在 Ambient 模式下，对于 Pod 出口流量的处理相对复杂。路径也比较长，不像 Sidecar 模式，直接在 Pod 内部完成流量转发。</p>
+<h2 id=入口流量拦截>入口流量拦截</h2>
+<p>有了上面的经验，我们不难发现，Ambient 模式下，对于流量的拦截主要通过 MARK 路由 + TPROXY 的方式，入口流量应该也差不多。</p>
+<p>我们采用最简单的方式分析一下。当节点上的进程，或者其他主机上的程序相应访问当前节点上的 Pod 时，流量会经过主机的路由表。我们查看一下当响应访问 productpage-v1-7c548b785b-w9zl6(10.244.1.7) 时的路由信息：</p>
+<pre><code class=language-console data-lang=console>root@ambient-worker2:/# ip r get 10.244.1.7
+10.244.1.7 via 192.168.126.2 dev istioin table 100 src 10.244.1.1 uid 0
+    cache
+</code></pre><p>我们可以看到，当访问 10.244.1.7 时，流量会被路由到 <code>192.168.126.2</code>，而这条规则正是由上面 istio-cni 添加的。</p>
+<p>同样地 <code>192.168.126.2</code> 这个 IP 属于 ztunnel：</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- ip a
+Defaulted container &quot;istio-proxy&quot; out of: istio-proxy, istio-init (init)
+2: eth0@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default
+    link/ether 46:8a:46:72:1d:3b brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.244.2.3/24 brd 10.244.2.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::448a:46ff:fe72:1d3b/64 scope link
+       valid_lft forever preferred_lft forever
+3: pistioin: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1450 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether 7e:b2:e6:f9:a4:92 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.126.2/30 scope global pistioin
+       valid_lft forever preferred_lft forever
+    inet6 fe80::7cb2:e6ff:fef9:a492/64 scope link
+       valid_lft forever preferred_lft forever
+</code></pre><p>按照相同的分析方法，我们看一下 iptables 规则：</p>
+<pre><code class=language-console data-lang=console>kebe@pc $ kubectl -n istio-system exec -it ztunnel-nptf6 -- iptables-save
+...
+-A PREROUTING -i pistioin -p tcp -m tcp --dport 15008 -j TPROXY --on-port 15008 --on-ip 127.0.0.1 --tproxy-mark 0x400/0xfff
+-A PREROUTING -i pistioin -p tcp -j TPROXY --on-port 15006 --on-ip 127.0.0.1 --tproxy-mark 0x400/0xfff
+...
+</code></pre><p>如果我们直接在节点上访问 PodIP+Pod 端口，流量会被转发到 ztunnel 的 15006 端口，而这就是 Istio 处理入口流量的端口。</p>
+<p>至于目标端口为 15008 端口的流量，这是 ztunnel 用来做四层流量隧道的端口。本文暂不细述。</p>
+<h2 id=对于-envoy-自身的流量处理>对于 Envoy 自身的流量处理</h2>
+<p>我们知道，在 Sidecar 模式下，Envoy 和业务容器运行在相同的网络 NS 中。对于业务容器的流量，我们需要全部拦截，以保证对流量的完成掌控，但是在 Ambient 模式下是否需要呢？</p>
+<p>答案是否定的，因为 Envoy 已经被独立到其它 Pod 中，Envoy 发出的流量是不需要特殊处理的。换言之，对于 ztunnel，我们只需要处理入口流量即可，所以 ztunnel 中的规则看起来还是相对简单。</p>
+<h2 id=未完待续>未完待续…</h2>
+<p>上面我们主要分析了在 Ambient 模式下对于 Pod 流量拦截的方案，还没有涉及到七成流量的处理，以及 ztunnel 实现的具体原理，后续我将分析流量在 ztunnel 和 waypoint proxy 中详细的处理路径。</p>
+<ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
+<li>
+<a href=/zh/blog/2022/05/18/cni-mode/ aria-label="上一页 - Merbridge CNI 模式" class="btn btn-primary"><span class=mr-1>←</span> 上一页</a>
+</li>
+<a class="btn btn-primary disabled">下一页 <span class=ml-1>→</span></a>
+</li>
+</ul>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+<ul class="list-inline mb-0">
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="User mailing list" aria-label="User mailing list">
+<a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/merbridge aria-label="User mailing list">
+<i class="fa fa-envelope"></i>
+</a>
+</li>
+</ul>
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+<ul class="list-inline mb-0">
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub>
+<a class=text-white target=_blank rel=noopener href=https://github.com/merbridge/merbridge aria-label=GitHub>
+<i class="fab fa-github"></i>
+</a>
+</li>
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=Slack aria-label=Slack>
+<a class=text-white target=_blank rel=noopener href=https://join.slack.com/t/merbridge/shared_invite/zt-11uc3z0w7-DMyv42eQ6s5YUxO5mZ5hwQ aria-label=Slack>
+<i class="fab fa-slack"></i>
+</a>
+</li>
+<li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Developer mailing list" aria-label="Developer mailing list">
+<a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/merbridge aria-label="Developer mailing list">
+<i class="fa fa-envelope"></i>
+</a>
+</li>
+</ul>
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+<small class=text-white>&copy; 2022 The Merbridge Authors 版权所有</small>
+<p class=mt-2><a href=/zh/about/>关于 Merbridge</a></p>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js integrity=sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF crossorigin=anonymous></script>
+<script src=/js/main.min.3b172c13b62c2bea8b1c9d2599cddc8cf89718a92d792c680871c81ba43d8c85.js integrity="sha256-OxcsE7YsK+qLHJ0lmc3cjPiXGKkteSxoCHHIG6Q9jIU=" crossorigin=anonymous></script>
+</body>
+</html>
