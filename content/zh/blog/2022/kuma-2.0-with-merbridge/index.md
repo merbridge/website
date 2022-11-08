@@ -22,4 +22,4 @@ Kuma 从 6 月开始，就在着手于集成 Merbridge 项目，试图使用社�
 
 得益于 Merbridge 比较清晰的架构设计，Kuma 在很短的时间内就完成了对 Kuma 的兼容，非常感谢 Kuma 社区能够为 Merbridge 贡献如此重要的能力，帮助社区共同成长！
 
-截止目前，Merbridge 已经支持了 Istio、Linkerd2 和 Kuma 等主流的服务网格，也正在做很多事情，比如 v4/v6 双栈支持、Ambient Mesh 支持、更低的内核版本要求等。希望 Merbridge 能够被越来越广泛的应用，并且能够真实的帮助到大家。
+截止目前，Merbridge 已经支持了 Istio、Linkerd2 和 Kuma 等主流的服务网格，也计划了很多新的特性，比如 IPv4/IPv6 双栈支持、Ambient Mesh 支持、更低的内核版本要求等。希望 Merbridge 能够被越来越广泛的应用，并且能够真实地帮助到大家。
