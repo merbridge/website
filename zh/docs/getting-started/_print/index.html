@@ -58,7 +58,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.40d42866631f8d2d4c12c1106c766e9e.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.57cd2ed31ceb97a0d5ac139e2393e5ed.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -82,7 +82,6 @@
 <h1 class=title>快速开始</h1>
 <div class=lead>本文将帮助您快速开始使用 Merbridge</div>
 <ul>
-<li>1: <a href=#pg-811eabe57877013e05aad1da682732d4>安装错误排查</a></li>
 </ul>
 <div class=content>
 <h2 id=prerequisites>先决条件</h2>
@@ -113,10 +112,6 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl <span style=color:#204a87>exec</span> <span style=color:#204a87;font-weight:700>$(</span>kubectl get po -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>sleep -o<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>jsonpath</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#39;{..metadata.name}&#39;</span><span style=color:#204a87;font-weight:700>)</span> -c sleep -- curl -s -v helloworld:5000/hello
 </code></pre></div><p>如果在结果中看到类似 <code>* Connected to helloworld (127.128.0.1) port 5000 (#0)</code> 的字样，表明 Merbridge 已经成功使用 eBPF 代替 iptables 进行流量转发。</p>
 </div>
-</div>
-<div class=td-content style=page-break-before:always>
-<h1 id=pg-811eabe57877013e05aad1da682732d4>1 - 安装错误排查</h1>
-<div class=lead>本文将帮助您进行 Merbridge 的错误排查和诊断</div>
 </div>
 </main>
 </div>
