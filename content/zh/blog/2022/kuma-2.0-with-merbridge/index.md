@@ -16,7 +16,7 @@ author: Kebe Liu
 
 > We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited that we have been able to contribute back to that library and become co-maintainers. We look forward to working more with the Merbridge team as we continue to explore different areas to include eBPF functionality in Kuma.
 
-我们非常高兴，能够作为一个开源项目，为 Kuma 提供如此令人兴奋的能力，这意味着，基本不需要任何开销，即可降低网格应用通讯延迟！
+我们非常高兴 Merbridge 作为一个开源项目，能够为 Kuma 提供如此令人兴奋的能力。这意味着，基本不需要任何开销，即可降低网格应用通讯延迟！
 
 Kuma 从 6 月开始，就在着手于集成 Merbridge 项目，试图使用社区现有的能力来为 Kuma 提供加速能力。
 
