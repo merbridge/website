@@ -18,7 +18,7 @@ author: Kebe Liu
 
 我们非常高兴 Merbridge 作为一个开源项目，能够为 Kuma 提供如此令人兴奋的能力。这意味着，基本不需要任何开销，即可降低网格应用通讯延迟！
 
-Kuma 从 6 月开始，就在着手于集成 Merbridge 项目，试图使用社区现有的能力来为 Kuma 提供加速能力。
+Kuma 从 6 月开始，就在着手于集成 Merbridge 项目，尝试使用社区现有的能力来为 Kuma 提供加速能力。
 
 得益于 Merbridge 比较清晰的架构设计，Kuma 在很短的时间内就完成了对 Merbridge 的兼容。非常感谢 Kuma 社区能够为 Merbridge 贡献如此重要的兼容能力，这有助于双方社区共同成长！
 
