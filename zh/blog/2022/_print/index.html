@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.57cd2ed31ceb97a0d5ac139e2393e5ed.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.d4ad5be248f41d95a93b36adc6bdeb7b.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -78,6 +78,7 @@
 </div>
 <h1 class=title>2022 年 Blog</h1>
 <ul>
+<li><a href=#pg-32ef913748e8f122396febed28845701>Kuma 2.0 集成 Merbridge 降低 12% 的网络延迟</a></li>
 <li><a href=#pg-1ca19c17b948e8cd4d6c551fe443f48e>深入 Ambient Mesh - 流量路径</a></li>
 <li><a href=#pg-ddae09d9f86ef7a0b6eecd3628b18eb5>Merbridge CNI 模式</a></li>
 <li><a href=#pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge 和 Cilium</a></li>
@@ -88,6 +89,24 @@
 </div>
 </div>
 <div class=td-content>
+<h1 id=pg-32ef913748e8f122396febed28845701>Kuma 2.0 集成 Merbridge 降低 12% 的网络延迟</h1>
+<div class="td-byline mb-4">
+By <b>Kebe Liu</b> |
+<time datetime=2022-11-08 class=text-muted>2022.11.08</time>
+</div>
+<p>最近 Kuma 正式<a href=https://kuma.io/blog/2022/kuma-2-0-0/>发布了 2.0.0 版本</a>，宣布了几项重大功能，其中第一条就是 Kuma 使用 eBPF 来加速应用访问。</p>
+<p><img src=./imgs/kuma-2.0-release-preview.png alt="Kuma 2.0 发布预览"></p>
+<p>根据 Kuma 官方的描述，Kuma 正是使用了 Merbridge，来实现 eBPF 的能力。</p>
+<p><img src=./imgs/kuma-2.0-ebpf-vs-iptables.png alt="Kuma 2.0 eBPF 与 iptables 性能对比"></p>
+<blockquote>
+<p>We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited that we have been able to contribute back to that library and become co-maintainers. We look forward to working more with the Merbridge team as we continue to explore different areas to include eBPF functionality in Kuma.</p>
+</blockquote>
+<p>我们非常高兴 Merbridge 作为一个开源项目，能够为 Kuma 提供如此令人兴奋的能力。这意味着，基本不需要任何开销，即可降低网格应用通讯延迟！</p>
+<p>Kuma 从 6 月开始，就在着手于集成 Merbridge 项目，尝试使用社区现有的能力来为 Kuma 提供加速能力。</p>
+<p>得益于 Merbridge 比较清晰的架构设计，Kuma 在很短的时间内就完成了对 Merbridge 的兼容。非常感谢 Kuma 社区能够为 Merbridge 贡献如此重要的兼容能力，这有助于双方社区共同成长！</p>
+<p>截止目前，Merbridge 已经支持了 Istio、Linkerd2 和 Kuma 等主流的服务网格，也计划了很多新的特性，比如 IPv4/IPv6 双栈支持、Ambient Mesh 支持、更低的内核版本要求等。希望 Merbridge 能够被越来越广泛的应用，并且能够真实地帮助到大家。</p>
+</div>
+<div class=td-content style=page-break-before:always>
 <h1 id=pg-1ca19c17b948e8cd4d6c551fe443f48e>深入 Ambient Mesh - 流量路径</h1>
 <div class=lead>此篇博客介绍 Ambient Mesh 中数据面的流量路径。</div>
 <div class="td-byline mb-4">
