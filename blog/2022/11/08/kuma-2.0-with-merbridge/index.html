@@ -12,23 +12,29 @@
 <link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
-<title>Release 0.5.0 | Merbridge</title>
-<meta name=description content="Merbridge website"><meta property="og:title" content="Release 0.5.0">
-<meta property="og:description" content="What is new in Version 0.5.0?
-">
+<title>Merbridge helps Kuma reduce network latency by 12% | Merbridge</title>
+<meta name=description content="Merbridge website"><meta property="og:title" content="Merbridge helps Kuma reduce network latency by 12%">
+<meta property="og:description" content="Recently, Kuma announced a major release of v2.0 with several new major features. A notable feature is that Kuma is using eBPF to improve the traffic flow.
+Based on the official release notes and blogs, Kuma implements the eBPF capabilities by integrating with Merbridge.
+A quote from Kuma 2.0 release blog:
+ We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited that we have been able to contribute back to that library and become co-maintainers.">
 <meta property="og:type" content="article">
-<meta property="og:url" content="/blog/2022/03/30/release-0.5.0/"><meta property="article:section" content="blog">
-<meta property="article:published_time" content="2022-03-30T00:00:00+00:00">
-<meta property="article:modified_time" content="2022-04-01T16:58:05+08:00"><meta property="og:site_name" content="Merbridge">
-<meta itemprop=name content="Release 0.5.0">
-<meta itemprop=description content="What is new in Version 0.5.0?
-"><meta itemprop=datePublished content="2022-03-30T00:00:00+00:00">
-<meta itemprop=dateModified content="2022-04-01T16:58:05+08:00">
-<meta itemprop=wordCount content="34">
+<meta property="og:url" content="/blog/2022/11/08/kuma-2.0-with-merbridge/"><meta property="article:section" content="blog">
+<meta property="article:published_time" content="2022-11-08T00:00:00+00:00">
+<meta property="article:modified_time" content="2022-11-11T13:57:39+08:00"><meta property="og:site_name" content="Merbridge">
+<meta itemprop=name content="Merbridge helps Kuma reduce network latency by 12%">
+<meta itemprop=description content="Recently, Kuma announced a major release of v2.0 with several new major features. A notable feature is that Kuma is using eBPF to improve the traffic flow.
+Based on the official release notes and blogs, Kuma implements the eBPF capabilities by integrating with Merbridge.
+A quote from Kuma 2.0 release blog:
+ We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited that we have been able to contribute back to that library and become co-maintainers."><meta itemprop=datePublished content="2022-11-08T00:00:00+00:00">
+<meta itemprop=dateModified content="2022-11-11T13:57:39+08:00">
+<meta itemprop=wordCount content="276">
 <meta itemprop=keywords content><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Release 0.5.0">
-<meta name=twitter:description content="What is new in Version 0.5.0?
-">
+<meta name=twitter:title content="Merbridge helps Kuma reduce network latency by 12%">
+<meta name=twitter:description content="Recently, Kuma announced a major release of v2.0 with several new major features. A notable feature is that Kuma is using eBPF to improve the traffic flow.
+Based on the official release notes and blogs, Kuma implements the eBPF capabilities by integrating with Merbridge.
+A quote from Kuma 2.0 release blog:
+ We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited that we have been able to contribute back to that library and become co-maintainers.">
 <link rel=preload href=/scss/main.min.957d988e396d495afa3156d4640b99742d961f39c79e92f8d152969969aa9ece.css as=style>
 <link href=/scss/main.min.957d988e396d495afa3156d4640b99742d961f39c79e92f8d152969969aa9ece.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
@@ -56,7 +62,7 @@
 English
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/zh/blog/2022/01/27/release-0.5.0/>中文 Chinese</a>
+<a class=dropdown-item href=/zh/blog/2022/11/08/kuma-2.0-with-merbridge/>中文 Chinese</a>
 </div>
 </li>
 </ul>
@@ -82,18 +88,18 @@ English
 English
 </a>
 <div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
-<a class=dropdown-item href=/zh/blog/2022/01/27/release-0.5.0/>中文 Chinese</a>
+<a class=dropdown-item href=/zh/blog/2022/11/08/kuma-2.0-with-merbridge/>中文 Chinese</a>
 </div>
 </div>
 <ul class="td-sidebar-nav__section pr-md-3 ul-0">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-blog-li>
 <a href=/blog/ title="Merbridge Blog" class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-blog><span>Blog</span></a>
 <ul class=ul-1>
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-blog2022-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-blog2022-li>
 <a href=/blog/2022/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-blog2022><span>Blogs of 2022</span></a>
 <ul class="ul-2 foldable">
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20221108kuma-20-with-merbridge-li>
-<a href=/blog/2022/11/08/kuma-2.0-with-merbridge/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20221108kuma-20-with-merbridge><span>Merbridge helps Kuma reduce network latency by 12%</span></a>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-blog20221108kuma-20-with-merbridge-li>
+<a href=/blog/2022/11/08/kuma-2.0-with-merbridge/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-blog20221108kuma-20-with-merbridge><span class=td-sidebar-nav-active-item>Merbridge helps Kuma reduce network latency by 12%</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20221013ambient-mesh-data-path-li>
 <a href=/blog/2022/10/13/ambient-mesh-data-path/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20221013ambient-mesh-data-path><span>Deep Dive into Ambient Mesh - Traffic Path</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20220518cni-mode-li>
@@ -106,15 +112,15 @@ English
 <a href=/blog/2022/03/01/merbridge-introduce/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20220301merbridge-introduce><span>Merbridge - Accelerate your mesh with eBPF</span></a>
 </li>
 </ul>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-blogreleases-li>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-blogreleases-li>
 <a href=/blog/releases/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-blogreleases><span>Version Release</span></a>
 <ul class="ul-2 foldable">
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20220720release-070-li>
 <a href=/blog/2022/07/20/release-0.7.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20220720release-070><span>Release 0.7.0</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20220523release-060-li>
 <a href=/blog/2022/05/23/release-0.6.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20220523release-060><span>Release 0.6.0</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-blog20220330release-050-li>
-<a href=/blog/2022/03/30/release-0.5.0/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-blog20220330release-050><span class=td-sidebar-nav-active-item>Release 0.5.0</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-blog20220330release-050-li>
+<a href=/blog/2022/03/30/release-0.5.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-blog20220330release-050><span>Release 0.5.0</span></a>
 </li>
 </ul>
 </li>
@@ -126,38 +132,49 @@ English
 </aside>
 <aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
 <div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
-<a href=https://github.com/merbridge/merbridge/edit/main/content/en/blog/releases/release-0.5.0.md target=_blank><i class="fa fa-edit fa-fw"></i> Edit this page</a>
-<a href="https://github.com/merbridge/merbridge/new/main/content/en/blog/releases/release-0.5.0.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> Create child page</a>
-<a href="https://github.com/merbridge/merbridge/issues/new?title=Release%200.5.0" target=_blank><i class="fab fa-github fa-fw"></i> Create documentation issue</a>
+<a href=https://github.com/merbridge/merbridge/edit/main/content/en/blog/2022/kuma-2.0-with-merbridge/index.md target=_blank><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/merbridge/merbridge/new/main/content/en/blog/2022/kuma-2.0-with-merbridge/index.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> Create child page</a>
+<a href="https://github.com/merbridge/merbridge/issues/new?title=Merbridge%20helps%20Kuma%20reduce%20network%20latency%20by%2012%25" target=_blank><i class="fab fa-github fa-fw"></i> Create documentation issue</a>
 <a href=https://github.com/merbridge/website/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
-<a id=print href=/blog/releases/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
+<a id=print href=/blog/2022/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
 </div>
 </aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role=main>
 <div class=td-content>
-<h1>Release 0.5.0</h1>
-<div class=lead>What is new in Version 0.5.0?</div>
+<h1>Merbridge helps Kuma reduce network latency by 12%</h1>
 <div class="td-byline mb-4">
-<time datetime=2022-03-30 class=text-muted>Wednesday, March 30, 2022</time>
+By <b>Kebe Liu</b> |
+<time datetime=2022-11-08 class=text-muted>Tuesday, November 08, 2022</time>
 </div>
 <header class=article-meta>
-<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 1 minute read</p>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 2 minute read</p>
 </header>
-<h2 id=added>Added</h2>
-<ol>
-<li>Support passive sockops. (<a href=https://github.com/merbridge/merbridge/pull/77>#77</a>) <a href=https://github.com/kebe7jun>@kebe7jun</a> .</li>
-<li>Use ingress path for message redirection and forwarding. (<a href=https://github.com/merbridge/merbridge/pull/82>#82</a>) <a href=https://github.com/dddddai>@dddddai</a> .</li>
-<li>Support helm-based deployment of Merbridge (<a href=https://github.com/merbridge/merbridge/pull/65>#65</a>) <a href=https://github.com/Xunzhuo>@Xunzhuo</a> .</li>
-</ol>
-<h2 id=fixed>Fixed</h2>
-<ol>
-<li>Fix the key size of <code>cookie_original_dst</code>(<a href=https://github.com/merbridge/merbridge/pull/75>#75</a>) <a href=https://github.com/dddddai>@dddddai</a>.</li>
-</ol>
+<p>Recently, Kuma announced a major release of <a href=https://kuma.io/blog/2022/kuma-2-0-0/>v2.0</a> with several new major features.
+A notable feature is that Kuma is using eBPF to improve the traffic flow.</p>
+<p><img src=./imgs/kuma-2.0-release-preview.png alt="Kuma 2.0 release preview"></p>
+<p>Based on the official release notes and blogs, Kuma implements the eBPF capabilities by integrating with Merbridge.</p>
+<p><img src=./imgs/kuma-2.0-ebpf-vs-iptables.png alt="Performance comparison between eBPF and iptables for Kuma 2.0"></p>
+<p>A quote from <a href=https://kuma.io/blog/2022/kuma-2-0-0/>Kuma 2.0 release blog</a>:</p>
+<blockquote>
+<p>We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited
+that we have been able to contribute back to that library and become co-maintainers. We look forward to working more
+with the Merbridge team as we continue to explore different areas to include eBPF functionality in Kuma.</p>
+</blockquote>
+<p>As an open source project, we are very excited to see that Merbridge brings such capabitilities to Kuma.
+This case proves that traffic latency can be reduced without any extra overhead if you use Merbridge in a service mesh.</p>
+<p>Since June this year, Kuma developers have been working on integrating with Merbridge, trying to get the eBPF-based acceleration capabilities.</p>
+<p>Thanks to the clear architecture of Merbridge, Kuma is smoothly adapted with Merbridge in days.
+A big thanks to the Kuma community for contributing such an important compatibility capability to Merbridge, which helps both communities grow together!</p>
+<p>So far, Merbridge has the capabilities to support popular service mesh products like Istio, Linkerd2, and Kuma,
+and also has a clear plan to develop new features to support IPv4/IPv6 dual-stack, ambient mesh, and earlier versions of kernel.
+It is exciting to see that Merbridge gets used more widely.
+We really hope the project can help you land your project with eBPF technologies.
+We are looking forward to receiving more comments, and having more developers get involved.</p>
 <ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
 <li>
-<a class="btn btn-primary disabled"><span class=mr-1>←</span> Previous</a>
+<a href=/blog/2022/10/13/ambient-mesh-data-path/ aria-label="Previous - Deep Dive into Ambient Mesh - Traffic Path" class="btn btn-primary"><span class=mr-1>←</span> Previous</a>
 </li>
-<a href=/blog/2022/05/23/release-0.6.0/ aria-label="Next - Release 0.6.0" class="btn btn-primary">Next <span class=ml-1>→</span></a>
+<a class="btn btn-primary disabled">Next <span class=ml-1>→</span></a>
 </li>
 </ul>
 </div>

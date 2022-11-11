@@ -55,7 +55,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.00a50030e6c242b73d3cdfdbd352cf64.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.169d37e992c4e5fd0f4b1cee431047b8.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -80,6 +80,7 @@ This the multi-page printable view of this section.
 <ul>
 <li><a href=#pg-ea4e888c31a16f912d612ee4ba1570cb>Blogs of 2022</a></li>
 <ul>
+<li><a href=#pg-32ef913748e8f122396febed28845701>Merbridge helps Kuma reduce network latency by 12%</a></li>
 <li><a href=#pg-1ca19c17b948e8cd4d6c551fe443f48e>Deep Dive into Ambient Mesh - Traffic Path</a></li>
 <li><a href=#pg-ddae09d9f86ef7a0b6eecd3628b18eb5>Merbridge CNI Mode</a></li>
 <li><a href=#pg-f8bd1de928cfdde2faaf3cb4d5cf2dfd>Merbridge and Cilium</a></li>
@@ -102,6 +103,34 @@ This the multi-page printable view of this section.
 </div>
 </div>
 <div class=td-content>
+<h1 id=pg-32ef913748e8f122396febed28845701>Merbridge helps Kuma reduce network latency by 12%</h1>
+<div class="td-byline mb-4">
+By <b>Kebe Liu</b> |
+<time datetime=2022-11-08 class=text-muted>Tuesday, November 08, 2022</time>
+</div>
+<p>Recently, Kuma announced a major release of <a href=https://kuma.io/blog/2022/kuma-2-0-0/>v2.0</a> with several new major features.
+A notable feature is that Kuma is using eBPF to improve the traffic flow.</p>
+<p><img src=./imgs/kuma-2.0-release-preview.png alt="Kuma 2.0 release preview"></p>
+<p>Based on the official release notes and blogs, Kuma implements the eBPF capabilities by integrating with Merbridge.</p>
+<p><img src=./imgs/kuma-2.0-ebpf-vs-iptables.png alt="Performance comparison between eBPF and iptables for Kuma 2.0"></p>
+<p>A quote from <a href=https://kuma.io/blog/2022/kuma-2-0-0/>Kuma 2.0 release blog</a>:</p>
+<blockquote>
+<p>We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited
+that we have been able to contribute back to that library and become co-maintainers. We look forward to working more
+with the Merbridge team as we continue to explore different areas to include eBPF functionality in Kuma.</p>
+</blockquote>
+<p>As an open source project, we are very excited to see that Merbridge brings such capabitilities to Kuma.
+This case proves that traffic latency can be reduced without any extra overhead if you use Merbridge in a service mesh.</p>
+<p>Since June this year, Kuma developers have been working on integrating with Merbridge, trying to get the eBPF-based acceleration capabilities.</p>
+<p>Thanks to the clear architecture of Merbridge, Kuma is smoothly adapted with Merbridge in days.
+A big thanks to the Kuma community for contributing such an important compatibility capability to Merbridge, which helps both communities grow together!</p>
+<p>So far, Merbridge has the capabilities to support popular service mesh products like Istio, Linkerd2, and Kuma,
+and also has a clear plan to develop new features to support IPv4/IPv6 dual-stack, ambient mesh, and earlier versions of kernel.
+It is exciting to see that Merbridge gets used more widely.
+We really hope the project can help you land your project with eBPF technologies.
+We are looking forward to receiving more comments, and having more developers get involved.</p>
+</div>
+<div class=td-content style=page-break-before:always>
 <h1 id=pg-1ca19c17b948e8cd4d6c551fe443f48e>Deep Dive into Ambient Mesh - Traffic Path</h1>
 <div class=lead>This blog analyzes the traffic path on data plane in the ambient mesh.</div>
 <div class="td-byline mb-4">

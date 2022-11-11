@@ -1,4 +1,25 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Deep Dive into Ambient Mesh - Traffic Path</title><link>/blog/2022/10/13/ambient-mesh-data-path/</link><pubDate>Thu, 13 Oct 2022 00:00:00 +0000</pubDate><guid>/blog/2022/10/13/ambient-mesh-data-path/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Merbridge helps Kuma reduce network latency by 12%</title><link>/blog/2022/11/08/kuma-2.0-with-merbridge/</link><pubDate>Tue, 08 Nov 2022 00:00:00 +0000</pubDate><guid>/blog/2022/11/08/kuma-2.0-with-merbridge/</guid><description>
+&lt;p>Recently, Kuma announced a major release of &lt;a href="https://kuma.io/blog/2022/kuma-2-0-0/">v2.0&lt;/a> with several new major features.
+A notable feature is that Kuma is using eBPF to improve the traffic flow.&lt;/p>
+&lt;p>&lt;img src="./imgs/kuma-2.0-release-preview.png" alt="Kuma 2.0 release preview">&lt;/p>
+&lt;p>Based on the official release notes and blogs, Kuma implements the eBPF capabilities by integrating with Merbridge.&lt;/p>
+&lt;p>&lt;img src="./imgs/kuma-2.0-ebpf-vs-iptables.png" alt="Performance comparison between eBPF and iptables for Kuma 2.0">&lt;/p>
+&lt;p>A quote from &lt;a href="https://kuma.io/blog/2022/kuma-2-0-0/">Kuma 2.0 release blog&lt;/a>:&lt;/p>
+&lt;blockquote>
+&lt;p>We are utilizing the Merbridge OSS project within our eBPF capabilities and are very excited
+that we have been able to contribute back to that library and become co-maintainers. We look forward to working more
+with the Merbridge team as we continue to explore different areas to include eBPF functionality in Kuma.&lt;/p>
+&lt;/blockquote>
+&lt;p>As an open source project, we are very excited to see that Merbridge brings such capabitilities to Kuma.
+This case proves that traffic latency can be reduced without any extra overhead if you use Merbridge in a service mesh.&lt;/p>
+&lt;p>Since June this year, Kuma developers have been working on integrating with Merbridge, trying to get the eBPF-based acceleration capabilities.&lt;/p>
+&lt;p>Thanks to the clear architecture of Merbridge, Kuma is smoothly adapted with Merbridge in days.
+A big thanks to the Kuma community for contributing such an important compatibility capability to Merbridge, which helps both communities grow together!&lt;/p>
+&lt;p>So far, Merbridge has the capabilities to support popular service mesh products like Istio, Linkerd2, and Kuma,
+and also has a clear plan to develop new features to support IPv4/IPv6 dual-stack, ambient mesh, and earlier versions of kernel.
+It is exciting to see that Merbridge gets used more widely.
+We really hope the project can help you land your project with eBPF technologies.
+We are looking forward to receiving more comments, and having more developers get involved.&lt;/p></description></item><item><title>Blog: Deep Dive into Ambient Mesh - Traffic Path</title><link>/blog/2022/10/13/ambient-mesh-data-path/</link><pubDate>Thu, 13 Oct 2022 00:00:00 +0000</pubDate><guid>/blog/2022/10/13/ambient-mesh-data-path/</guid><description>
 &lt;p>Ambient Mesh has been released for a while, and some online articles have talked much about its usage and architecture.
 This blog will dive into the traffic path on data plane in the ambient mesh to help you fully understand
 the implementations of the ambient data plane.&lt;/p>
