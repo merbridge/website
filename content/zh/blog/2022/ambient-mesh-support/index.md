@@ -18,7 +18,7 @@ iptables 技术强大，为很多软件实现了各种功能，但在实际应�
 通过 [深入 Ambient Mesh - 流量路径](/zh/blog/2022/10/13/ambient-mesh-data-path/) 一文，我们可以知道的是，我们最终的目标有两个：
 
 - 将位于 Ambient Mesh 模式下的 Pod 向外发出的流量，拦截到 ztunnel 的 15001 端口。
-- 当主机上的有程序相应发往位于 Ambient Mesh 模式下的 Pod 时，应该将流量重定向到 ztunnel 的 15006 端口。
+- 当主机程序向 Ambient Mesh 模式下的 Pod 发送流量时，应该将流量重定向到 ztunnel 的 15006 端口。
 
 至于其中的想 istioin 等网卡，完全是为了配合 Ambient Mesh 原有模式也设计的，所以我们不需要关心。
 
