@@ -11,7 +11,7 @@ author: Kebe Liu
 
 Merbridge 主要场景就是使用 eBPF 代替 iptables 为服务网格应用加速。Ambient Mesh 作为 Istio 服务网格的全新模式，Merbridge 自然也要支持这种新模式。
 iptables 技术强大，为很多软件实现了各种功能，但在实际应用中也存在一些缺陷。首先，iptables 使用线性匹配方式，当多个应用使用相同能力时可能会产生冲突，进而导致某些功能不可用。其次，虽然其足够灵活，但是仍旧无法实现像 eBPF 一样自由编程的能力。
-所以，使用 eBPF 技术，代替 iptables 的能力，来帮助 Ambient Mesh 实现流量拦截，应该是一项令人兴奋的技术。
+所以，使用 eBPF 技术代替 iptables 的能力，帮助 Ambient Mesh 实现流量拦截，这应该是一项令人兴奋的技术。
 
 ## 确定目标
 
