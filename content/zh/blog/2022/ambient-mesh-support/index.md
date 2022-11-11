@@ -9,7 +9,7 @@ author: Kebe Liu
 
 在 [深入 Ambient Mesh - 流量路径](/zh/blog/2022/10/13/ambient-mesh-data-path/) 一文中，我们分析了 Ambient Mesh 如何实现在不引入 Sidecar 的情况下，将特定 Pod 的出入口流量转发到 ztunnel 进行处理。我们可以发现，其通过 iptables + TPROXY + 路由表的方式进行实现，路径比较长，理解起来比较复杂。而且，由于其使用 mark 做路由标记，这可能导致在某些同样依赖 CNI 的网络下无法正常工作，或者在一些 Bridge 模式的网络 CNI 下无法工作，会极大的限制 Ambient Mesh 使用场景。
 
-Merbridge 主要场景就是使用 eBPF 代替 iptables 为服务网格应用加速，Ambient Mesh 作为 Istio 服务网格一个全新的模式，必然也是我们需要支持地。
+Merbridge 主要场景就是使用 eBPF 代替 iptables 为服务网格应用加速。Ambient Mesh 作为 Istio 服务网格的全新模式，Merbridge 自然也要支持这种新模式。
 iptables 是一项很强的技术，因为其比较强大的能力，被很多软件应用来实现相应的功能。但是由于其线性的匹配方式，会造成当存在多个应用使用相同能力的时候可能会产生冲突，这也就会导致某些功能不可用。其次，虽然其足够灵活，但是还没法实现像 eBPF 一样自由编程的能力。
 所以，使用 eBPF 技术，代替 iptables 的能力，来帮助 Ambient Mesh 实现流量拦截，应该是一项令人兴奋的技术。
 
