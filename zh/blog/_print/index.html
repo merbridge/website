@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.169d37e992c4e5fd0f4b1cee431047b8.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.cdf23d39918a7bded23b6ccf561560a0.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -80,6 +80,7 @@
 <ul>
 <li><a href=#pg-ea4e888c31a16f912d612ee4ba1570cb>2022 年 Blog</a></li>
 <ul>
+<li><a href=#pg-084ecb4659c778fbfd1b89e55853320e>Merbridge 支持 Ambient Mesh，无惧 CNI 兼容性！</a></li>
 <li><a href=#pg-32ef913748e8f122396febed28845701>Kuma 2.0 集成 Merbridge 降低 12% 的网络延迟</a></li>
 <li><a href=#pg-1ca19c17b948e8cd4d6c551fe443f48e>深入 Ambient Mesh - 流量路径</a></li>
 <li><a href=#pg-ddae09d9f86ef7a0b6eecd3628b18eb5>Merbridge CNI 模式</a></li>
@@ -103,6 +104,85 @@
 </div>
 </div>
 <div class=td-content>
+<h1 id=pg-084ecb4659c778fbfd1b89e55853320e>Merbridge 支持 Ambient Mesh，无惧 CNI 兼容性！</h1>
+<div class=lead>此篇博客介绍 Merbridge 支持 Ambient Mesh 的新特性。</div>
+<div class="td-byline mb-4">
+By <b>Kebe Liu</b> |
+<time datetime=2022-11-11 class=text-muted>2022.11.11</time>
+</div>
+<p>在 <a href=/zh/blog/2022/10/13/ambient-mesh-data-path/>深入 Ambient Mesh - 流量路径</a> 一文中，我们分析了 Ambient Mesh 如何实现在不引入 Sidecar 的情况下，将特定 Pod 的出入口流量转发到 ztunnel 进行处理。我们可以发现，其通过 iptables + TPROXY + 路由表的方式进行实现，路径比较长，理解起来比较复杂。而且，由于其使用 mark 做路由标记，这可能导致在某些同样依赖 CNI 的网络下无法正常工作，或者在一些 Bridge 模式的网络 CNI 下无法工作，会极大的限制 Ambient Mesh 使用场景。</p>
+<p>Merbridge 主要场景就是使用 eBPF 代替 iptables 为服务网格应用加速。Ambient Mesh 作为 Istio 服务网格的全新模式，Merbridge 自然也要支持这种新模式。
+iptables 技术强大，为很多软件实现了各种功能，但在实际应用中也存在一些缺陷。首先，iptables 使用线性匹配方式，当多个应用使用相同能力时可能会产生冲突，进而导致某些功能不可用。其次，虽然其足够灵活，但是仍旧无法实现像 eBPF 一样自由编程的能力。
+所以，使用 eBPF 技术代替 iptables 的能力，帮助 Ambient Mesh 实现流量拦截，这应该是一项令人兴奋的技术。</p>
+<h2 id=确定目标>确定目标</h2>
+<p>通过 <a href=/zh/blog/2022/10/13/ambient-mesh-data-path/>深入 Ambient Mesh - 流量路径</a> 一文，我们可以知道的是，我们最终的目标有两个：</p>
+<ul>
+<li>将位于 Ambient Mesh 模式下的 Pod 向外发出的流量，拦截到 ztunnel 的 15001 端口。</li>
+<li>当主机程序向 Ambient Mesh 模式下的 Pod 发送流量时，应该将流量重定向到 ztunnel 的 15006 端口。</li>
+</ul>
+<p>至于其中的 istioin 等网卡，完全是为了配合 Ambient Mesh 原有模式设计的，所以无需关注。</p>
+<h2 id=分析难点>分析难点</h2>
+<p>在运行模式上，Ambient Mesh 模式和 Sidecar 模式存在很大区别。根据 Istio 官方的定义，将一个 Pod 加入 Ambient Mesh 并不需要重启 Pod，在 Pod 中也不存在 Sidecar 相关进程，这就意味着两个问题：</p>
+<ol>
+<li>之前 Merbridge 使用 CNI 的方案，让 eBPF 程序能够感知到当前 Pod 的 IP 地址从而做出策略判断的方式将失效，因为 Pod 加入或移除 Ambient Mesh 模式并不会重启，也不会调用 CNI 插件，需要重新考量。</li>
+<li>以前的流量拦截，只需要在 eBPF 的 connect 钩子中，将目标地址改为 <code>127.0.0.1:15001</code>，但是在 Ambient Mesh 模式下，需要将目标 IP 换成 ztunnel 的 IP 地址。</li>
+</ol>
+<p>同时，由于 Ambient Mesh 模式下的 Pod 中，并不存在 Sidecar 相关进程，所以之前 Merbridge 用查看当前 Pod 中是否监听了 15006 等端口的方式也不再适用，需要重新设计方案判断进程的运行环境。</p>
+<p>所以，基于上述分析，基本上需要重新设计整个拦截方案，以便让 Merbridge 支持 Ambient Mesh 模式。</p>
+<p>总结下来，我们需要做这些事情：</p>
+<ul>
+<li>重新设计判断 Pod 是否加入 Ambient Mesh 模式的方案</li>
+<li>不依赖 CNI，实现 eBPF 感知当前 Pod IP 的方案</li>
+<li>让 eBPF 程序知道当前节点的 ztunnel 的 IP 地址方案</li>
+</ul>
+<h2 id=解决方案>解决方案</h2>
+<p>在 0.7.2 版本中，我们引入了使用 cgroup id 加速 connect 程序的性能。通常每一个 Pod 中的容器都有一个对应的 cgroup id，我们可以在 bpf 程序中，通过 <code>bpf_get_current_cgroup_id</code> 函数获取到。通过将 IP 信息写入专用的 <code>cgroup_info_map</code> ，可以优化 connect 程序的运行速度。</p>
+<p>之前 CNI 在网络命名空间中监听一个特殊的端口，用于存储 Pod 的信息，而 Ambient Mesh 模式与此不同。在 Ambient Mesh 模式中可以借助 cgroup id，如果能将 cgroup id 与 Pod IP 产生关联，那就可以在 eBPF 中获取到当前 Pod IP 信息。</p>
+<p>由于不能依赖 CNI，所以需要改变获取 Pod 状态变更信息的方案。为此，我们通过观测进程的创建和销毁信息来探测本地 Pod 的创建和销毁等操作，创建了一个新的工具，用来观测主机上进程的变更信息：<a href=https://github.com/merbridge/process-watcher>process-watcher 项目</a>。</p>
+<p>通过从进程 ID 读取所在的 cgroup id 和 ip 信息并将其写入 <code>cgroup_info_map</code>。</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#000>tcg</span> <span style=color:#ce5c00;font-weight:700>:=</span> <span style=color:#000>cgroupInfo</span><span style=color:#000;font-weight:700>{</span>
+		<span style=color:#000>ID</span><span style=color:#000;font-weight:700>:</span>            <span style=color:#000>cgroupInode</span><span style=color:#000;font-weight:700>,</span>
+		<span style=color:#000>IsInMesh</span><span style=color:#000;font-weight:700>:</span>      <span style=color:#000>in</span><span style=color:#000;font-weight:700>,</span>
+		<span style=color:#000>CgroupIp</span><span style=color:#000;font-weight:700>:</span>      <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000;font-weight:700>(</span><span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000;font-weight:700>[</span><span style=color:#0000cf;font-weight:700>4</span><span style=color:#000;font-weight:700>]</span><span style=color:#204a87;font-weight:700>uint32</span><span style=color:#000;font-weight:700>)(</span><span style=color:#000>_ip</span><span style=color:#000;font-weight:700>),</span>
+		<span style=color:#000>Flags</span><span style=color:#000;font-weight:700>:</span>         <span style=color:#000>flag</span><span style=color:#000;font-weight:700>,</span>
+		<span style=color:#000>DetectedFlags</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000>cgrinfo</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>DetectedFlags</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000>AMBIENT_MESH_MODE_FLAG</span> <span style=color:#000;font-weight:700>|</span> <span style=color:#000>ZTUNNEL_FLAG</span><span style=color:#000;font-weight:700>,</span>
+	<span style=color:#000;font-weight:700>}</span>
+	<span style=color:#204a87;font-weight:700>return</span> <span style=color:#000>ebpfs</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>GetCgroupInfoMap</span><span style=color:#000;font-weight:700>().</span><span style=color:#000>Update</span><span style=color:#000;font-weight:700>(</span><span style=color:#ce5c00;font-weight:700>&amp;</span><span style=color:#000>cgroupInode</span><span style=color:#000;font-weight:700>,</span> <span style=color:#ce5c00;font-weight:700>&amp;</span><span style=color:#000>tcg</span><span style=color:#000;font-weight:700>,</span> <span style=color:#000>ebpf</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>UpdateAny</span><span style=color:#000;font-weight:700>)</span>
+</code></pre></div><p>然后在 eBPF 中获取到当前 cgroup 所关联的信息：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#000>__u64</span> <span style=color:#000>cgroup_id</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>bpf_get_current_cgroup_id</span><span style=color:#000;font-weight:700>();</span>
+<span style=color:#204a87;font-weight:700>void</span> <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000>info</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>bpf_map_lookup_elem</span><span style=color:#000;font-weight:700>(</span><span style=color:#ce5c00;font-weight:700>&amp;</span><span style=color:#000>cgroup_info_map</span><span style=color:#000;font-weight:700>,</span> <span style=color:#ce5c00;font-weight:700>&amp;</span><span style=color:#000>cgroup_id</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><p>通过这里，我们可以知道，当前的容器是否启用了 Ambient Mesh 模式、是否在网格中等信息。</p>
+<p>其次，对于 ztunnel 的 IP 地址，Istio 通过增加网卡绑定固定 IP 的方式实现，这种方案可能存在冲突的风险，也可能在某些情况下（比如 SNAT）会造成原地址信息丢失的情况。所以 Merbridge 放弃了此方案，直接在控制面获取 ztunnel 的 IP 地址，写入 map，让 eBPF 程序读取（这样速度更快）。</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#204a87;font-weight:700>static</span> <span style=color:#204a87;font-weight:700>inline</span> <span style=color:#000>__u32</span> <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000>get_ztunnel_ip</span><span style=color:#000;font-weight:700>()</span>
+<span style=color:#000;font-weight:700>{</span>
+    <span style=color:#000>__u32</span> <span style=color:#000>ztunnel_ip_key</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>ZTUNNEL_KEY</span><span style=color:#000;font-weight:700>;</span>
+    <span style=color:#204a87;font-weight:700>return</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>__u32</span> <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000;font-weight:700>)</span><span style=color:#000>bpf_map_lookup_elem</span><span style=color:#000;font-weight:700>(</span><span style=color:#ce5c00;font-weight:700>&amp;</span><span style=color:#000>settings</span><span style=color:#000;font-weight:700>,</span> <span style=color:#ce5c00;font-weight:700>&amp;</span><span style=color:#000>ztunnel_ip_key</span><span style=color:#000;font-weight:700>);</span>
+<span style=color:#000;font-weight:700>}</span>
+</code></pre></div><p>然后，可以利用 connect 程序，重写目标地址：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=color:#000>ctx</span><span style=color:#ce5c00;font-weight:700>-&gt;</span><span style=color:#000>user_ip4</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>ztunnel_ip</span><span style=color:#000;font-weight:700>[</span><span style=color:#0000cf;font-weight:700>3</span><span style=color:#000;font-weight:700>];</span>
+<span style=color:#000>ctx</span><span style=color:#ce5c00;font-weight:700>-&gt;</span><span style=color:#000>user_port</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>bpf_htons</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>OUT_REDIRECT_PORT</span><span style=color:#000;font-weight:700>);</span>
+</code></pre></div><p>通过与 cgroup id 的关联，可以实现在 eBPF 中获取当前进程所在的 Pod IP 地址，从而进行策略操作，将 Ambient Mesh 模式下 Pod 发出的流量转发到 ztunnel 进行处理，从而实现 Merbridge 在 Ambient Mesh 模式下的兼容。</p>
+<p>这将是对所有 CNI 都适配的一种能力，可以避免原有 Ambient Mesh 模式不能很好的在大多数 CNI 模式下无法工作的问题。</p>
+<h2 id=使用与反馈>使用与反馈</h2>
+<p>由于目前 Ambient 仍处于早期阶段，且 Merbridge 对于 Ambient 模式的支持也相对初级，还有一些问题没有得到很好的解决，所以 Ambient 模式还没有合并入主分支。如果想要体验 Merbridge 代替 iptables 为 Ambient Mesh 实现流量拦截的能力，可以按照如下的方式操作（首先需要安装好 Ambient Mesh 模式的网格）：</p>
+<ol>
+<li>禁用 Istio CNI（安装时设置 <code>--set components.cni.enabled=false</code> ，或删除 Istio CNI 的 DaemonSet <code>kubectl -n istio-system delete ds istio-cni</code> 的方式）。</li>
+<li>删除 ztunnel 的 init 容器（因为它会初始化 iptables 规则、网卡等，而 Merbridge 不需要这个操作）。</li>
+<li>使用 <code>kubectl apply -f https://github.com/merbridge/merbridge/raw/ambient/deploy/all-in-one.yaml</code> 安装支持 Merbridge 。</li>
+</ol>
+<p>等待 Merbridge 就绪之后，即可以使用 Ambient Mesh 的所有能力。</p>
+<p>*<strong>注意：</strong></p>
+<ol>
+<li>当前不支持在 Kind 下使用 Ambient 模式（将在后续支持）；</li>
+<li>主机内核版本需要大于等于 5.7；</li>
+<li>需要开启 cgroup v2；</li>
+<li>此模式也兼容 Sidecar 模式；</li>
+<li>Ambient 模式下安装默认会开启 debug 模式，会对性能造成一定影响。</li>
+</ol>
+<p>更多实现细节可以查看<a href=https://github.com/merbridge/merbridge/tree/ambient>源码</a>。</p>
+<p>如果遇到任何问题，可在 <a href=https://join.slack.com/t/merbridge/shared_invite/zt-11uc3z0w7-DMyv42eQ6s5YUxO5mZ5hwQ>Slack</a> 中与我们反馈，或加入我们的技术交流微信群。</p>
+</div>
+<div class=td-content style=page-break-before:always>
 <h1 id=pg-32ef913748e8f122396febed28845701>Kuma 2.0 集成 Merbridge 降低 12% 的网络延迟</h1>
 <div class="td-byline mb-4">
 By <b>Kebe Liu</b> |
