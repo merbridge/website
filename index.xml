@@ -1,4 +1,103 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Merbridge helps Kuma reduce network latency by 12%</title><link>/blog/2022/11/08/kuma-2.0-with-merbridge/</link><pubDate>Tue, 08 Nov 2022 00:00:00 +0000</pubDate><guid>/blog/2022/11/08/kuma-2.0-with-merbridge/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Merbridge now supports Ambient Mesh, no worry about CNI compatibility!</title><link>/blog/2022/11/11/ambient-mesh-support/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>/blog/2022/11/11/ambient-mesh-support/</guid><description>
+&lt;p>In the blog &lt;a href="../ambient-mesh-data-path/index.md">Deep Dive into Ambient Mesh - Traffic Path&lt;/a>,
+we analyzed how Ambient Mesh forwards the ingress and egress traffic of Pod to ztunnel.
+It is implemented by iptables + TPROXY + routing table. The traffic datapath is relatively
+long compared to sidecar mode, and the principle is complicated. Moreover, it uses routing marks, which may cause
+unexpected behaviors in some cases when it relies on CNI or it is running in a CNI with the bridge mode.
+These severely limit the applicable scope of ambient mesh.&lt;/p>
+&lt;p>The main purpose of Merbridge is to replace iptables with eBPF to accelerate applications running in
+a service mesh. Ambient Mesh is a new mode of Istio. It is necessary for Merbridge to support this new mode.
+iptables is a powerful tool to block unwanted traffic, allow desired traffic, and redirect packets to specific
+addresses and ports, but it also has some weaknesses. First, iptables uses a linear matching method.
+When several applications simultaneously call a same program, conflicts may arise and make some features become unavailable.
+Second, although it is flexible enough, it still cannot be programmed as freely as eBPF.
+Therefore, replacing iptables with eBPF can help Ambient Mesh achieve traffic interception.&lt;/p>
+&lt;h2 id="objectives">Objectives&lt;/h2>
+&lt;p>As mentioned in &lt;a href="../ambient-mesh-data-path/index.md">Deep Dive into Ambient Mesh - Traffic Path&lt;/a>,
+we set two objectives:&lt;/p>
+&lt;ul>
+&lt;li>Outgoing traffic from pods in Ambient Mesh should be intercepted and redirected to port 15001 of ztunnel.&lt;/li>
+&lt;li>Traffic sent from host applications to pods in Ambient Mesh should be redirected to port 15006 of ztunnel.&lt;/li>
+&lt;/ul>
+&lt;p>Since istioin and other network interface cards (NICs) are completely designed to adapt to the native Ambient Mesh, we don&amp;rsquo;t need to make any changes.&lt;/p>
+&lt;h2 id="pain-points-analysis">Pain points analysis&lt;/h2>
+&lt;p>Ambient Mesh has a different operation mechanism from sidecars. According to the official definition of Istio,
+adding a Pod to Ambient Mesh does not require restarting the Pod and no any sidecar-related process is running in the Pod. It means:&lt;/p>
+&lt;ol>
+&lt;li>Merbridge used the CNI mode to enable the eBPF program to get the current Pod IP to make policy decisions,
+which is incompatible with ambient mesh. The reason is a pod will not be restarted after joining or
+leaving the ambient mesh, nor will it call the CNI plug-in.&lt;/li>
+&lt;li>In the sidecar mode, the only thing you need to change is the destination address to &lt;code>127.0.0.1:15001&lt;/code> in
+the connect hook of eBPF, but in the ambient mesh you need to replace the desitination IP with that of ztunnel.&lt;/li>
+&lt;/ol>
+&lt;p>In addtion, no sidecar-related process exists in a Pod running in an ambient mesh,
+so the legacy method of checking whether a port such as 15006 is listening in the current Pod is no longer applicable.
+It is necessary to redesign the scheme to check the environment where processes are running.&lt;/p>
+&lt;p>Therefore, based on the above analysis, it is required to redesign the entire interception scheme so that Merbridge can support the ambient mesh.&lt;/p>
+&lt;p>In summary, we need to implement the following features:&lt;/p>
+&lt;ul>
+&lt;li>Redesign a scheme for judging whether a Pod is running in the ambient mesh&lt;/li>
+&lt;li>Use eBPF to perceive current Pod IP regardless of CNIs&lt;/li>
+&lt;li>Enable eBPF programs to know the ztunnel IP on the current node&lt;/li>
+&lt;/ul>
+&lt;h2 id="solution">Solution&lt;/h2>
+&lt;p>In version 0.7.2, cgroup id is used to improve the performance of the connect program.
+Usually, each container in a Pod has a proper cgroup id, which can be obtained through the &lt;code>bpf_get_current_cgroup_id&lt;/code>
+function in the BPF program. The speed of the connect program can be optimized by writing IP information to a specific &lt;code>cgroup_info_map&lt;/code>.&lt;/p>
+&lt;p>An ambient mesh is different from the legacy CNI listening on a special port in the network namespace for storing Pod-related information.
+In the ambient mesh, cgroup id is useful. If cgroup id can be associated with the Pod IP, you can get the current Pod IP in eBPF.&lt;/p>
+&lt;p>Since CNI cannot be relied on anymore, we need change the scheme for obtaining the information of Pod status.
+For this reason, we detect the creation and revocation actions of local Pods by watching the process creation and revocation.
+We created a new tool to watch the process changes on a host: &lt;a href="https://github.com/merbridge/process-watcher">process-watcher project&lt;/a>.&lt;/p>
+&lt;p>Read the cgroup id and ip information from the process ID and writing it to the &lt;code>cgroup_info_map&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#000">tcg&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">:=&lt;/span> &lt;span style="color:#000">cgroupInfo&lt;/span>&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000">ID&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000">cgroupInode&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#000">IsInMesh&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000">in&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#000">CgroupIp&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">4&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">uint32&lt;/span>&lt;span style="color:#000;font-weight:bold">)(&lt;/span>&lt;span style="color:#000">_ip&lt;/span>&lt;span style="color:#000;font-weight:bold">),&lt;/span>
+&lt;span style="color:#000">Flags&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000">flag&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#000">DetectedFlags&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000">cgrinfo&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">DetectedFlags&lt;/span> &lt;span style="color:#000;font-weight:bold">|&lt;/span> &lt;span style="color:#000">AMBIENT_MESH_MODE_FLAG&lt;/span> &lt;span style="color:#000;font-weight:bold">|&lt;/span> &lt;span style="color:#000">ZTUNNEL_FLAG&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">return&lt;/span> &lt;span style="color:#000">ebpfs&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">GetCgroupInfoMap&lt;/span>&lt;span style="color:#000;font-weight:bold">().&lt;/span>&lt;span style="color:#000">Update&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">cgroupInode&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">tcg&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">ebpf&lt;/span>&lt;span style="color:#000;font-weight:bold">.&lt;/span>&lt;span style="color:#000">UpdateAny&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then get the current cgroup-related information in eBPF:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">&lt;span style="color:#000">__u64&lt;/span> &lt;span style="color:#000">cgroup_id&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">bpf_get_current_cgroup_id&lt;/span>&lt;span style="color:#000;font-weight:bold">();&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">void&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000">info&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">bpf_map_lookup_elem&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">cgroup_info_map&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">cgroup_id&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now, we can learn whether the current container has the ambient mesh enabled and it is located in a mesh or not.&lt;/p>
+&lt;p>Second, for the ztunnel IP, Istio implements it by adding NIC and binding fixed IPs.
+This scheme may have the risk of conflict, and the original addresses may be lost in some cases (such as SNAT).
+So Merbridge gives up the scheme and directly obtains the ztunnel IPs on the control plane,
+writes it into the map, and enables the eBPF program read it (this is faster).&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">&lt;span style="color:#204a87;font-weight:bold">static&lt;/span> &lt;span style="color:#204a87;font-weight:bold">inline&lt;/span> &lt;span style="color:#000">__u32&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000">get_ztunnel_ip&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#000">__u32&lt;/span> &lt;span style="color:#000">ztunnel_ip_key&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ZTUNNEL_KEY&lt;/span>&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">return&lt;/span> &lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">__u32&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">*&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>&lt;span style="color:#000">bpf_map_lookup_elem&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">settings&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&lt;/span>&lt;span style="color:#000">ztunnel_ip_key&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then use the connect program to rewrite the destination address:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-c" data-lang="c">&lt;span style="color:#000">ctx&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#000">user_ip4&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ztunnel_ip&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">3&lt;/span>&lt;span style="color:#000;font-weight:bold">];&lt;/span>
+&lt;span style="color:#000">ctx&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">-&amp;gt;&lt;/span>&lt;span style="color:#000">user_port&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">bpf_htons&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">OUT_REDIRECT_PORT&lt;/span>&lt;span style="color:#000;font-weight:bold">);&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>With the association with the cgroup id, the Pod IP of current processes can be obtained in eBPF, so as to enforce policies.
+Forward the traffic from the Pod in the ambient mesh to the ztunnel, so that Merbridge can be compatible with the ambient mesh.&lt;/p>
+&lt;p>This will be a capability that is adaptable to all CNIs and can avoid the problem that the native ambient mesh cannot work well in most CNI modes.&lt;/p>
+&lt;h2 id="usage-and-feedback">Usage and feedback&lt;/h2>
+&lt;p>Since the ambient mesh is still in its early stage and the support for ambient mode is relatively preliminary,
+some problems have not been well resolved, so the code of supporting for the ambient mode has not been merged into the main branch.
+If you want to experience the capability of Merbridge to implement traffic interception for ambient mesh instead of iptables,
+you can perform the following steps (it is required to install the ambient mesh in advance):&lt;/p>
+&lt;ol>
+&lt;li>Disable Istio CNI (set &lt;code>--set components.cni.enabled=false&lt;/code> during installation, or delete Istio CNI&amp;rsquo;s DaemonSet &lt;code>kubectl -n istio-system delete ds istio-cni&lt;/code>).&lt;/li>
+&lt;li>Remove the init container of ztunnel (because it initializes iptables rules and NICs, which is not required for Merbridge).&lt;/li>
+&lt;li>Install Merbridge by running &lt;code>kubectl apply -f https://github.com/merbridge/merbridge/raw/ambient/deploy/all-in-one.yaml&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;p>After the Merbridge is ready, you can use all capabilities of ambient mesh.&lt;/p>
+&lt;p>&lt;strong>*Attentions:&lt;/strong>&lt;/p>
+&lt;ol>
+&lt;li>The Ambient mode under Kind is not supported currently (we have a plan to support it in the future)&lt;/li>
+&lt;li>The host kernel version needs to be not less than 5.7&lt;/li>
+&lt;li>cgroup v2 is required to be enabled&lt;/li>
+&lt;li>This mode is also compatible with sidecars&lt;/li>
+&lt;li>The debug mode will be enabled by default in an ambient mesh, which will have certain impact on performance&lt;/li>
+&lt;/ol>
+&lt;p>For more details see &lt;a href="https://github.com/merbridge/merbridge/tree/ambient">source code&lt;/a>.&lt;/p>
+&lt;p>If you have any question, please reach out to us with &lt;a href="https://join.slack.com/t/merbridge/shared_invite/zt-11uc3z0w7-DMyv42eQ6s5YUxO5mZ5hwQ">Slack&lt;/a> or add the wechat group to chat.&lt;/p></description></item><item><title>Blog: Merbridge helps Kuma reduce network latency by 12%</title><link>/blog/2022/11/08/kuma-2.0-with-merbridge/</link><pubDate>Tue, 08 Nov 2022 00:00:00 +0000</pubDate><guid>/blog/2022/11/08/kuma-2.0-with-merbridge/</guid><description>
 &lt;p>Recently, Kuma announced a major release of &lt;a href="https://kuma.io/blog/2022/kuma-2-0-0/">v2.0&lt;/a> with several new major features.
 A notable feature is that Kuma is using eBPF to improve the traffic flow.&lt;/p>
 &lt;p>&lt;img src="./imgs/kuma-2.0-release-preview.png" alt="Kuma 2.0 release preview">&lt;/p>
