@@ -8,7 +8,7 @@ description: >
 
 ## Prerequisites {#prerequisites}
 
-1. Use kernel `5.7` or a higher version. Check your version with `name -r`.
+1. Use kernel `5.7` or a higher version. Check your version with `uname -r`.
 1. Activate `cgroup2` in your system. Check the status with `mount | grep cgroup2`.
 
 ## Installation {#installation}
