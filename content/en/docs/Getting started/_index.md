@@ -31,6 +31,14 @@ Apply the following command to install Merbridge:
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
 ```
 
+### Install on Kuma {#installation-on-kuma}
+
+Apply the following command to install Merbridge:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-kuma.yaml
+```
+
 ## Verification {#verification}
 
 ### Verify installation {#verification-installation}
