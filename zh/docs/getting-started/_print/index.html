@@ -58,7 +58,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f8c744e3c8ee8e5516e0e9a0dd0b67b.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.cafc22cb5f75f81cb51206ebfa610277.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -97,6 +97,9 @@
 </code></pre></div><h3 id=installation-on-linkerd>Linkerd2 环境</h3>
 <p>只需要在环境中执行以下命令即可安装 Merbridge：</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
+</code></pre></div><h3 id=installation-on-kuma>Kuma 环境</h3>
+<p>只需要在环境中执行以下命令即可安装 Merbridge：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-kuma.yaml
 </code></pre></div><h2 id=verification>验证</h2>
 <h3 id=verification-installation>验证安装</h3>
 <p>在验证 Merbridge 是否能正常工作之前，需要先确保 Merbridge 的 Pod 都运行正常。以 Istio 为例，可以使用以下命令查看 Merbridge 的 Pod 状态：</p>
@@ -148,7 +151,7 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2022 The Merbridge Authors 版权所有</small>
+<small class=text-white>&copy; 2023 The Merbridge Authors 版权所有</small>
 <p class=mt-2><a href=/zh/about/>关于 Merbridge</a></p>
 </div>
 </div>

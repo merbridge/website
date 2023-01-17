@@ -55,7 +55,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.1f8c744e3c8ee8e5516e0e9a0dd0b67b.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.cafc22cb5f75f81cb51206ebfa610277.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -189,6 +189,9 @@ This the multi-page printable view of this section.
 </code></pre></div><h3 id=installation-on-linkerd>Install on Linkerd2</h3>
 <p>Apply the following command to install Merbridge:</p>
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
+</code></pre></div><h3 id=installation-on-kuma>Install on Kuma</h3>
+<p>Apply the following command to install Merbridge:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-kuma.yaml
 </code></pre></div><h2 id=verification>Verification</h2>
 <h3 id=verification-installation>Verify installation</h3>
 <p>Before you start this verification, make sure all Pods relevant to Merbridge are running well. You can check Pod status in Istio with the following command:</p>
@@ -282,7 +285,7 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2022 The Merbridge Authors All Rights Reserved</small>
+<small class=text-white>&copy; 2023 The Merbridge Authors All Rights Reserved</small>
 <p class=mt-2><a href=/about/>Merbridge</a></p>
 </div>
 </div>
