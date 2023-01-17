@@ -31,6 +31,14 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
 ```
 
+### Kuma 环境 {#installation-on-kuma}
+
+只需要在环境中执行以下命令即可安装 Merbridge：
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-kuma.yaml
+```
+
 ## 验证 {#verification}
 
 ### 验证安装 {#verification-installation}
