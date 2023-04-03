@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.5521e14b81fbe6870e21cab7e99f64f5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.05df8d8dade450f7d001113c2c807cb4.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -65,7 +65,7 @@
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.5521e14b81fbe6870e21cab7e99f64f5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.05df8d8dade450f7d001113c2c807cb4.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -82,8 +82,13 @@
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog-li>
 <a href=/zh/blog/ title="Merbridge Blog" class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-zhblog><span>Blog</span></a>
 <ul class=ul-1>
-<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-zhblog2023-li>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog2023-li>
 <a href=/zh/blog/2023/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__section" id=m-zhblog2023><span class=td-sidebar-nav-active-item>2023 年 Blog</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20230318osm-edge-demo-li>
+<a href=/zh/blog/2023/03/18/osm-edge-demo/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20230318osm-edge-demo><span>OSM Edge 与 Merbridge 集成测试</span></a>
+</li>
+</ul>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-zhblog2022-li>
 <a href=/zh/blog/2022/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblog2022><span>2022 年 Blog</span></a>
 <ul class="ul-2 foldable">
@@ -133,6 +138,26 @@
 <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role=main>
 <div class=row>
 <div class=col-12>
+<h2>Posts in 2023</h2>
+<ul class="list-unstyled mt-4">
+<li class="media mb-4">
+<div class=media-body>
+<h5 class="mt-0 mb-1"><a href=/zh/blog/2023/03/18/osm-edge-demo/>OSM Edge 与 Merbridge 集成测试</a></h5>
+<p class="mb-2 mb-md-3"><small class=text-muted>2023.03.18 in 2023 年 Blog</small></p>
+<header class=article-meta>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 3 分钟 阅读时间</p>
+</header>
+<p class="pt-0 mt-0">本文演示了如何在 OSM Edge 边缘网格环境中集成 Merbridge 实现网格加速效果。
+这篇 Demo 集成测试源于 cybwan 个人空间。
+1. 部署 k8s 环境 1.1 部署环境准备 部署 3 个 ubuntu 22.04/20.04 的虚机，一个作为 master 节点，两个作为 worker 节点
+主机名分别设置为 master、node1、node2
+修改 /etc/hosts，使其相互间可以通过主机名互通
+更新系统软件包：
+sudo apt -y …</p>
+<p class=pt-0><a href=/zh/blog/2023/03/18/osm-edge-demo/ aria-label="更多 - OSM Edge 与 Merbridge 集成测试">更多</a></p>
+</div>
+</li>
+</ul>
 </div>
 </div>
 <div class="row pl-2 pt-2">

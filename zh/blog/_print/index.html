@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.5521e14b81fbe6870e21cab7e99f64f5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.05df8d8dade450f7d001113c2c807cb4.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -80,6 +80,7 @@
 <ul>
 <li><a href=#pg-9974ffd96185d1107b35d87ea46b9b21>2023 年 Blog</a></li>
 <ul>
+<li><a href=#pg-cf7eef55fc5c258ae8723649161bdb5d>OSM Edge 与 Merbridge 集成测试</a></li>
 </ul>
 <li><a href=#pg-ea4e888c31a16f912d612ee4ba1570cb>2022 年 Blog</a></li>
 <ul>
@@ -105,6 +106,155 @@
 <h1 id=pg-9974ffd96185d1107b35d87ea46b9b21>2023 年 Blog</h1>
 <div class="td-byline mb-4">
 </div>
+</div>
+<div class=td-content>
+<h1 id=pg-cf7eef55fc5c258ae8723649161bdb5d>OSM Edge 与 Merbridge 集成测试</h1>
+<div class="td-byline mb-4">
+<time datetime=2023-03-18 class=text-muted>2023.03.18</time>
+</div>
+<p>本文演示了如何在 <a href=https://github.com/flomesh-io/osm-edge>OSM Edge</a> 边缘网格环境中集成 Merbridge 实现网格加速效果。</p>
+<blockquote>
+<p>这篇 Demo 集成测试源于 <a href=https://github.com/cybwan/osm-edge-start-demo/blob/main/demo/merbridge/README.zh.md>cybwan 个人空间</a>。</p>
+</blockquote>
+<h2 id=1-部署-k8s-环境>1. 部署 k8s 环境</h2>
+<h3 id=11-部署环境准备>1.1 部署环境准备</h3>
+<ul>
+<li>
+<p><input checked disabled type=checkbox> 部署 3 个 <strong>ubuntu 22.04/20.04</strong> 的虚机，一个作为 master 节点，两个作为 worker 节点</p>
+</li>
+<li>
+<p><input checked disabled type=checkbox> 主机名分别设置为 master、node1、node2</p>
+</li>
+<li>
+<p><input checked disabled type=checkbox> 修改 <code>/etc/hosts</code>，使其相互间可以通过主机名互通</p>
+</li>
+<li>
+<p><input checked disabled type=checkbox> 更新系统软件包：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo apt -y update <span style=color:#ce5c00;font-weight:700>&amp;&amp;</span> sudo apt -y upgrade
+</code></pre></div></li>
+<li>
+<p><input checked disabled type=checkbox> 以 root 身份执行后续部署指令</p>
+</li>
+</ul>
+<h3 id=12-各虚机上部署容器环境>1.2 各虚机上部署容器环境</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init.sh -O
+chmod u+x install-k8s-node-init.sh
+
+<span style=color:#000>system</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>uname -s <span style=color:#000;font-weight:700>|</span> tr <span style=color:#ce5c00;font-weight:700>[</span>:upper:<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>[</span>:lower:<span style=color:#ce5c00;font-weight:700>]</span><span style=color:#204a87;font-weight:700>)</span>
+<span style=color:#000>arch</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>dpkg --print-architecture<span style=color:#204a87;font-weight:700>)</span>
+./install-k8s-node-init.sh <span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span> <span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>
+</code></pre></div><h3 id=13-各虚机上部署-k8s-工具>1.3 各虚机上部署 k8s 工具</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init-tools.sh -O
+chmod u+x install-k8s-node-init-tools.sh
+
+<span style=color:#000>system</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>uname -s <span style=color:#000;font-weight:700>|</span> tr <span style=color:#ce5c00;font-weight:700>[</span>:upper:<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>[</span>:lower:<span style=color:#ce5c00;font-weight:700>]</span><span style=color:#204a87;font-weight:700>)</span>
+<span style=color:#000>arch</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>dpkg --print-architecture<span style=color:#204a87;font-weight:700>)</span>
+./install-k8s-node-init-tools.sh <span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span> <span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>
+
+<span style=color:#204a87>source</span> ~/.bashrc
+</code></pre></div><h3 id=14-master-节点启动-k8s-相关服务>1.4 Master 节点启动 k8s 相关服务</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-master-start.sh -O
+chmod u+x install-k8s-node-master-start.sh
+
+<span style=color:#8f5902;font-style:italic># 调整为你的 master 的 ip 地址</span>
+<span style=color:#000>MASTER_IP</span><span style=color:#ce5c00;font-weight:700>=</span>192.168.127.80
+<span style=color:#8f5902;font-style:italic># 使用 flannel 网络插件</span>
+<span style=color:#000>CNI</span><span style=color:#ce5c00;font-weight:700>=</span>flannel
+./install-k8s-node-master-start.sh <span style=color:#4e9a06>${</span><span style=color:#000>MASTER_IP</span><span style=color:#4e9a06>}</span> <span style=color:#4e9a06>${</span><span style=color:#000>CNI</span><span style=color:#4e9a06>}</span>
+<span style=color:#8f5902;font-style:italic># 耐心等待..</span>
+</code></pre></div><h3 id=15-node1-和-node2-启动-k8s-相关服务>1.5 node1 和 node2 启动 k8s 相关服务</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-worker-join.sh -O
+chmod u+x install-k8s-node-worker-join.sh
+
+<span style=color:#8f5902;font-style:italic># 调整为你的 master 的 ip 地址</span>
+<span style=color:#000>MASTER_IP</span><span style=color:#ce5c00;font-weight:700>=</span>192.168.127.80
+<span style=color:#8f5902;font-style:italic># 安装过程会提示输入 master 的 root 的密码</span>
+./install-k8s-node-worker-join.sh <span style=color:#4e9a06>${</span><span style=color:#000>MASTER_IP</span><span style=color:#4e9a06>}</span>
+</code></pre></div><h3 id=16-master-节点查看-k8s-相关服务的启动状态>1.6 Master 节点查看 k8s 相关服务的启动状态</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl get pods -A -o wide
+</code></pre></div><h2 id=2-部署-osm-edge-服务>2. 部署 osm-edge 服务</h2>
+<h3 id=21-下载并安装-osm-edge-命令行工具>2.1 下载并安装 osm-edge 命令行工具</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#000>system</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>uname -s <span style=color:#000;font-weight:700>|</span> tr <span style=color:#ce5c00;font-weight:700>[</span>:upper:<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>[</span>:lower:<span style=color:#ce5c00;font-weight:700>]</span><span style=color:#204a87;font-weight:700>)</span>
+<span style=color:#000>arch</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>dpkg --print-architecture<span style=color:#204a87;font-weight:700>)</span>
+<span style=color:#000>release</span><span style=color:#ce5c00;font-weight:700>=</span>v1.3.3
+curl -L https://github.com/flomesh-io/osm-edge/releases/download/<span style=color:#4e9a06>${</span><span style=color:#000>release</span><span style=color:#4e9a06>}</span>/osm-edge-<span style=color:#4e9a06>${</span><span style=color:#000>release</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span>.tar.gz <span style=color:#000;font-weight:700>|</span> tar -vxzf -
+./<span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span>/osm version
+cp ./<span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span>/osm /usr/local/bin/
+</code></pre></div><h3 id=22-安装-osm-edge>2.2 安装 osm-edge</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#204a87>export</span> <span style=color:#000>osm_namespace</span><span style=color:#ce5c00;font-weight:700>=</span>osm-system
+<span style=color:#204a87>export</span> <span style=color:#000>osm_mesh_name</span><span style=color:#ce5c00;font-weight:700>=</span>osm
+
+osm install <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --mesh-name <span style=color:#4e9a06>&#34;</span><span style=color:#000>$osm_mesh_name</span><span style=color:#4e9a06>&#34;</span> <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --osm-namespace <span style=color:#4e9a06>&#34;</span><span style=color:#000>$osm_namespace</span><span style=color:#4e9a06>&#34;</span> <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.image.registry<span style=color:#ce5c00;font-weight:700>=</span>flomesh <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.image.tag<span style=color:#ce5c00;font-weight:700>=</span>1.3.3 <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.certificateProvider.kind<span style=color:#ce5c00;font-weight:700>=</span>tresor <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.image.pullPolicy<span style=color:#ce5c00;font-weight:700>=</span>Always <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.enablePermissiveTrafficPolicy<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87>true</span> <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.controllerLogLevel<span style=color:#ce5c00;font-weight:700>=</span>warn <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --timeout<span style=color:#ce5c00;font-weight:700>=</span>900s
+</code></pre></div><p>如果部署 osm，指令参考:</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#000>system</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>uname -s <span style=color:#000;font-weight:700>|</span> tr <span style=color:#ce5c00;font-weight:700>[</span>:upper:<span style=color:#ce5c00;font-weight:700>]</span> <span style=color:#ce5c00;font-weight:700>[</span>:lower:<span style=color:#ce5c00;font-weight:700>]</span><span style=color:#204a87;font-weight:700>)</span>
+<span style=color:#000>arch</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87;font-weight:700>$(</span>dpkg --print-architecture<span style=color:#204a87;font-weight:700>)</span>
+<span style=color:#000>release</span><span style=color:#ce5c00;font-weight:700>=</span>v1.2.3
+curl -L https://github.com/openservicemesh/osm/releases/download/<span style=color:#4e9a06>${</span><span style=color:#000>release</span><span style=color:#4e9a06>}</span>/osm-<span style=color:#4e9a06>${</span><span style=color:#000>release</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span>.tar.gz <span style=color:#000;font-weight:700>|</span> tar -vxzf -
+./<span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span>/osm version
+cp ./<span style=color:#4e9a06>${</span><span style=color:#000>system</span><span style=color:#4e9a06>}</span>-<span style=color:#4e9a06>${</span><span style=color:#000>arch</span><span style=color:#4e9a06>}</span>/osm /usr/local/bin/
+
+<span style=color:#204a87>export</span> <span style=color:#000>osm_namespace</span><span style=color:#ce5c00;font-weight:700>=</span>osm-system
+<span style=color:#204a87>export</span> <span style=color:#000>osm_mesh_name</span><span style=color:#ce5c00;font-weight:700>=</span>osm
+
+osm install <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --mesh-name <span style=color:#4e9a06>&#34;</span><span style=color:#000>$osm_mesh_name</span><span style=color:#4e9a06>&#34;</span> <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --osm-namespace <span style=color:#4e9a06>&#34;</span><span style=color:#000>$osm_namespace</span><span style=color:#4e9a06>&#34;</span> <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.image.registry<span style=color:#ce5c00;font-weight:700>=</span>openservicemesh <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.image.tag<span style=color:#ce5c00;font-weight:700>=</span>v1.2.3 <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.certificateProvider.kind<span style=color:#ce5c00;font-weight:700>=</span>tresor <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.image.pullPolicy<span style=color:#ce5c00;font-weight:700>=</span>Always <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.enablePermissiveTrafficPolicy<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#204a87>true</span> <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --set<span style=color:#ce5c00;font-weight:700>=</span>osm.controllerLogLevel<span style=color:#ce5c00;font-weight:700>=</span>warn <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --verbose <span style=color:#4e9a06>\
+</span><span style=color:#4e9a06></span>    --timeout<span style=color:#ce5c00;font-weight:700>=</span>900s
+</code></pre></div><h2 id=3-部署-merbridge-服务>3. 部署 Merbridge 服务</h2>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>curl -L https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-osm.yaml -O
+sed -i <span style=color:#4e9a06>&#39;s/--cni-mode=false/--cni-mode=true/g&#39;</span> all-in-one-osm.yaml
+sed -i <span style=color:#4e9a06>&#39;/--cni-mode=true/a\\t\t- --debug=true&#39;</span> all-in-one-osm.yaml
+sed -i <span style=color:#4e9a06>&#39;s/\t/    /g&#39;</span> all-in-one-osm.yaml
+kubectl apply -f all-in-one-osm.yaml
+
+sleep 5s
+kubectl <span style=color:#204a87>wait</span> --for<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>condition</span><span style=color:#ce5c00;font-weight:700>=</span>ready pod -n osm-system -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>merbridge --field-selector spec.nodeName<span style=color:#ce5c00;font-weight:700>==</span>master --timeout<span style=color:#ce5c00;font-weight:700>=</span>1800s
+kubectl <span style=color:#204a87>wait</span> --for<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>condition</span><span style=color:#ce5c00;font-weight:700>=</span>ready pod -n osm-system -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>merbridge --field-selector spec.nodeName<span style=color:#ce5c00;font-weight:700>==</span>node1 --timeout<span style=color:#ce5c00;font-weight:700>=</span>1800s
+kubectl <span style=color:#204a87>wait</span> --for<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>condition</span><span style=color:#ce5c00;font-weight:700>=</span>ready pod -n osm-system -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>merbridge --field-selector spec.nodeName<span style=color:#ce5c00;font-weight:700>==</span>node2 --timeout<span style=color:#ce5c00;font-weight:700>=</span>1800s
+</code></pre></div><h2 id=4-merbridge-替代-iptables-测试>4. Merbridge 替代 iptables 测试</h2>
+<h3 id=41-部署业务-pod>4.1 部署业务 Pod</h3>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#8f5902;font-style:italic># 模拟业务服务</span>
+kubectl create namespace demo
+osm namespace add demo
+kubectl apply -n demo -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
+kubectl apply -n demo -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
+
+<span style=color:#8f5902;font-style:italic># 让 Pod 分布到不同的 node 上</span>
+kubectl patch deployments sleep -n demo -p <span style=color:#4e9a06>&#39;{&#34;spec&#34;:{&#34;template&#34;:{&#34;spec&#34;:{&#34;nodeName&#34;:&#34;node1&#34;}}}}&#39;</span>
+kubectl patch deployments helloworld-v1 -n demo -p <span style=color:#4e9a06>&#39;{&#34;spec&#34;:{&#34;template&#34;:{&#34;spec&#34;:{&#34;nodeName&#34;:&#34;node1&#34;}}}}&#39;</span>
+kubectl patch deployments helloworld-v2 -n demo -p <span style=color:#4e9a06>&#39;{&#34;spec&#34;:{&#34;template&#34;:{&#34;spec&#34;:{&#34;nodeName&#34;:&#34;node2&#34;}}}}&#39;</span>
+
+<span style=color:#8f5902;font-style:italic># 等待依赖的 Pod 正常启动</span>
+kubectl <span style=color:#204a87>wait</span> --for<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>condition</span><span style=color:#ce5c00;font-weight:700>=</span>ready pod -n demo -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>sleep --timeout<span style=color:#ce5c00;font-weight:700>=</span>180s
+kubectl <span style=color:#204a87>wait</span> --for<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>condition</span><span style=color:#ce5c00;font-weight:700>=</span>ready pod -n demo -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>helloworld -l <span style=color:#000>version</span><span style=color:#ce5c00;font-weight:700>=</span>v1 --timeout<span style=color:#ce5c00;font-weight:700>=</span>180s
+kubectl <span style=color:#204a87>wait</span> --for<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>condition</span><span style=color:#ce5c00;font-weight:700>=</span>ready pod -n demo -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>helloworld -l <span style=color:#000>version</span><span style=color:#ce5c00;font-weight:700>=</span>v2 --timeout<span style=color:#ce5c00;font-weight:700>=</span>180s
+</code></pre></div><h3 id=42场景测试一>4.2 场景测试一</h3>
+<h4 id=421-在-node1-和-node2-上监测内核日志>4.2.1 在 node1 和 node2 上监测内核日志</h4>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cat /sys/kernel/debug/tracing/trace_pipe<span style=color:#000;font-weight:700>|</span>grep bpf_trace_printk<span style=color:#000;font-weight:700>|</span>grep -E <span style=color:#4e9a06>&#34;rewritten|redirect&#34;</span>
+</code></pre></div><h4 id=422-测试指令>4.2.2 测试指令</h4>
+<p>多次执行：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>kubectl <span style=color:#204a87>exec</span> <span style=color:#204a87;font-weight:700>$(</span>kubectl get po -l <span style=color:#000>app</span><span style=color:#ce5c00;font-weight:700>=</span>sleep -n demo -o<span style=color:#ce5c00;font-weight:700>=</span><span style=color:#000>jsonpath</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#39;{..metadata.name}&#39;</span><span style=color:#204a87;font-weight:700>)</span> -n demo -c sleep -- curl -s helloworld:5000/hello
+</code></pre></div><h4 id=423-测试结果>4.2.3 测试结果</h4>
+<p>正确返回结果类似于：</p>
+<div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>Hello version: v1, instance: helloworld-v1-5d46f78b4c-hghcj
+Hello version: v2, instance: helloworld-v2-6b56769f9d-stwrj
+</code></pre></div>
 </div>
 <div class=td-content style=page-break-before:always>
 <h1 id=pg-ea4e888c31a16f912d612ee4ba1570cb>2022 年 Blog</h1>

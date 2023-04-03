@@ -2,8 +2,7 @@
 <head>
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
-<meta name=generator content="Hugo 0.87.0"><link rel=canonical type=text/html href=/zh/blog/2023/>
-<meta name=ROBOTS content="NOINDEX, NOFOLLOW">
+<meta name=generator content="Hugo 0.87.0"><meta name=ROBOTS content="NOINDEX, NOFOLLOW">
 <link rel="shortcut icon" href=/favicons/favicon.ico>
 <link rel=icon type=image/png href=/favicons/favicon-16x16.png sizes=16x16>
 <link rel=icon type=image/png href=/favicons/favicon-32x32.png sizes=32x32>
@@ -13,21 +12,47 @@
 <link rel=icon type=image/png href=/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/favicons/android-192x192.png sizes=192x192>
-<title>2023 年 Blog | Merbridge</title>
-<meta name=description content="Merbridge 的官网"><meta property="og:title" content="2023 年 Blog">
-<meta property="og:description" content="Merbridge 的官网">
-<meta property="og:type" content="website">
-<meta property="og:url" content="/zh/blog/2023/"><meta property="og:site_name" content="Merbridge">
-<meta itemprop=name content="2023 年 Blog">
-<meta itemprop=description content="Merbridge 的官网"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="2023 年 Blog">
-<meta name=twitter:description content="Merbridge 的官网">
+<title>OSM Edge 与 Merbridge 集成测试 | Merbridge</title>
+<meta name=description content="Merbridge 的官网"><meta property="og:title" content="OSM Edge 与 Merbridge 集成测试">
+<meta property="og:description" content="本文演示了如何在 OSM Edge 边缘网格环境中集成 Merbridge 实现网格加速效果。
+ 这篇 Demo 集成测试源于 cybwan 个人空间。
+ 1. 部署 k8s 环境 1.1 部署环境准备   部署 3 个 ubuntu 22.04/20.04 的虚机，一个作为 master 节点，两个作为 worker 节点
+  主机名分别设置为 master、node1、node2
+  修改 /etc/hosts，使其相互间可以通过主机名互通
+  更新系统软件包：
+sudo apt -y update && sudo apt -y upgrade   以 root 身份执行后续部署指令
+  1.2 各虚机上部署容器环境 curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init.sh -O chmod u+x install-k8s-node-init.sh system=$(uname -s | tr [:upper:] [:lower:]) arch=$(dpkg --print-architecture) .">
+<meta property="og:type" content="article">
+<meta property="og:url" content="/zh/blog/2023/03/18/osm-edge-demo/"><meta property="article:section" content="blog">
+<meta property="article:published_time" content="2023-03-18T00:00:00+00:00">
+<meta property="article:modified_time" content="2023-03-17T10:28:26+08:00"><meta property="og:site_name" content="Merbridge">
+<meta itemprop=name content="OSM Edge 与 Merbridge 集成测试">
+<meta itemprop=description content="本文演示了如何在 OSM Edge 边缘网格环境中集成 Merbridge 实现网格加速效果。
+ 这篇 Demo 集成测试源于 cybwan 个人空间。
+ 1. 部署 k8s 环境 1.1 部署环境准备   部署 3 个 ubuntu 22.04/20.04 的虚机，一个作为 master 节点，两个作为 worker 节点
+  主机名分别设置为 master、node1、node2
+  修改 /etc/hosts，使其相互间可以通过主机名互通
+  更新系统软件包：
+sudo apt -y update && sudo apt -y upgrade   以 root 身份执行后续部署指令
+  1.2 各虚机上部署容器环境 curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init.sh -O chmod u+x install-k8s-node-init.sh system=$(uname -s | tr [:upper:] [:lower:]) arch=$(dpkg --print-architecture) ."><meta itemprop=datePublished content="2023-03-18T00:00:00+00:00">
+<meta itemprop=dateModified content="2023-03-17T10:28:26+08:00">
+<meta itemprop=wordCount content="469">
+<meta itemprop=keywords content><meta name=twitter:card content="summary">
+<meta name=twitter:title content="OSM Edge 与 Merbridge 集成测试">
+<meta name=twitter:description content="本文演示了如何在 OSM Edge 边缘网格环境中集成 Merbridge 实现网格加速效果。
+ 这篇 Demo 集成测试源于 cybwan 个人空间。
+ 1. 部署 k8s 环境 1.1 部署环境准备   部署 3 个 ubuntu 22.04/20.04 的虚机，一个作为 master 节点，两个作为 worker 节点
+  主机名分别设置为 master、node1、node2
+  修改 /etc/hosts，使其相互间可以通过主机名互通
+  更新系统软件包：
+sudo apt -y update && sudo apt -y upgrade   以 root 身份执行后续部署指令
+  1.2 各虚机上部署容器环境 curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init.sh -O chmod u+x install-k8s-node-init.sh system=$(uname -s | tr [:upper:] [:lower:]) arch=$(dpkg --print-architecture) .">
 <link rel=preload href=/scss/main.min.957d988e396d495afa3156d4640b99742d961f39c79e92f8d152969969aa9ece.css as=style>
 <link href=/scss/main.min.957d988e396d495afa3156d4640b99742d961f39c79e92f8d152969969aa9ece.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.5.1.min.js integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin=anonymous></script>
 <script src=https://unpkg.com/lunr@2.3.8/lunr.min.js integrity=sha384-vRQ9bDyE0Wnu+lMfm57BlYLO0/XauFuKpVsZPs7KEDwYKktWi5+Kz3MP8++DFlRY crossorigin=anonymous></script>
 </head>
-<body class="td-section td-blog">
+<body class="td-page td-blog">
 <header>
 <nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
 <a class=navbar-brand href=/zh/>
@@ -62,32 +87,115 @@
 <div class="container-fluid td-outer">
 <div class=td-main>
 <div class="row flex-xl-nowrap">
-<div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+<aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+<div id=td-sidebar-menu class=td-sidebar__inner>
+<form class="td-sidebar__search d-flex align-items-center">
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.05df8d8dade450f7d001113c2c807cb4.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
+</button>
+</form>
+<nav class="collapse td-sidebar-nav" id=td-section-nav>
+<div class="nav-item dropdown d-block d-lg-none">
+<a class="nav-link dropdown-toggle" href=# id=navbarDropdown role=button data-toggle=dropdown aria-haspopup=true aria-expanded=false>
+中文 Chinese
+</a>
+<div class=dropdown-menu aria-labelledby=navbarDropdownMenuLink>
+<a class=dropdown-item href=/>English</a>
 </div>
-<div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
 </div>
+<ul class="td-sidebar-nav__section pr-md-3 ul-0">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog-li>
+<a href=/zh/blog/ title="Merbridge Blog" class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-zhblog><span>Blog</span></a>
+<ul class=ul-1>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-zhblog2023-li>
+<a href=/zh/blog/2023/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblog2023><span>2023 年 Blog</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-zhblog20230318osm-edge-demo-li>
+<a href=/zh/blog/2023/03/18/osm-edge-demo/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__page" id=m-zhblog20230318osm-edge-demo><span class=td-sidebar-nav-active-item>OSM Edge 与 Merbridge 集成测试</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-zhblog2022-li>
+<a href=/zh/blog/2022/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblog2022><span>2022 年 Blog</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20221111ambient-mesh-support-li>
+<a href=/zh/blog/2022/11/11/ambient-mesh-support/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20221111ambient-mesh-support><span>Merbridge 支持 Ambient Mesh，无惧 CNI 兼容性！</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20221108kuma-20-with-merbridge-li>
+<a href=/zh/blog/2022/11/08/kuma-2.0-with-merbridge/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20221108kuma-20-with-merbridge><span>Kuma 2.0 集成 Merbridge 降低 12% 的网络延迟</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20221013ambient-mesh-data-path-li>
+<a href=/zh/blog/2022/10/13/ambient-mesh-data-path/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20221013ambient-mesh-data-path><span>深入 Ambient Mesh - 流量路径</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220518cni-mode-li>
+<a href=/zh/blog/2022/05/18/cni-mode/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220518cni-mode><span>Merbridge CNI 模式</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220423merbridge-and-cilium-li>
+<a href=/zh/blog/2022/04/23/merbridge-and-cilium/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220423merbridge-and-cilium><span>Merbridge 和 Cilium</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220329solo-io-livestream-li>
+<a href=/zh/blog/2022/03/29/solo-io-livestream/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220329solo-io-livestream><span>与 Solo.io 一起举办的直播活动</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220301merbridge-introduce-li>
+<a href=/zh/blog/2022/03/01/merbridge-introduce/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220301merbridge-introduce><span>一行代码，使用 eBPF 代替 iptables 加速服务网格</span></a>
+</li>
+</ul>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child" id=m-zhblogreleases-li>
+<a href=/zh/blog/releases/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-zhblogreleases><span>版本发布</span></a>
+<ul class="ul-2 foldable">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220720release-070-li>
+<a href=/zh/blog/2022/07/20/release-0.7.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220720release-070><span>发布 0.7.0</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220523release-060-li>
+<a href=/zh/blog/2022/05/23/release-0.6.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220523release-060><span>发布 0.6.0</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-zhblog20220127release-050-li>
+<a href=/zh/blog/2022/01/27/release-0.5.0/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-zhblog20220127release-050><span>Release 0.5.0</span></a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</aside>
+<aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+<a href=https://github.com/merbridge/merbridge/edit/main/content/zh/blog/2023/osm-edge-demo/index.md target=_blank><i class="fa fa-edit fa-fw"></i> 编辑此页</a>
+<a href="https://github.com/merbridge/merbridge/new/main/content/zh/blog/2023/osm-edge-demo/index.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" target=_blank><i class="fa fa-edit fa-fw"></i> 添加子页面</a>
+<a href="https://github.com/merbridge/merbridge/issues/new?title=OSM%20Edge%20%e4%b8%8e%20Merbridge%20%e9%9b%86%e6%88%90%e6%b5%8b%e8%af%95" target=_blank><i class="fab fa-github fa-fw"></i> 提交文档问题</a>
+<a href=https://github.com/merbridge/website/issues/new target=_blank><i class="fas fa-tasks fa-fw"></i> 提交项目问题</a>
+<a id=print href=/zh/blog/2023/_print/><i class="fa fa-print fa-fw"></i> 整节打印</a>
+</div>
+<div class=td-toc><nav id=TableOfContents>
+<ul>
+<li><a href=#1-部署-k8s-环境>1. 部署 k8s 环境</a>
+<ul>
+<li><a href=#11-部署环境准备>1.1 部署环境准备</a></li>
+<li><a href=#12-各虚机上部署容器环境>1.2 各虚机上部署容器环境</a></li>
+<li><a href=#13-各虚机上部署-k8s-工具>1.3 各虚机上部署 k8s 工具</a></li>
+<li><a href=#14-master-节点启动-k8s-相关服务>1.4 Master 节点启动 k8s 相关服务</a></li>
+<li><a href=#15-node1-和-node2-启动-k8s-相关服务>1.5 node1 和 node2 启动 k8s 相关服务</a></li>
+<li><a href=#16-master-节点查看-k8s-相关服务的启动状态>1.6 Master 节点查看 k8s 相关服务的启动状态</a></li>
+</ul>
+</li>
+<li><a href=#2-部署-osm-edge-服务>2. 部署 osm-edge 服务</a>
+<ul>
+<li><a href=#21-下载并安装-osm-edge-命令行工具>2.1 下载并安装 osm-edge 命令行工具</a></li>
+<li><a href=#22-安装-osm-edge>2.2 安装 osm-edge</a></li>
+</ul>
+</li>
+<li><a href=#3-部署-merbridge-服务>3. 部署 Merbridge 服务</a></li>
+<li><a href=#4-merbridge-替代-iptables-测试>4. Merbridge 替代 iptables 测试</a>
+<ul>
+<li><a href=#41-部署业务-pod>4.1 部署业务 Pod</a></li>
+<li><a href=#42场景测试一>4.2 场景测试一</a></li>
+</ul>
+</li>
+</ul>
+</nav></div>
+</aside>
 <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role=main>
 <div class=td-content>
-<div class="pageinfo pageinfo-primary d-print-none">
-<p>
-这是本节的多页打印视图。
-<a href=# onclick="return print(),!1">点击此处打印</a>.
-</p><p>
-<a href=/zh/blog/2023/>返回本页常规视图</a>.
-</p>
-</div>
-<h1 class=title>2023 年 Blog</h1>
-<ul>
-<li><a href=#pg-cf7eef55fc5c258ae8723649161bdb5d>OSM Edge 与 Merbridge 集成测试</a></li>
-</ul>
-<div class=content>
-</div>
-</div>
-<div class=td-content>
-<h1 id=pg-cf7eef55fc5c258ae8723649161bdb5d>OSM Edge 与 Merbridge 集成测试</h1>
+<h1>OSM Edge 与 Merbridge 集成测试</h1>
 <div class="td-byline mb-4">
 <time datetime=2023-03-18 class=text-muted>2023.03.18</time>
 </div>
+<header class=article-meta>
+<p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 3 分钟 阅读时间</p>
+</header>
 <p>本文演示了如何在 <a href=https://github.com/flomesh-io/osm-edge>OSM Edge</a> 边缘网格环境中集成 Merbridge 实现网格加速效果。</p>
 <blockquote>
 <p>这篇 Demo 集成测试源于 <a href=https://github.com/cybwan/osm-edge-start-demo/blob/main/demo/merbridge/README.zh.md>cybwan 个人空间</a>。</p>
@@ -231,6 +339,13 @@ kubectl <span style=color:#204a87>wait</span> --for<span style=color:#ce5c00;fon
 <div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>Hello version: v1, instance: helloworld-v1-5d46f78b4c-hghcj
 Hello version: v2, instance: helloworld-v2-6b56769f9d-stwrj
 </code></pre></div>
+<ul class="list-unstyled d-flex justify-content-between align-items-center mb-0 pt-5">
+<li>
+<a class="btn btn-primary disabled"><span class=mr-1>←</span> 上一页</a>
+</li>
+<a class="btn btn-primary disabled">下一页 <span class=ml-1>→</span></a>
+</li>
+</ul>
 </div>
 </main>
 </div>

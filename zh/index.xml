@@ -1,4 +1,136 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/zh/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Merbridge 支持 Ambient Mesh，无惧 CNI 兼容性！</title><link>/zh/blog/2022/11/11/ambient-mesh-support/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/11/11/ambient-mesh-support/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/zh/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/zh/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: OSM Edge 与 Merbridge 集成测试</title><link>/zh/blog/2023/03/18/osm-edge-demo/</link><pubDate>Sat, 18 Mar 2023 00:00:00 +0000</pubDate><guid>/zh/blog/2023/03/18/osm-edge-demo/</guid><description>
+&lt;p>本文演示了如何在 &lt;a href="https://github.com/flomesh-io/osm-edge">OSM Edge&lt;/a> 边缘网格环境中集成 Merbridge 实现网格加速效果。&lt;/p>
+&lt;blockquote>
+&lt;p>这篇 Demo 集成测试源于 &lt;a href="https://github.com/cybwan/osm-edge-start-demo/blob/main/demo/merbridge/README.zh.md">cybwan 个人空间&lt;/a>。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="1-部署-k8s-环境">1. 部署 k8s 环境&lt;/h2>
+&lt;h3 id="11-部署环境准备">1.1 部署环境准备&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> 部署 3 个 &lt;strong>ubuntu 22.04/20.04&lt;/strong> 的虚机，一个作为 master 节点，两个作为 worker 节点&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> 主机名分别设置为 master、node1、node2&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> 修改 &lt;code>/etc/hosts&lt;/code>，使其相互间可以通过主机名互通&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> 更新系统软件包：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt -y update &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&amp;amp;&lt;/span> sudo apt -y upgrade
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> 以 root 身份执行后续部署指令&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="12-各虚机上部署容器环境">1.2 各虚机上部署容器环境&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init.sh -O
+chmod u+x install-k8s-node-init.sh
+&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+./install-k8s-node-init.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="13-各虚机上部署-k8s-工具">1.3 各虚机上部署 k8s 工具&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init-tools.sh -O
+chmod u+x install-k8s-node-init-tools.sh
+&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+./install-k8s-node-init-tools.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;span style="color:#204a87">source&lt;/span> ~/.bashrc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="14-master-节点启动-k8s-相关服务">1.4 Master 节点启动 k8s 相关服务&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-master-start.sh -O
+chmod u+x install-k8s-node-master-start.sh
+&lt;span style="color:#8f5902;font-style:italic"># 调整为你的 master 的 ip 地址&lt;/span>
+&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>192.168.127.80
+&lt;span style="color:#8f5902;font-style:italic"># 使用 flannel 网络插件&lt;/span>
+&lt;span style="color:#000">CNI&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>flannel
+./install-k8s-node-master-start.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">CNI&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># 耐心等待..&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="15-node1-和-node2-启动-k8s-相关服务">1.5 node1 和 node2 启动 k8s 相关服务&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-worker-join.sh -O
+chmod u+x install-k8s-node-worker-join.sh
+&lt;span style="color:#8f5902;font-style:italic"># 调整为你的 master 的 ip 地址&lt;/span>
+&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>192.168.127.80
+&lt;span style="color:#8f5902;font-style:italic"># 安装过程会提示输入 master 的 root 的密码&lt;/span>
+./install-k8s-node-worker-join.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="16-master-节点查看-k8s-相关服务的启动状态">1.6 Master 节点查看 k8s 相关服务的启动状态&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl get pods -A -o wide
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-部署-osm-edge-服务">2. 部署 osm-edge 服务&lt;/h2>
+&lt;h3 id="21-下载并安装-osm-edge-命令行工具">2.1 下载并安装 osm-edge 命令行工具&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1.3.3
+curl -L https://github.com/flomesh-io/osm-edge/releases/download/&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm-edge-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>.tar.gz &lt;span style="color:#000;font-weight:bold">|&lt;/span> tar -vxzf -
+./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm version
+cp ./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm /usr/local/bin/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="22-安装-osm-edge">2.2 安装 osm-edge&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_namespace&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm-system
+&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_mesh_name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm
+osm install &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --mesh-name &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_mesh_name&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --osm-namespace &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_namespace&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.registry&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>flomesh &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.tag&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1.3.3 &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.certificateProvider.kind&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>tresor &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.pullPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>Always &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.enablePermissiveTrafficPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87">true&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.controllerLogLevel&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>warn &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>900s
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>如果部署 osm，指令参考:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1.2.3
+curl -L https://github.com/openservicemesh/osm/releases/download/&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>.tar.gz &lt;span style="color:#000;font-weight:bold">|&lt;/span> tar -vxzf -
+./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm version
+cp ./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm /usr/local/bin/
+&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_namespace&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm-system
+&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_mesh_name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm
+osm install &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --mesh-name &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_mesh_name&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --osm-namespace &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_namespace&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.registry&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>openservicemesh &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.tag&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1.2.3 &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.certificateProvider.kind&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>tresor &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.pullPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>Always &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.enablePermissiveTrafficPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87">true&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.controllerLogLevel&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>warn &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --verbose &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>900s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-部署-merbridge-服务">3. 部署 Merbridge 服务&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-osm.yaml -O
+sed -i &lt;span style="color:#4e9a06">&amp;#39;s/--cni-mode=false/--cni-mode=true/g&amp;#39;&lt;/span> all-in-one-osm.yaml
+sed -i &lt;span style="color:#4e9a06">&amp;#39;/--cni-mode=true/a\\t\t- --debug=true&amp;#39;&lt;/span> all-in-one-osm.yaml
+sed -i &lt;span style="color:#4e9a06">&amp;#39;s/\t/ /g&amp;#39;&lt;/span> all-in-one-osm.yaml
+kubectl apply -f all-in-one-osm.yaml
+sleep 5s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n osm-system -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>merbridge --field-selector spec.nodeName&lt;span style="color:#ce5c00;font-weight:bold">==&lt;/span>master --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1800s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n osm-system -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>merbridge --field-selector spec.nodeName&lt;span style="color:#ce5c00;font-weight:bold">==&lt;/span>node1 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1800s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n osm-system -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>merbridge --field-selector spec.nodeName&lt;span style="color:#ce5c00;font-weight:bold">==&lt;/span>node2 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1800s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-merbridge-替代-iptables-测试">4. Merbridge 替代 iptables 测试&lt;/h2>
+&lt;h3 id="41-部署业务-pod">4.1 部署业务 Pod&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#8f5902;font-style:italic"># 模拟业务服务&lt;/span>
+kubectl create namespace demo
+osm namespace add demo
+kubectl apply -n demo -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
+kubectl apply -n demo -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
+&lt;span style="color:#8f5902;font-style:italic"># 让 Pod 分布到不同的 node 上&lt;/span>
+kubectl patch deployments sleep -n demo -p &lt;span style="color:#4e9a06">&amp;#39;{&amp;#34;spec&amp;#34;:{&amp;#34;template&amp;#34;:{&amp;#34;spec&amp;#34;:{&amp;#34;nodeName&amp;#34;:&amp;#34;node1&amp;#34;}}}}&amp;#39;&lt;/span>
+kubectl patch deployments helloworld-v1 -n demo -p &lt;span style="color:#4e9a06">&amp;#39;{&amp;#34;spec&amp;#34;:{&amp;#34;template&amp;#34;:{&amp;#34;spec&amp;#34;:{&amp;#34;nodeName&amp;#34;:&amp;#34;node1&amp;#34;}}}}&amp;#39;&lt;/span>
+kubectl patch deployments helloworld-v2 -n demo -p &lt;span style="color:#4e9a06">&amp;#39;{&amp;#34;spec&amp;#34;:{&amp;#34;template&amp;#34;:{&amp;#34;spec&amp;#34;:{&amp;#34;nodeName&amp;#34;:&amp;#34;node2&amp;#34;}}}}&amp;#39;&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># 等待依赖的 Pod 正常启动&lt;/span>
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n demo -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>sleep --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>180s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n demo -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>helloworld -l &lt;span style="color:#000">version&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>180s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n demo -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>helloworld -l &lt;span style="color:#000">version&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v2 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>180s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="42场景测试一">4.2 场景测试一&lt;/h3>
+&lt;h4 id="421-在-node1-和-node2-上监测内核日志">4.2.1 在 node1 和 node2 上监测内核日志&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cat /sys/kernel/debug/tracing/trace_pipe&lt;span style="color:#000;font-weight:bold">|&lt;/span>grep bpf_trace_printk&lt;span style="color:#000;font-weight:bold">|&lt;/span>grep -E &lt;span style="color:#4e9a06">&amp;#34;rewritten|redirect&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="422-测试指令">4.2.2 测试指令&lt;/h4>
+&lt;p>多次执行：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl &lt;span style="color:#204a87">exec&lt;/span> &lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>kubectl get po -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>sleep -n demo -o&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">jsonpath&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;{..metadata.name}&amp;#39;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span> -n demo -c sleep -- curl -s helloworld:5000/hello
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="423-测试结果">4.2.3 测试结果&lt;/h4>
+&lt;p>正确返回结果类似于：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Hello version: v1, instance: helloworld-v1-5d46f78b4c-hghcj
+Hello version: v2, instance: helloworld-v2-6b56769f9d-stwrj
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Blog: Merbridge 支持 Ambient Mesh，无惧 CNI 兼容性！</title><link>/zh/blog/2022/11/11/ambient-mesh-support/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>/zh/blog/2022/11/11/ambient-mesh-support/</guid><description>
 &lt;p>在 &lt;a href="/zh/blog/2022/10/13/ambient-mesh-data-path/">深入 Ambient Mesh - 流量路径&lt;/a> 一文中，我们分析了 Ambient Mesh 如何实现在不引入 Sidecar 的情况下，将特定 Pod 的出入口流量转发到 ztunnel 进行处理。我们可以发现，其通过 iptables + TPROXY + 路由表的方式进行实现，路径比较长，理解起来比较复杂。而且，由于其使用 mark 做路由标记，这可能导致在某些同样依赖 CNI 的网络下无法正常工作，或者在一些 Bridge 模式的网络 CNI 下无法工作，会极大的限制 Ambient Mesh 使用场景。&lt;/p>
 &lt;p>Merbridge 主要场景就是使用 eBPF 代替 iptables 为服务网格应用加速。Ambient Mesh 作为 Istio 服务网格的全新模式，Merbridge 自然也要支持这种新模式。
 iptables 技术强大，为很多软件实现了各种功能，但在实际应用中也存在一些缺陷。首先，iptables 使用线性匹配方式，当多个应用使用相同能力时可能会产生冲突，进而导致某些功能不可用。其次，虽然其足够灵活，但是仍旧无法实现像 eBPF 一样自由编程的能力。
