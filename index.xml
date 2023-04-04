@@ -1,4 +1,136 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Merbridge now supports Ambient Mesh, no worry about CNI compatibility!</title><link>/blog/2022/11/11/ambient-mesh-support/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>/blog/2022/11/11/ambient-mesh-support/</guid><description>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Merbridge – Merbridge</title><link>/</link><description>Recent content on Merbridge</description><generator>Hugo -- gohugo.io</generator><atom:link href="/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Test OSM Edge Integration with Merbridge</title><link>/blog/2023/04/03/osm-edge-demo/</link><pubDate>Mon, 03 Apr 2023 00:00:00 +0000</pubDate><guid>/blog/2023/04/03/osm-edge-demo/</guid><description>
+&lt;p>This page will walk you through how to integrate Merbridge into &lt;a href="https://github.com/flomesh-io/osm-edge">OSM Edge&lt;/a> for mesh acceleration.&lt;/p>
+&lt;blockquote>
+&lt;p>This demo originated from &lt;a href="https://github.com/cybwan/osm-edge-start-demo/blob/main/demo/merbridge/README.zh.md">cybwan&amp;rsquo;s personal space&lt;/a>.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="1-deploy-k8s">1. Deploy k8s&lt;/h2>
+&lt;h3 id="11-preparation">1.1 Preparation&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> Deploy 3 virtual machines of &lt;strong>ubuntu 22.04/20.04&lt;/strong>, one as master node and the other two as worker nodes.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> Name them as &lt;code>master&lt;/code>, &lt;code>node1&lt;/code>, and &lt;code>node2&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> Modify &lt;code>/etc/hosts&lt;/code> to enable hostname-based connectivity between the three nodes.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> Update apt packages：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">sudo apt -y update &lt;span style="color:#ce5c00;font-weight:bold">&amp;amp;&amp;amp;&lt;/span> sudo apt -y upgrade
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>&lt;input checked="" disabled="" type="checkbox"> Use root account to run the following commands.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="12--deploy-resources-for-container-initialization-on-each-vm">1.2 Deploy resources for container initialization on each VM&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init.sh -O
+chmod u+x install-k8s-node-init.sh
+&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+./install-k8s-node-init.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="13-deploy-k8s-tools-on-each-vm">1.3 Deploy k8s tools on each VM&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-init-tools.sh -O
+chmod u+x install-k8s-node-init-tools.sh
+&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+./install-k8s-node-init-tools.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;span style="color:#204a87">source&lt;/span> ~/.bashrc
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="14-launch-k8s-related-services-on-the-master-node">1.4 Launch k8s-related services on the master node&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-master-start.sh -O
+chmod u+x install-k8s-node-master-start.sh
+&lt;span style="color:#8f5902;font-style:italic"># replace with the IP of your master node&lt;/span>
+&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>192.168.127.80
+&lt;span style="color:#8f5902;font-style:italic"># Set flannel as CNI&lt;/span>
+&lt;span style="color:#000">CNI&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>flannel
+./install-k8s-node-master-start.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">CNI&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Wait a while...&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="15-launch-k8s-related-services-on-the-worker-nodes">1.5 Launch k8s-related services on the worker nodes&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/cybwan/osm-edge-scripts/main/scripts/install-k8s-node-worker-join.sh -O
+chmod u+x install-k8s-node-worker-join.sh
+&lt;span style="color:#8f5902;font-style:italic"># replace with the IP of your master node&lt;/span>
+&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>192.168.127.80
+&lt;span style="color:#8f5902;font-style:italic"># enter root passwords of Master node as required&lt;/span>
+./install-k8s-node-worker-join.sh &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">MASTER_IP&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="16-check-status-of-k8s-related-pods-on-the-master-node">1.6 Check status of k8s-related pods on the master node&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl get pods -A -o wide
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-deploy-osm-edge">2. Deploy osm-edge&lt;/h2>
+&lt;h3 id="21-download-and-install-osm-edge-clt">2.1 Download and install osm-edge CLT&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1.3.3
+curl -L https://github.com/flomesh-io/osm-edge/releases/download/&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm-edge-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>.tar.gz &lt;span style="color:#000;font-weight:bold">|&lt;/span> tar -vxzf -
+./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm version
+cp ./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm /usr/local/bin/
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="22-install-osm-edge">2.2 Install osm-edge&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_namespace&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm-system
+&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_mesh_name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm
+osm install &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --mesh-name &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_mesh_name&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --osm-namespace &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_namespace&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.registry&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>flomesh &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.tag&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1.3.3 &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.certificateProvider.kind&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>tresor &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.pullPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>Always &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.enablePermissiveTrafficPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87">true&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.controllerLogLevel&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>warn &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>900s
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If you want to deploy &lt;code>osm&lt;/code>, use the following commands:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>uname -s &lt;span style="color:#000;font-weight:bold">|&lt;/span> tr &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:upper:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">[&lt;/span>:lower:&lt;span style="color:#ce5c00;font-weight:bold">]&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#204a87;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1.2.3
+curl -L https://github.com/openservicemesh/osm/releases/download/&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">release&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>.tar.gz &lt;span style="color:#000;font-weight:bold">|&lt;/span> tar -vxzf -
+./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm version
+cp ./&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">system&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>-&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">arch&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/osm /usr/local/bin/
+&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_namespace&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm-system
+&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">osm_mesh_name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm
+osm install &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --mesh-name &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_mesh_name&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --osm-namespace &lt;span style="color:#4e9a06">&amp;#34;&lt;/span>&lt;span style="color:#000">$osm_namespace&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.registry&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>openservicemesh &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.tag&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1.2.3 &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.certificateProvider.kind&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>tresor &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.image.pullPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>Always &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.enablePermissiveTrafficPolicy&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#204a87">true&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --set&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>osm.controllerLogLevel&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>warn &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --verbose &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>900s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-deploy-merbridge">3. Deploy Merbridge&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">curl -L https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-osm.yaml -O
+sed -i &lt;span style="color:#4e9a06">&amp;#39;s/--cni-mode=false/--cni-mode=true/g&amp;#39;&lt;/span> all-in-one-osm.yaml
+sed -i &lt;span style="color:#4e9a06">&amp;#39;/--cni-mode=true/a\\t\t- --debug=true&amp;#39;&lt;/span> all-in-one-osm.yaml
+sed -i &lt;span style="color:#4e9a06">&amp;#39;s/\t/ /g&amp;#39;&lt;/span> all-in-one-osm.yaml
+kubectl apply -f all-in-one-osm.yaml
+sleep 5s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n osm-system -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>merbridge --field-selector spec.nodeName&lt;span style="color:#ce5c00;font-weight:bold">==&lt;/span>master --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1800s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n osm-system -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>merbridge --field-selector spec.nodeName&lt;span style="color:#ce5c00;font-weight:bold">==&lt;/span>node1 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1800s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n osm-system -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>merbridge --field-selector spec.nodeName&lt;span style="color:#ce5c00;font-weight:bold">==&lt;/span>node2 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>1800s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="4-test-if-merbridge-replaces-iptables">4. Test if Merbridge replaces iptables&lt;/h2>
+&lt;h3 id="41-deploy-business-pods">4.1 Deploy business pods&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#8f5902;font-style:italic"># simulate business services&lt;/span>
+kubectl create namespace demo
+osm namespace add demo
+kubectl apply -n demo -f https://raw.githubusercontent.com/istio/istio/master/samples/sleep/sleep.yaml
+kubectl apply -n demo -f https://raw.githubusercontent.com/istio/istio/master/samples/helloworld/helloworld.yaml
+&lt;span style="color:#8f5902;font-style:italic"># schedule pods to different nodes&lt;/span>
+kubectl patch deployments sleep -n demo -p &lt;span style="color:#4e9a06">&amp;#39;{&amp;#34;spec&amp;#34;:{&amp;#34;template&amp;#34;:{&amp;#34;spec&amp;#34;:{&amp;#34;nodeName&amp;#34;:&amp;#34;node1&amp;#34;}}}}&amp;#39;&lt;/span>
+kubectl patch deployments helloworld-v1 -n demo -p &lt;span style="color:#4e9a06">&amp;#39;{&amp;#34;spec&amp;#34;:{&amp;#34;template&amp;#34;:{&amp;#34;spec&amp;#34;:{&amp;#34;nodeName&amp;#34;:&amp;#34;node1&amp;#34;}}}}&amp;#39;&lt;/span>
+kubectl patch deployments helloworld-v2 -n demo -p &lt;span style="color:#4e9a06">&amp;#39;{&amp;#34;spec&amp;#34;:{&amp;#34;template&amp;#34;:{&amp;#34;spec&amp;#34;:{&amp;#34;nodeName&amp;#34;:&amp;#34;node2&amp;#34;}}}}&amp;#39;&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># wait supportive pods to run&lt;/span>
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n demo -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>sleep --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>180s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n demo -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>helloworld -l &lt;span style="color:#000">version&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v1 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>180s
+kubectl &lt;span style="color:#204a87">wait&lt;/span> --for&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">condition&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>ready pod -n demo -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>helloworld -l &lt;span style="color:#000">version&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>v2 --timeout&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>180s
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="42scenarios-test">4.2 Scenarios Test&lt;/h3>
+&lt;h4 id="421-monitor-kernel-logs-on-node1-and-node2">4.2.1 Monitor kernel logs on node1 and node2&lt;/h4>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">cat /sys/kernel/debug/tracing/trace_pipe&lt;span style="color:#000;font-weight:bold">|&lt;/span>grep bpf_trace_printk&lt;span style="color:#000;font-weight:bold">|&lt;/span>grep -E &lt;span style="color:#4e9a06">&amp;#34;rewritten|redirect&amp;#34;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="422-command-for-testing">4.2.2 Command for testing&lt;/h4>
+&lt;p>Run it multiple times:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">kubectl &lt;span style="color:#204a87">exec&lt;/span> &lt;span style="color:#204a87;font-weight:bold">$(&lt;/span>kubectl get po -l &lt;span style="color:#000">app&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>sleep -n demo -o&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">jsonpath&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;{..metadata.name}&amp;#39;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">)&lt;/span> -n demo -c sleep -- curl -s helloworld:5000/hello
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="423-test-results">4.2.3 Test results&lt;/h4>
+&lt;p>The expected output should be like:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">Hello version: v1, instance: helloworld-v1-5d46f78b4c-hghcj
+Hello version: v2, instance: helloworld-v2-6b56769f9d-stwrj
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Blog: Merbridge now supports Ambient Mesh, no worry about CNI compatibility!</title><link>/blog/2022/11/11/ambient-mesh-support/</link><pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate><guid>/blog/2022/11/11/ambient-mesh-support/</guid><description>
 &lt;p>In the blog &lt;a href="../ambient-mesh-data-path/index.md">Deep Dive into Ambient Mesh - Traffic Path&lt;/a>,
 we analyzed how Ambient Mesh forwards the ingress and egress traffic of Pod to ztunnel.
 It is implemented by iptables + TPROXY + routing table. The traffic datapath is relatively
