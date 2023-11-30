@@ -69,4 +69,4 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 kubectl exec $(kubectl get po -l app=sleep -o=jsonpath='{..metadata.name}') -c sleep -- curl -s -v helloworld:5000/hello
 ```
 
-如果在结果中看到类似 `* Connected to helloworld (127.128.0.1) port 5000 (#0)` 的字样，表明 Merbridge 已经成功使用 eBPF 代替 iptables 进行流量转发。
+如果在结果中看到类似 `* Connected to helloworld (127.128.0.1) port 5000 (#0)` 的字样（其中ip是127开头），表明 Merbridge 已经成功使用 eBPF 代替 iptables 进行流量转发。
