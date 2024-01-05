@@ -1,9 +1,9 @@
 ---
-title: "快速开始"
-linkTitle: "快速开始"
+title: "快速入门"
+linkTitle: "快速入门"
 weight: 2
 description: >
-  本文将帮助您快速开始使用 Merbridge
+  本文将帮助您快速使用 Merbridge
 ---
 
 ## 先决条件 {#prerequisites}
