@@ -55,7 +55,7 @@
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.2136017ac44a5900703dbb1dbaf8eecc.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; 站内搜索…" aria-label=站内搜索… autocomplete=off data-offline-search-index-json-src=/offline-search-index.1267b07a190c2fc0ea69e6b29105c9e0.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -79,13 +79,13 @@
 <h1 class=title>文档</h1>
 <ul>
 <li>1: <a href=#pg-4945894b7164a800c7f7895256065f85>概览</a></li>
-<li>2: <a href=#pg-93aadc1aba179e6928539400a09b9e4e>快速开始</a></li>
+<li>2: <a href=#pg-f09cc107d66e7fd665ea6ab4c05074a8>快速入门</a></li>
 <ul>
 </ul>
 <li>3: <a href=#pg-fcf6186c3c17ed7f2e8577136109a520>概念</a></li>
 <ul>
 </ul>
-<li>4: <a href=#pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c>参与贡献</a></li>
+<li>4: <a href=#pg-c06818113a7abe60306ad7c0f283489e>参与贡献</a></li>
 <ul>
 </ul>
 </ul>
@@ -173,8 +173,8 @@
 <p>Merbridge 是完全独立的开源项目，目前仍处于早期阶段。希望有更多的用户或开发者参与其中，不断完善 Merbridge，共同优化服务网格。如果您发现了 Merbridge 的漏洞而且有兴趣帮助修复，非常欢迎您<a href=https://github.com/merbridge/merbridge/pulls>提交 Pull Request</a>，附上您的修复代码，我们会及时处理您的 PR。</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-93aadc1aba179e6928539400a09b9e4e>2 - 快速开始</h1>
-<div class=lead>本文将帮助您快速开始使用 Merbridge</div>
+<h1 id=pg-f09cc107d66e7fd665ea6ab4c05074a8>2 - 快速入门</h1>
+<div class=lead>本文将帮助您快速使用 Merbridge</div>
 <h2 id=prerequisites>先决条件</h2>
 <ol>
 <li>系统的内核版本应大于等于 <code>5.7</code>，可以使用 <code>uname -r</code> 查看。</li>
@@ -210,10 +210,14 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 <h1 id=pg-fcf6186c3c17ed7f2e8577136109a520>3 - 概念</h1>
 <div class=lead>本文介绍 Merbridge 项目中的一些关键概念</div>
 <h2 id=ebpf>eBPF</h2>
-<p>eBPF 全称为 Extended Berkeley Packet Filter，顾名思义，这是一个用来过滤网络数据包的模块。例如 eBPF 的 sockops 和 redir 能力，就可以高效地过滤和拦截数据包。</p>
-<p>eBPF 是一项起源于 Linux 内核的革命性技术，可以在操作系统的内核中运行沙盒程序，能够安全、有效地扩展 Linux 内核的功能，无需改变内核的源代码，也无需加载内核模块。</p>
+<p>eBPF 全称为 Extended Berkeley Packet Filter，顾名思义，这是一个用来过滤网络数据包的模块。
+例如 eBPF 的 sockops 和 redir 能力，就可以高效地过滤和拦截数据包。</p>
+<p>eBPF 是一项起源于 Linux 内核的革命性技术，可以在操作系统的内核中运行沙盒程序，能够安全、有效地扩展
+Linux 内核的功能，无需改变内核的源代码，也无需加载内核模块。</p>
 <h2 id=iptables>iptables</h2>
-<p>iptables 是建立在 netfilter 之上的流量过滤器，通过向 netfilter 的挂载点上注册钩子函数来实现对流量过滤和拦截。从 iptables 这个名字上可以看出有表的概念，iptables 通过把这些规则表挂载在 netfilter 的不同链上，对进出内核协议栈的流量数据包进行过滤或者修改。</p>
+<p>iptables 是建立在 netfilter 之上的流量过滤器，通过向 netfilter 的挂载点上注册钩子函数来实现对流量过滤和拦截。
+从 iptables 这个名字上可以看出有表的概念，iptables 通过把这些规则表挂载在 netfilter 的不同链上，
+对进出内核协议栈的流量数据包进行过滤或者修改。</p>
 <p>iptables 默认有 4 个表：</p>
 <ul>
 <li>Filter 表（数据过滤表）</li>
@@ -230,20 +234,29 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 <li>POSTROUTING 链（路由后规则）</li>
 </ul>
 <h2 id=service-mesh>Service Mesh</h2>
-<p>中文名为服务网格，这是一个可配置的低延迟基础设施层，通过 API 接口处理应用服务之间的网络进程间通信。服务网格能确保容器化应用基础结构服务之间的通信快速、可靠和安全。网格提供的关键功能包括服务发现、负载均衡、安全加密和身份验证、故障恢复、可观测性等。  </p>
-<p>服务网格通常会为每个服务实例注入一个 Sidcar 的代理实例。这些 Sidcar 会处理服务间的通信、监控和安全等问题。这样，开发人员就可以专注于服务中应用代码的开发、支持和维护，而运维团队负责服务网格以及应用的维护工作。</p>
+<p>中文名为服务网格，这是一个可配置的低延迟基础设施层，通过 API 接口处理应用服务之间的网络进程间通信。
+服务网格能确保容器化应用基础结构服务之间的通信快速、可靠和安全。网格提供的关键功能包括服务发现、负载均衡、
+安全加密和身份验证、故障恢复、可观测性等。</p>
+<p>服务网格通常会为每个服务实例注入一个 Sidcar 的代理实例。这些 Sidcar 会处理服务间的通信、监控和安全等问题。
+这样，开发人员就可以专注于服务中应用代码的开发、支持和维护，而运维团队负责服务网格以及应用的维护工作。</p>
 <p>目前最著名的服务网格架构是 Istio。</p>
 <h2 id=istio>Istio</h2>
-<p>Istio 是最初由 IBM、Google 和 Lyft 开源的服务网格技术。它可以透明地分层到分布式应用上，并提供服务网格的所有优点，例如流量治理、安全性和可观测性等。</p>
-<p>Istio 能够适配本地部署、云托管、Kubernetes 容器以及虚拟机上运行的服务程序。通常与 Kubernetes 平台上部署的微服务一起使用。</p>
-<p>从根本上讲，Istio 的工作原理是以 Sidcar 的形式将 Envoy 的扩展版本作为代理布署到每个微服务中。其使用的代理网络构成了 Istio 的数据平面。而这些代理的配置和管理在控制平面完成，为数据平面中的 Envoy 代理提供发现、配置和证书管理。</p>
+<p>Istio 是最初由 IBM、Google 和 Lyft 开源的服务网格技术。它可以透明地分层到分布式应用上，
+并提供服务网格的所有优点，例如流量治理、安全性和可观测性等。</p>
+<p>Istio 能够适配本地部署、云托管、Kubernetes 容器以及虚拟机上运行的服务程序。
+通常与 Kubernetes 平台上部署的微服务一起使用。</p>
+<p>从根本上讲，Istio 的工作原理是以 Sidcar 的形式将 Envoy 的扩展版本作为代理布署到每个微服务中。
+其使用的代理网络构成了 Istio 的数据平面。而这些代理的配置和管理在控制平面完成，为数据平面中的
+Envoy 代理提供发现、配置和证书管理。</p>
 <h2 id=linkerd>Linkerd</h2>
 <p>Linkerd 是市场上出现的第一个服务网格。</p>
-<p>Linkerd 是 Buoyant 为 Kubernetes 设计的开源、超轻量级的服务网格。用 Rust 语言完全重写，使其尽可能小、轻和安全，它提供了运行时调试、可观测性、可靠性和安全性，而无需在分布式应用中更改代码。</p>
-<p>Linkerd 有三个基本组件：UI、数据平面和控制平面。Linkerd 通过在每个服务实例旁安装一组超轻、透明的代理来工作，这些代理会自动处理进出服务的所有流量。</p>
+<p>Linkerd 是 Buoyant 为 Kubernetes 设计的开源、超轻量级的服务网格。用 Rust 语言完全重写，
+使其尽可能小、轻和安全，它提供了运行时调试、可观测性、可靠性和安全性，而无需在分布式应用中更改代码。</p>
+<p>Linkerd 有三个基本组件：UI、数据平面和控制平面。Linkerd 通过在每个服务实例旁安装一组超轻、透明的代理来工作，
+这些代理会自动处理进出服务的所有流量。</p>
 </div>
 <div class=td-content style=page-break-before:always>
-<h1 id=pg-8efbf7499fe9c7bde8d2c1bb7ff6ee3c>4 - 参与贡献</h1>
+<h1 id=pg-c06818113a7abe60306ad7c0f283489e>4 - 参与贡献</h1>
 <div class=lead>本文介绍参与 Merbridge 项目的方式</div>
 <p>Merbridge 目前托管在 GitHub 上进行开源，所有与代码相关的事情都在 GitHub 上进行管理。</p>
 <p>如果您对 Merbridge 有疑问，需要我们帮忙解决问题，或者想要提供一些新的功能，可以在 GitHub 上<a href=https://github.com/merbridge/merbridge/issues>创建新的 Issue</a>，我们会及时查看并处理。</p>
@@ -284,7 +297,7 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/master/samples/he
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 The Merbridge Authors 版权所有</small>
+<small class=text-white>&copy; 2024 The Merbridge Authors 版权所有</small>
 <p class=mt-2><a href=/zh/about/>关于 Merbridge</a></p>
 </div>
 </div>

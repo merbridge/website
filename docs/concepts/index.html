@@ -58,7 +58,7 @@ English
 </ul>
 </div>
 <div class="navbar-nav d-none d-lg-block">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.2136017ac44a5900703dbb1dbaf8eecc.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.1267b07a190c2fc0ea69e6b29105c9e0.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -68,7 +68,7 @@ English
 <aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.2136017ac44a5900703dbb1dbaf8eecc.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/offline-search-index.1267b07a190c2fc0ea69e6b29105c9e0.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -87,12 +87,12 @@ English
 <ul class=ul-1>
 <li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsoverview-li>
 <a href=/docs/overview/ class="align-left pl-0 td-sidebar-link td-sidebar-link__page" id=m-docsoverview><span>Overview</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsgetting-started-li>
-<a href=/docs/getting-started/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-docsgetting-started><span>Quick Start</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docsget-started-li>
+<a href=/docs/get-started/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-docsget-started><span>Quick Start</span></a>
 </li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-docsconcepts-li>
 <a href=/docs/concepts/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__section" id=m-docsconcepts><span class=td-sidebar-nav-active-item>Concepts</span></a>
-</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docscontribution-guidelines-li>
-<a href=/docs/contribution-guidelines/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-docscontribution-guidelines><span>Make Contributions</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-docscontribution-li>
+<a href=/docs/contribution/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-docscontribution><span>Make Contributions</span></a>
 </li>
 </ul>
 </li>
@@ -136,10 +136,17 @@ English
 <p class=reading-time><i class="fa fa-clock" aria-hidden=true></i> 3 minute read</p>
 </header>
 <h2 id=ebpf>eBPF</h2>
-<p>The full name of eBPF is Extended Berkeley Packet Filter. As the name implies, this is a module used to filter network packets. For example, sockops and redir capabilities of eBPF can efficiently filter and intercept packets.</p>
-<p>eBPF is a revolutionary technology with origins in the Linux kernel that can run sandboxed programs in an operating system kernel. It is used to safely and efficiently extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules.</p>
+<p>The full name of eBPF is Extended Berkeley Packet Filter. As the name implies,
+this is a module used to filter network packets. For example, sockops and redir
+capabilities of eBPF can efficiently filter and intercept packets.</p>
+<p>eBPF is a revolutionary technology with origins in the Linux kernel that can run
+sandboxed programs in an operating system kernel. It is used to safely and efficiently
+extend the capabilities of the kernel without requiring to change kernel source code or load kernel modules.</p>
 <h2 id=iptables>iptables</h2>
-<p>iptables is a traffic filter built on netfilter. It implements traffic filtering and interception by registering hook functions on the mount point of netfilter. From the name of iptables, we can guess it may contain some tables. In practice, by mounting rule tables on different chains of netfilter, iptables can filter or modify the traffic packets entering and leaving the kernel protocol stack.</p>
+<p>iptables is a traffic filter built on netfilter. It implements traffic filtering and interception
+by registering hook functions on the mount point of netfilter. From the name of iptables, we can
+guess it may contain some tables. In practice, by mounting rule tables on different chains of
+netfilter, iptables can filter or modify the traffic packets entering and leaving the kernel protocol stack.</p>
 <p>iptables has 4 tables by default:</p>
 <ul>
 <li>Filter</li>
@@ -156,23 +163,42 @@ English
 <li>POSTROUTING chain (rules after routing)</li>
 </ul>
 <h2 id=service-mesh>Service Mesh</h2>
-<p>A service mesh is a dedicated infrastructure layer for handling service-to-service communication. It’s responsible for the reliable delivery of requests through the complex topology of services that comprise a modern, cloud native application. A service mesh can guarantee fast, reliable, and secure communication between containerized application infrastructure services. Key capabilities provided by mesh include service discovery, load balancing, secure encryption and authentication, failover, observability, and more.  </p>
-<p>A service mesh typically injects a sidecar proxy into each service instance. These sidecars handle inter-service communication, monitoring, and security. In this way, developers can focus on the development, support, and maintenance of the application code in the service, while the O&M team is responsible for the maintenance of the service mesh and applications. </p>
+<p>A service mesh is a dedicated infrastructure layer for handling service-to-service communication.
+It’s responsible for the reliable delivery of requests through the complex topology of services that
+comprise a modern, cloud native application. A service mesh can guarantee fast, reliable, and secure
+communication between containerized application infrastructure services. Key capabilities provided by
+mesh include service discovery, load balancing, secure encryption and authentication, failover,
+observability, and more.</p>
+<p>A service mesh typically injects a sidecar proxy into each service instance. These sidecars handle
+inter-service communication, monitoring, and security. In this way, developers can focus on the
+development, support, and maintenance of the application code in the service, while the O&M team
+is responsible for the maintenance of the service mesh and applications.</p>
 <p>Today, the most well-known service mesh is Istio.</p>
 <h2 id=istio>Istio</h2>
-<p>Istio is a service mesh technology originally open sourced by IBM, Google, and Lyft. It can be layered transparently onto distributed applications and provides all the benefits of a service mesh, such as traffic governance, security, and observability.</p>
-<p>Istio can adapt to all services hosted with on-premises, cloud, Kubernetes containers, and virtual machines. It is typically used with microservices deployed on a Kubernetes platform.</p>
-<p>Fundamentally, Istio works by deploying an extended version of Envoy as a sidecar proxy to each microservice. The proxy network it uses forms a data plane of Istio. The configuration and management of these proxies is done in a control plane, providing discovery, configuration, and certificate management for Envoy proxies in the data plane.</p>
+<p>Istio is a service mesh technology originally open sourced by IBM, Google, and Lyft. It can be layered
+transparently onto distributed applications and provides all the benefits of a service mesh, such as
+traffic governance, security, and observability.</p>
+<p>Istio can adapt to all services hosted with on-premises, cloud, Kubernetes containers, and virtual machines.
+It is typically used with microservices deployed on a Kubernetes platform.</p>
+<p>Fundamentally, Istio works by deploying an extended version of Envoy as a sidecar proxy to each microservice.
+The proxy network it uses forms a data plane of Istio. The configuration and management of these proxies is
+done in a control plane, providing discovery, configuration, and certificate management for Envoy proxies
+in the data plane.</p>
 <h2 id=linkerd>Linkerd</h2>
 <p>Linkerd is the first service mesh launched on the market, but Istio is more popular today.</p>
-<p>Linkerd is an open source, ultra-lightweight service mesh designed by Buoyant for Kubernetes. It is completely rewritten in Rust, which makes it as small, light and safe as possible. It provides runtime debugging, observability, reliability, and safety without code changes in distributed applications.</p>
-<p>Linkerd has three basic components: UI, data plane, and control plane. Linkerd works by installing a set of ultra-light, transparent proxies next to each service instance that automatically handle all traffic to and from the service.</p>
+<p>Linkerd is an open source, ultra-lightweight service mesh designed by Buoyant for Kubernetes.
+It is completely rewritten in Rust, which makes it as small, light and safe as possible.
+It provides runtime debugging, observability, reliability, and safety without code changes
+in distributed applications.</p>
+<p>Linkerd has three basic components: UI, data plane, and control plane. Linkerd works by installing
+a set of ultra-light, transparent proxies next to each service instance that automatically handle
+all traffic to and from the service.</p>
 <div class=section-index>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
 Last modified
-May 7, 2022
-: <a href=https://github.com/merbridge/merbridge/commit/010fd12642500da4db16d02ab521bb21d9288e16>polished docs (#18) (010fd12)</a>
+January 5, 2024
+: <a href=https://github.com/merbridge/merbridge/commit/7757615400641fab4deaf136e6ae1ac8e5f71cdc>Clean up docs (#43) (7757615)</a>
 </div>
 </div>
 </main>
@@ -210,7 +236,7 @@ May 7, 2022
 </ul>
 </div>
 <div class="col-12 col-sm-4 text-center py-2 order-sm-2">
-<small class=text-white>&copy; 2023 The Merbridge Authors All Rights Reserved</small>
+<small class=text-white>&copy; 2024 The Merbridge Authors All Rights Reserved</small>
 <p class=mt-2><a href=/about/>Merbridge</a></p>
 </div>
 </div>
