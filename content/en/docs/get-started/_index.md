@@ -6,16 +6,15 @@ description: >
   This page helps you quickly get started with Merbridge.
 ---
 
-## Prerequisites {#prerequisites}
+## Prerequisites
 
 1. Use kernel `5.7` or a higher version. Check your version with `uname -r`.
 1. Activate `cgroup2` in your system. Check the status with `mount | grep cgroup2`.
 
-## Installation {#installation}
-
+## Installation
 Merbridge can be installed on Istio and Linkerd2 only.
 
-### Install on Istio {#installation-on-istio}
+### Install on Istio
 
 Apply the following command to install Merbridge:
 
@@ -23,7 +22,7 @@ Apply the following command to install Merbridge:
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml
 ```
 
-### Install on Linkerd2 {#installation-on-linkerd}
+### Install on Linkerd2
 
 Apply the following command to install Merbridge:
 
@@ -31,7 +30,7 @@ Apply the following command to install Merbridge:
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
 ```
 
-### Install on Kuma {#installation-on-kuma}
+### Install on Kuma
 
 Apply the following command to install Merbridge:
 
@@ -39,9 +38,9 @@ Apply the following command to install Merbridge:
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-kuma.yaml
 ```
 
-## Verification {#verification}
+## Verification
 
-### Verify installation {#verification-installation}
+### Verify installation
 
 Before you start this verification, make sure all Pods relevant to Merbridge are running well. You can check Pod status in Istio with the following command:
 
@@ -51,7 +50,7 @@ kubectl -n istio-system get pods
 
 If all these Pods are `Running`, it means Merbridge is successfully installed.
 
-### Verify connection {#verification-connection-test}
+### Verify connection
 
 Use the following methods to check the connectivity of Merbridge:
 
@@ -70,4 +69,3 @@ kubectl exec $(kubectl get po -l app=sleep -o=jsonpath='{..metadata.name}') -c s
 ```
 
 If you see words like `* Connected to helloworld (127.128.0.1) port 5000 (#0)` in the output, it means Merbridge has managed to replace iptables with eBPF for traffic forwarding.
-
