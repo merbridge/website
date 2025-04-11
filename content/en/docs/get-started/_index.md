@@ -12,6 +12,7 @@ description: >
 1. Activate `cgroup2` in your system. Check the status with `mount | grep cgroup2`.
 
 ## Installation
+
 Merbridge can be installed on Istio and Linkerd2 only.
 
 ### Install on Istio
