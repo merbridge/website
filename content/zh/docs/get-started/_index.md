@@ -15,7 +15,7 @@ description: >
 
 目前支持在 Istio 和 Linkerd2 环境下安装 Merbridge。
 
-### Istio 环境 {#installation-on-istio}
+### Istio 环境 {#install-on-istio}
 
 只需要在环境中执行以下命令即可安装 Merbridge：
 
@@ -23,7 +23,7 @@ description: >
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one.yaml
 ```
 
-### Linkerd2 环境 {#installation-on-linkerd}
+### Linkerd2 环境 {#install-on-linkerd}
 
 只需要在环境中执行以下命令即可安装 Merbridge：
 
@@ -31,7 +31,7 @@ kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/depl
 kubectl apply -f https://raw.githubusercontent.com/merbridge/merbridge/main/deploy/all-in-one-linkerd.yaml
 ```
 
-### Kuma 环境 {#installation-on-kuma}
+### Kuma 环境 {#install-on-kuma}
 
 只需要在环境中执行以下命令即可安装 Merbridge：
 

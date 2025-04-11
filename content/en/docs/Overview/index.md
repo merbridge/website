@@ -3,77 +3,83 @@ title: "Overview"
 linkTitle: "Overview"
 weight: 1
 description: >
-  This page outlines the features and scenarios of Merbridge, as well as its competitive advantages.
+  This page provides an overview of Merbridge, including its features, use cases, and advantages.
 ---
 
-## What is Merbridge
+## What is Merbridge?
 
-Merbridge is designed to make traffic interception and forwarding more efficient for service mesh by replacing iptables with eBPF.
+Merbridge enhances traffic interception and forwarding in service meshes by replacing iptables with eBPF, making the process more efficient.
 
-eBPF (extended Berkeley Packet Filter) allows users to run programs in the Linux kernel without modifying the kernel code or loading kernel modules. It is widely used in networking, security, monitoring, and other relevant fields. Compared to iptables, Merbridge shortens the data path between sidecars and services, thereby accelerating networking. Additionally, using Merbridge does not change the original architecture of Istio. The original logic remains valid, meaning that if you no longer want to use Merbridge, you can simply delete the DaemonSet and the original iptables will function again without any issues.
+eBPF (extended Berkeley Packet Filter) allows users to run programs within the Linux kernel without modifying kernel code or loading kernel modules. It is widely used in networking, security, monitoring, and related fields. Compared to iptables, Merbridge shortens the data path between sidecars and services, improving network performance. Additionally, Merbridge maintains Istio's original architecture, ensuring compatibility. If you choose to stop using Merbridge, simply deleting the DaemonSet restores iptables without any issues.
 
-## What Merbridge can do
+## What Merbridge Can Do
 
-Merbridge has following core features:
+Merbridge offers the following core features:
 
-- Processing outbound traffic
+- **Handling Outbound Traffic**
+  
+  Merbridge leverages eBPF's `connect` program to modify `user_ip` and `user_port`, redirecting connections to the appropriate interface. To help Envoy recognize the original destination, applications (including Envoy) call `get_sockopt` to retrieve `ORIGINAL_DST` when receiving a connection.
 
-  Merbridge uses eBPF's `connect` program to modify the `user_ip` and `user_port`, in order to change the destination address of a connection and ensure that traffic can be sent to the new interface. To help Envoy identify the original destination, the application, including Envoy, will call the `get_sockopt` function to get `ORIGINAL_DST` when receiving a connection.
+- **Handling Inbound Traffic**
+  
+  Inbound traffic follows a similar process to outbound traffic. However, unlike iptables, eBPF cannot be applied to a specific namespace—it affects the entire system. This can cause issues if eBPF is applied to Pods outside of Istio’s management or to an external IP, potentially breaking connectivity.
 
-- Processing inbound traffic
+  To mitigate this, Merbridge includes a lightweight control plane deployed as a DaemonSet. This component monitors all Pods on a node (similar to kubelet) and maintains a `local_pod_ips` map containing the IPs of sidecar-injected Pods. Traffic with destinations not in this map remains unaffected, ensuring stability.
 
-  Inbound traffic is processed similarly to outbound traffic, but it's worth noting that eBPF cannot take effect in a specified namespace like iptables, so changes will be global. This means that if eBPF is applied to Pods that are not originally managed by Istio or to an external IP, serious problems may occur, such as not being able to establish a connection.
+- **Accelerating Network Performance**
+  
+  In Istio, Envoy connects to applications using the current Pod IP and port. Since this Pod IP exists in the `local_pod_ips` map, traffic is redirected to the Pod IP on port 15006, creating a potential infinite loop. Merbridge solves this by implementing a feedback mechanism: when Envoy initiates a connection, it is redirected to port 15006. At the sockops level, the source and destination IPs are checked. If they match, the request is discarded to prevent the loop. Additionally, the process ID and IP are stored in the `process_ip` map, enabling eBPF to map processes to IPs. For subsequent requests, this mapping prevents redundant retries, ensuring faster connections.
 
-  To address this issue, a tiny control plane was designed and deployed as a DaemonSet. It can watch and get a list of all pods on the node, similar to kubelet. Then, Pod IPs injected into the sidecar will be written into the `local_pod_ips` map. For traffic with a destination address not in the map, Merbridge will not intercept it.
+## Why Merbridge Is Better
 
-- Accelerating your network
+In service mesh environments, traffic must be transparently routed through sidecars without application awareness. Traditionally, this is achieved using iptables (netfilter) to redirect traffic. However, iptables-based redirection introduces latency because both egress and ingress traffic undergo multiple interception and redirection steps, unnecessarily elongating the data path.
 
-  In Istio, Envoy visits the application by the current podIP and port number. Because the podIP exists in the `local_pod_ips` map, traffic will be redirected to the podIP on port 15006, which creates an infinite loop. A solution to this issue is to use a feedback mechanism where when Envoy tries to establish a connection, it's redirected to port 15006. When it moves to sockops, the source IP and the destination IP are checked to see if they are the same. If they are, it means that the request is incorrect and it will be discarded in the sockops process. Meanwhile, the current ProcessID and IP will be written into the `process_ip` map, allowing eBPF to support the corresponding relationship between processes and IPs. When the next request is sent, it will check directly from the `process_ip` map if the destination is the same as the current IP. Envoy will retry when the request fails. This retry process will only occur once and subsequent connections will go very fast.
+eBPF provides a function called `bpf_msg_redirect_hash`, which enables direct packet forwarding from an inbound socket to an outbound socket, significantly improving kernel-level packet processing. The core idea behind Merbridge is to replace iptables with eBPF to streamline this process.
 
-## Why Merbridge is better
+## When to Use Merbridge
 
-In the service mesh scenario, in order to use sidecars for traffic management without the application being aware of it, the ingress and egress traffic of Pods should be forwarded to the sidecar. The most common solution is using the redirect capability of iptables (netfilter) to forward the original traffic. However, this approach increases network latency because iptables intercept both egress and ingress traffic, which causes duplicated steps to be performed several times. As a result, the data path becomes very long.
+Merbridge is recommended in the following scenarios:
 
-eBPF provides a function called `bpf_msg_redirect_hash` which allows for directly forwarding packets from applications in the inbound socket to the outbound socket. This can greatly accelerate packet processing in the kernel. Therefore, the aim is to replace iptables with eBPF, this is the main idea behind Merbridge.
+1. **High-Performance Networking Requirements**
 
-## When to use Merbridge
+   - As container counts increase, iptables performance degrades due to the need to traverse and update rule sets frequently.
+   - Systems that rely on IP-based security filtering experience higher overhead as Pod lifecycles shorten, requiring constant iptables rule updates.
+   - Iptables-based transparent interception depends on the conntrack module for connection tracking, which becomes resource-intensive when handling high connection volumes.
 
-Merbridge is recommended if you have any of following problems:
+1. **Environments Where Iptables Is Not Feasible**
 
-1. In scenarios that require high-performance connections, using iptables will increase latency.
-   - The performance of iptables control plane and data plane degrades as the number of containers in the cluster increases because it needs to traverse and modify all the rules every time a new rule is added.
-   - Systems that use IP addresses for security filtering will come under increasing pressure as the Pod lifecycle gets shorter, sometimes just a few seconds, because it requires more frequent updates of iptables rules.
-   - Using iptables to achieve transparent interception requires a conntrack module for connection trace, which causes a lot of consumption when there are many connections.
-2. The system cannot use iptables for some reasons.
-   - Sometimes it needs to process numerous active connections simultaneously, but using iptables easily causes a full conntrack table.
-   - Sometimes numerous connections need to be processed in one second, which will exceed the limit of the conntrack table. For example, if you try to process 1100 connections per second with timeout set as 120 seconds and a table capacity of 128k, it would exceed the conntrack table’s limit (128k/120 seconds = 1092 connections/second).
-3. Due to security concerns, some ordinary Pods cannot have too many permissions, but using Istio (without CNI) requires these Pods to gain more permissions.
-   - Running the init container may require the `NET_ADMIN` permissions.
-   - Running an iptables command may require the `CAP_NET_ADMIN` permissions.
-   - Mounting a file system may require the `CAP_SYS_ADMIN` permissions.
+   - Systems with high concurrent connections may suffer from full conntrack tables, leading to connection failures.
+   - Workloads processing thousands of connections per second may exceed conntrack table limits. For example, with a table capacity of 128K and a timeout of 120 seconds, the limit is approximately 1,092 connections per second, which can be easily surpassed.
 
-In short Merbridge is a better alternative to iptables, as it's faster, more efficient, and easier to manage in high traffic scenarios.
+1. **Security-Conscious Environments**
 
-## What Merbridge will change
+   - Some Pods have limited permissions for security reasons, but Istio (without CNI) requires additional privileges.
+   - Running the init container may require `NET_ADMIN` capabilities.
+   - Executing iptables commands may require `CAP_NET_ADMIN` privileges.
+   - Mounting certain filesystems may require `CAP_SYS_ADMIN` privileges.
 
-Using eBPF can greatly simplify the kernel's processing of traffic and make inter-service communication more efficient.
+In summary, Merbridge is a superior alternative to iptables, offering lower latency, higher efficiency, and easier management in high-traffic environments.
 
-- Before applying eBPF with Merbridge, the data path between pods is like:
+## What Changes With Merbridge?
 
-  ![iptable path](./imgs/iptables_path.png)
+Using eBPF simplifies kernel-level traffic processing, enhancing inter-service communication efficiency.
 
-  > Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
+- **Before Merbridge**: The data path between Pods follows a complex route via iptables:
 
-- After applying Merbridge, the outbound traffic can skip many filter steps to improve performance:
+  ![iptables path](./imgs/iptables_path.png)
+  
+  > Diagram from: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
+
+- **After Merbridge**: Outbound traffic bypasses multiple filtering steps, improving performance:
 
   ![eBPF path](./imgs/eBPF_path.png)
+  
+  > Diagram from: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
-  > Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
-
-- If two pods are on the same node, the connection will be even faster:
+- **If Two Pods Are on the Same Node**: Communication is even faster:
 
   ![same-node eBPF path](./imgs/sameNode_eBPF_path.png)
+  
+  > Diagram from: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
 
-  > Diagram From: [Accelerating Envoy and Istio with Cilium and the Linux Kernel](https://pt.slideshare.net/ThomasGraf5/accelerating-envoy-and-istio-with-cilium-and-the-linux-kernel/22)
-
-[Merbridge](https://github.com/merbridge/merbridge) is a completely independent open source project that is still in its early stages. We would greatly appreciate it if more users and developers could try this new technology to accelerate your mesh and provide feedback. By using Merbridge, you can benefit from faster and more efficient traffic management compared to using iptables, and can help to improve the project by providing feedback and participating in its development.
+[Merbridge](https://github.com/merbridge/merbridge) is an independent open-source project in its early stages. We encourage users and developers to explore this technology, provide feedback, and contribute to its evolution. By adopting Merbridge, you can achieve faster, more efficient traffic management while helping to enhance the project through real-world usage and contributions.
